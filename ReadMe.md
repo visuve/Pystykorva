@@ -1,4 +1,4 @@
-# BoostGrep
+# Pystykorva
 
 - A C++ library containing Grep-like functionality
 	- Implemented using Boost, with ICU as its backend

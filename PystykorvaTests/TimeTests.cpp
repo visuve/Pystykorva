@@ -1,6 +1,6 @@
 #include "PCH.hpp"
 
-#include "../BoostGrepCLI/Time.hpp"
+#include "../PystykorvaCLI/Time.hpp"
 
 BOOST_AUTO_TEST_CASE(FileTimeFromStringTest)
 {

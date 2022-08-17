@@ -1,6 +1,6 @@
 #pragma once
 
-class __declspec(dllexport) BoostGrep
+class __declspec(dllexport) Pystykorva
 {
 public:
 	enum MatchMode : uint8_t
@@ -29,8 +29,8 @@ public:
 		std::chrono::time_point<std::chrono::file_clock> MaximumTime;
 	};
 
-	BoostGrep(const Options& options);
-	~BoostGrep();
+	Pystykorva(const Options& options);
+	~Pystykorva();
 
 	void Run();
 

@@ -1,12 +1,12 @@
 #include "PCH.hpp"
-#include "../BoostGrepLib/BoostGrep.hpp"
+#include "../PystykorvaLib/Pystykorva.hpp"
 #include "Time.hpp"
 
 namespace bpo = boost::program_options;
 
-BoostGrep::Options Parse(const bpo::variables_map& vm)
+Pystykorva::Options Parse(const bpo::variables_map& vm)
 {
-	BoostGrep::Options options;
+	Pystykorva::Options options;
 
 	options.Directory = vm["directory"].as<std::string>();
 	boost::split(options.Wildcards, vm["wildcards"].as<std::string>(), boost::is_any_of("|"));
@@ -15,7 +15,7 @@ BoostGrep::Options Parse(const bpo::variables_map& vm)
 	options.SearchExpression = vm["searchexpression"].as<std::string>();
 	options.ReplacementText = vm["replacement"].as<std::string>();
 
-	options.Mode = vm["mode"].as<BoostGrep::MatchMode>();
+	options.Mode = vm["mode"].as<Pystykorva::MatchMode>();
 
 	options.MinimumSize = vm["minsize"].as<uint64_t>();
 	options.MaximumSize = vm["maxsize"].as<uint64_t>();
@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 {
 	try
 	{
-		bpo::options_description description("BoostGrep");
+		bpo::options_description description("Pystykorva");
 
 		std::string directory;
 
@@ -59,10 +59,10 @@ int main(int argc, char** argv)
 			return 0;
 		}
 
-		BoostGrep::Options options;
-		BoostGrep boostGrep(options);
+		Pystykorva::Options options;
+		Pystykorva Pystykorva(options);
 
-		boostGrep.Run();
+		Pystykorva.Run();
 	}
 	catch (std::exception& e)
 	{

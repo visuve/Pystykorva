@@ -8,16 +8,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		BoostGrep.props = BoostGrep.props
+		Pystykorva.props = Pystykorva.props
 		LICENSE.md = LICENSE.md
 		ReadMe.md = ReadMe.md
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BoostGrepLib", "BoostGrepLib\BoostGrepLib.vcxproj", "{7FA20915-6EFB-40AC-969C-1D408922AFC3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PystykorvaLib", "PystykorvaLib\PystykorvaLib.vcxproj", "{7FA20915-6EFB-40AC-969C-1D408922AFC3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BoostGrepCLI", "BoostGrepCLI\BoostGrepCLI.vcxproj", "{4D16FDA1-E2D7-4F93-9542-56F45C743A34}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PystykorvaCLI", "PystykorvaCLI\PystykorvaCLI.vcxproj", "{4D16FDA1-E2D7-4F93-9542-56F45C743A34}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BoostGrepTests", "BoostGrepTests\BoostGrepTests.vcxproj", "{0BA3DF49-09DC-43DF-A793-67F662BFC9F2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PystykorvaTests", "PystykorvaTests\PystykorvaTests.vcxproj", "{0BA3DF49-09DC-43DF-A793-67F662BFC9F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

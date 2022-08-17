@@ -3,9 +3,9 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4D16FDA1-E2D7-4F93-9542-56F45C743A34}</ProjectGuid>
     <ConfigurationType>Application</ConfigurationType>
-    <ProjectName>BoostGrepCLI</ProjectName>
+    <ProjectName>PystykorvaCLI</ProjectName>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\BoostGrep.props" />
+  <Import Project="$(SolutionDir)\Pystykorva.props" />
   <ItemDefinitionGroup>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -22,7 +22,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BoostGrepLib\BoostGrepLib.vcxproj">
+    <ProjectReference Include="..\PystykorvaLib\PystykorvaLib.vcxproj">
       <Project>{7fa20915-6efb-40ac-969c-1d408922afc3}</Project>
     </ProjectReference>
   </ItemGroup>
