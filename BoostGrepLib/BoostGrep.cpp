@@ -1,7 +1,16 @@
 #include "PCH.hpp"
 #include "BoostGrep.hpp"
 
-void BoostGrep::SayHello()
+BoostGrep::BoostGrep(const Options& options) :
+	_options(options)
 {
-	puts("Hello");
+}
+
+BoostGrep::~BoostGrep()
+{
+}
+
+void BoostGrep::Run()
+{
+
 }

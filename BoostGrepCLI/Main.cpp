@@ -1,7 +1,30 @@
 #include "PCH.hpp"
 #include "../BoostGrepLib/BoostGrep.hpp"
+#include "Time.hpp"
 
 namespace bpo = boost::program_options;
+
+BoostGrep::Options Parse(const bpo::variables_map& vm)
+{
+	BoostGrep::Options options;
+
+	options.Directory = vm["directory"].as<std::string>();
+	boost::split(options.Wildcards, vm["wildcards"].as<std::string>(), boost::is_any_of("|"));
+	boost::split(options.Excludes, vm["excludes"].as<std::string>(), boost::is_any_of("|"));
+
+	options.SearchExpression = vm["searchexpression"].as<std::string>();
+	options.ReplacementText = vm["replacement"].as<std::string>();
+
+	options.Mode = vm["mode"].as<BoostGrep::MatchMode>();
+
+	options.MinimumSize = vm["minsize"].as<uint64_t>();
+	options.MaximumSize = vm["maxsize"].as<uint64_t>();
+
+	options.MinimumTime = FileTimeFromString(vm["mintime"].as<std::string>());
+	options.MaximumTime = FileTimeFromString(vm["maxtime"].as<std::string>());
+
+	return options;
+}
 
 int main(int argc, char** argv)
 {
@@ -15,7 +38,13 @@ int main(int argc, char** argv)
 			("help", "Prints out this help message")
 			("directory", bpo::value(&directory), "The directory to search in")
 			("wildcards", "The file names to match")
-			("searchword", "The string to search");
+			("searchexpression", "The text to search")
+			("replacement", "The text to replace")
+			("mode", "Plain or regex, case sensitive or not")
+			("minsize", "Minimum file size")
+			("maxsize", "Maximum file size")
+			("mintime", "Minimum file time")
+			("maxtime", "Maximum file time");
 
 		bpo::variables_map vm;
 
@@ -30,8 +59,10 @@ int main(int argc, char** argv)
 			return 0;
 		}
 
-		BoostGrep x;
-		x.SayHello();
+		BoostGrep::Options options;
+		BoostGrep boostGrep(options);
+
+		boostGrep.Run();
 	}
 	catch (std::exception& e)
 	{
