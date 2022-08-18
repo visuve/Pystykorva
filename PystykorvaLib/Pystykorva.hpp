@@ -22,18 +22,44 @@ public:
 
 		MatchMode Mode;
 
-		uint64_t MinimumSize;
-		uint64_t MaximumSize;
+		uint64_t MinimumSize = 0;
+		uint64_t MaximumSize = 0;
 
 		std::chrono::time_point<std::chrono::file_clock> MinimumTime;
 		std::chrono::time_point<std::chrono::file_clock> MaximumTime;
+
+		uint16_t MaximumThreads = 0;
 	};
 
-	Pystykorva(const Options& options);
+	enum Status : uint8_t
+	{
+		Ok,
+		Excluded,
+		TooSmall,
+		TooBig,
+		TooEarly,
+		TooLate
+	};
+
+	struct Callbacks
+	{
+		std::function<void()> Started;
+		std::function<void(std::filesystem::path)> Processing;
+		std::function<void(uint32_t line, std::string content)> MatchFound;
+		std::function<void(std::filesystem::path, Status)> Processed;
+		std::function<void(std::chrono::milliseconds)> Finished;
+	};
+
+	Pystykorva(const Options& options, const Callbacks& callbacks);
 	~Pystykorva();
 
-	void Run();
+	void Start();
+	void Stop();
 
 private:
 	Options _options;
+	Callbacks _callbacks;
+
+	std::unique_ptr<boost::asio::thread_pool> _pool;
+	std::atomic_bool _run;
 };

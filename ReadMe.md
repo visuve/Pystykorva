@@ -6,7 +6,7 @@
 ## Development
 
 - Point ``ICU_PATH`` environment variable to ICU root e.g. ``X:\\icu4c-71_1``
-	- https://github.com/unicode-org/icu/releases/tag/release-71-1
+	- https://icu.unicode.org/download
 - Compile Boost (static linkage) with test and localization modules with ICU
 	- https://www.boost.org/users/download/
 - Point ``BOOST_INCLUDEDIR`` environment variable to Boost root e.g. ``X:\boost_1_80_0``

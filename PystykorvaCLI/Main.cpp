@@ -23,6 +23,8 @@ Pystykorva::Options Parse(const bpo::variables_map& vm)
 	options.MinimumTime = FileTimeFromString(vm["mintime"].as<std::string>());
 	options.MaximumTime = FileTimeFromString(vm["maxtime"].as<std::string>());
 
+	options.MaximumThreads = vm["maxthreads"].as<uint16_t>();
+
 	return options;
 }
 
@@ -44,7 +46,8 @@ int main(int argc, char** argv)
 			("minsize", "Minimum file size")
 			("maxsize", "Maximum file size")
 			("mintime", "Minimum file time")
-			("maxtime", "Maximum file time");
+			("maxtime", "Maximum file time")
+			("maxthreads", "Maximum number of threads");
 
 		bpo::variables_map vm;
 
@@ -60,9 +63,10 @@ int main(int argc, char** argv)
 		}
 
 		Pystykorva::Options options;
-		Pystykorva Pystykorva(options);
+		Pystykorva::Callbacks callbacks;
+		Pystykorva Pystykorva(options, callbacks);
 
-		Pystykorva.Run();
+		Pystykorva.Start();
 	}
 	catch (std::exception& e)
 	{
