@@ -1,6 +1,6 @@
 #pragma once
 
-class __declspec(dllexport) Pystykorva
+class Pystykorva
 {
 public:
 	enum MatchMode : uint8_t
@@ -28,25 +28,26 @@ public:
 		std::chrono::time_point<std::chrono::file_clock> MinimumTime;
 		std::chrono::time_point<std::chrono::file_clock> MaximumTime;
 
-		uint16_t MaximumThreads = 0;
+		uint32_t MaximumThreads = 0;
 	};
 
-	enum Status : uint8_t
+	enum Status : uint32_t
 	{
-		Ok,
-		Excluded,
-		TooSmall,
-		TooBig,
-		TooEarly,
-		TooLate
+		Ok = 0x00,
+		Missing = (1u << 0),
+		NoPermission = (1u << 1),
+		NameExcluded = (1u << 2),
+		TooSmall = (1u << 3),
+		TooBig = (1u << 4),
+		TooEarly = (1u << 5),
+		TooLate = (1u << 6)
 	};
 
 	struct Callbacks
 	{
 		std::function<void()> Started;
 		std::function<void(std::filesystem::path)> Processing;
-		std::function<void(uint32_t line, std::string content)> MatchFound;
-		std::function<void(std::filesystem::path, Status)> Processed;
+		std::function<void(std::filesystem::path, std::map<uint32_t, std::string>, uint32_t statusMask)> Processed;
 		std::function<void(std::chrono::milliseconds)> Finished;
 	};
 
@@ -54,12 +55,19 @@ public:
 	~Pystykorva();
 
 	void Start();
+	void Wait();
 	void Stop();
 
+	std::filesystem::path Next();
+
 private:
+	uint32_t FileStatus(const std::filesystem::path&);
+	void Worker(std::stop_token token);
+
 	Options _options;
 	Callbacks _callbacks;
 
-	std::unique_ptr<boost::asio::thread_pool> _pool;
-	std::atomic_bool _run;
+	std::vector<std::jthread> _threads;
+	std::filesystem::recursive_directory_iterator _rdi;
+	std::mutex _mutex;
 };

@@ -53,7 +53,7 @@
   </ImportGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -61,6 +61,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <SDLCheck>true</SDLCheck>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ConformanceMode>true</ConformanceMode>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -73,7 +74,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -81,6 +82,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <SDLCheck>true</SDLCheck>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ConformanceMode>true</ConformanceMode>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -103,6 +105,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <SDLCheck>true</SDLCheck>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ConformanceMode>true</ConformanceMode>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -127,6 +130,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <SDLCheck>true</SDLCheck>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ConformanceMode>true</ConformanceMode>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -139,8 +143,4 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <PropertyGroup>
-    <IncludePath>$(BOOST_INCLUDEDIR);$(IncludePath)</IncludePath>
-    <LibraryPath>$(BOOST_LIBRARYDIR);$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
 </Project>

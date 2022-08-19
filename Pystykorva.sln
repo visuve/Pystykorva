@@ -8,8 +8,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		Pystykorva.props = Pystykorva.props
 		LICENSE.md = LICENSE.md
+		Pystykorva.props = Pystykorva.props
 		ReadMe.md = ReadMe.md
 	EndProjectSection
 EndProject
@@ -17,7 +17,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PystykorvaLib", "Pystykorva
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PystykorvaCLI", "PystykorvaCLI\PystykorvaCLI.vcxproj", "{4D16FDA1-E2D7-4F93-9542-56F45C743A34}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PystykorvaTests", "PystykorvaTests\PystykorvaTests.vcxproj", "{0BA3DF49-09DC-43DF-A793-67F662BFC9F2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PystykorvaTests", "PystykorvaTests\PystykorvaTests.vcxproj", "{16E5E2A0-0508-4A1B-BEC8-AD3AFF5BCEDA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,14 +43,14 @@ Global
 		{4D16FDA1-E2D7-4F93-9542-56F45C743A34}.Release|x64.Build.0 = Release|x64
 		{4D16FDA1-E2D7-4F93-9542-56F45C743A34}.Release|x86.ActiveCfg = Release|Win32
 		{4D16FDA1-E2D7-4F93-9542-56F45C743A34}.Release|x86.Build.0 = Release|Win32
-		{0BA3DF49-09DC-43DF-A793-67F662BFC9F2}.Debug|x64.ActiveCfg = Debug|x64
-		{0BA3DF49-09DC-43DF-A793-67F662BFC9F2}.Debug|x64.Build.0 = Debug|x64
-		{0BA3DF49-09DC-43DF-A793-67F662BFC9F2}.Debug|x86.ActiveCfg = Debug|Win32
-		{0BA3DF49-09DC-43DF-A793-67F662BFC9F2}.Debug|x86.Build.0 = Debug|Win32
-		{0BA3DF49-09DC-43DF-A793-67F662BFC9F2}.Release|x64.ActiveCfg = Release|x64
-		{0BA3DF49-09DC-43DF-A793-67F662BFC9F2}.Release|x64.Build.0 = Release|x64
-		{0BA3DF49-09DC-43DF-A793-67F662BFC9F2}.Release|x86.ActiveCfg = Release|Win32
-		{0BA3DF49-09DC-43DF-A793-67F662BFC9F2}.Release|x86.Build.0 = Release|Win32
+		{16E5E2A0-0508-4A1B-BEC8-AD3AFF5BCEDA}.Debug|x64.ActiveCfg = Debug|x64
+		{16E5E2A0-0508-4A1B-BEC8-AD3AFF5BCEDA}.Debug|x64.Build.0 = Debug|x64
+		{16E5E2A0-0508-4A1B-BEC8-AD3AFF5BCEDA}.Debug|x86.ActiveCfg = Debug|Win32
+		{16E5E2A0-0508-4A1B-BEC8-AD3AFF5BCEDA}.Debug|x86.Build.0 = Debug|Win32
+		{16E5E2A0-0508-4A1B-BEC8-AD3AFF5BCEDA}.Release|x64.ActiveCfg = Release|x64
+		{16E5E2A0-0508-4A1B-BEC8-AD3AFF5BCEDA}.Release|x64.Build.0 = Release|x64
+		{16E5E2A0-0508-4A1B-BEC8-AD3AFF5BCEDA}.Release|x86.ActiveCfg = Release|Win32
+		{16E5E2A0-0508-4A1B-BEC8-AD3AFF5BCEDA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

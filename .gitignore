@@ -1,6 +1,4 @@
 out/
 .vs/
-*.opendb
-*.db
+packages/
 *.user
-*.aps

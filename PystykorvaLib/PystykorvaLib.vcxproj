@@ -2,17 +2,19 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7FA20915-6EFB-40AC-969C-1D408922AFC3}</ProjectGuid>
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <ProjectName>PystykorvaLib</ProjectName>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\Pystykorva.props" />
   <ItemGroup>
+    <ClCompile Include="Puukko.cpp" />
     <ClCompile Include="Pystykorva.cpp" />
     <ClCompile Include="PCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Puukko.hpp" />
     <ClInclude Include="Pystykorva.hpp" />
     <ClInclude Include="PCH.hpp" />
   </ItemGroup>

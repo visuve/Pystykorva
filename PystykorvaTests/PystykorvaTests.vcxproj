@@ -1,12 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{0BA3DF49-09DC-43DF-A793-67F662BFC9F2}</ProjectGuid>
+    <ProjectGuid>{16E5E2A0-0508-4A1B-BEC8-AD3AFF5BCEDA}</ProjectGuid>
     <ConfigurationType>Application</ConfigurationType>
     <ProjectName>PystykorvaTests</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\Pystykorva.props" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.6\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets" Condition="Exists('..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.6\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" />
+  </ImportGroup>
   <ItemDefinitionGroup>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -16,14 +19,23 @@
     <ClInclude Include="PCH.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TimeTests.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="PCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PystykorvaLib\PystykorvaLib.vcxproj">
       <Project>{7fa20915-6efb-40ac-969c-1d408922afc3}</Project>
     </ProjectReference>
   </ItemGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.6\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.6\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets'))" />
+  </Target>
 </Project>
