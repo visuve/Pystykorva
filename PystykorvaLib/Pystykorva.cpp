@@ -7,6 +7,7 @@ Pystykorva::Pystykorva(const Options& options, const Callbacks& callbacks) :
 	_callbacks(callbacks),
 	_rdi(options.Directory)
 {
+	assert(_options.BufferSize > _options.SearchExpression.size());
 }
 
 Pystykorva::~Pystykorva()
@@ -81,7 +82,9 @@ uint32_t Pystykorva::FileStatus(const std::filesystem::path& path)
 		status |= Status::TooSmall;
 	}
 
-	if (fileSize > _options.MaximumSize)
+	// This is an annoying limitation for now: if the whole file does not fit
+	// into the buffer, it is skipped
+	if (fileSize > _options.MaximumSize || fileSize > _options.BufferSize)
 	{
 		status |= Status::TooBig;
 	}
@@ -103,7 +106,7 @@ uint32_t Pystykorva::FileStatus(const std::filesystem::path& path)
 
 void Pystykorva::Worker(std::stop_token token)
 {
-	Puukko puukko(_options);
+	Puukko puukko(_options, token);
 
 	while (!token.stop_requested())
 	{

@@ -28,6 +28,7 @@ public:
 		std::chrono::time_point<std::chrono::file_clock> MinimumTime;
 		std::chrono::time_point<std::chrono::file_clock> MaximumTime;
 
+		uint32_t BufferSize = 0;
 		uint32_t MaximumThreads = 0;
 	};
 
