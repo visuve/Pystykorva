@@ -20,6 +20,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="UnicodeConverter.cpp" />
+    <ClCompile Include="Wildcard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EncodingDetector.hpp" />
@@ -28,5 +29,6 @@
     <ClInclude Include="Pystykorva.hpp" />
     <ClInclude Include="PCH.hpp" />
     <ClInclude Include="UnicodeConverter.hpp" />
+    <ClInclude Include="Wildcard.hpp" />
   </ItemGroup>
 </Project>
