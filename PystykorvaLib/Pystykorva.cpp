@@ -1,6 +1,7 @@
 #include "PCH.hpp"
 #include "Pystykorva.hpp"
 #include "Puukko.hpp"
+#include "Wildcard.hpp"
 
 Pystykorva::Pystykorva(const Options& options, const Callbacks& callbacks) :
 	_options(options),
@@ -46,29 +47,60 @@ void Pystykorva::Stop()
 	_threads.clear();
 }
 
+bool Pystykorva::IsExcludedDirectory(const std::filesystem::path& path) const
+{
+	return std::any_of(
+		_options.ExcludedDirectories.cbegin(),
+		_options.ExcludedDirectories.cend(),
+		[&](std::string_view excluded)
+	{
+		return path.stem() == excluded;
+	});
+}
+
 std::filesystem::path Pystykorva::Next()
 {
 	std::lock_guard<std::mutex> lock(_mutex);
 
-	std::error_code ec;
+	std::filesystem::path result;
 
-	do 
+	while (_rdi != std::filesystem::recursive_directory_iterator())
 	{
-		_rdi.increment(ec);
+		const std::filesystem::path path = _rdi->path();
 
 		if (_rdi->is_regular_file())
 		{
-			return _rdi->path();
+			result = path;
+		}
+		else if (_rdi->is_directory() && IsExcludedDirectory(path))
+		{
+			_rdi.disable_recursion_pending();
 		}
 
-	} while (ec.value() != 0);
+		++_rdi;
 
-	return {};
+		if (!result.empty())
+		{
+			break;
+		}
+	}
+
+	return result;
 }
 
 uint32_t Pystykorva::FileStatus(const std::filesystem::path& path)
 {
 	uint32_t status = Status::Ok;
+
+	// TODO: check file permission
+
+	if (!_options.IncludeWildcards.empty() && std::none_of(
+		_options.IncludeWildcards.cbegin(),
+		_options.IncludeWildcards.cbegin(),
+		std::bind(Wildcard::Matches, path.string(), std::placeholders::_1)))
+	{
+		return Status::NameExcluded;
+	}
 
 	if (!std::filesystem::exists(path))
 	{

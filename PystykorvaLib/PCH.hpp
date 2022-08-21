@@ -12,6 +12,7 @@
 #include <map>
 #include <mutex>
 #include <queue>
+#include <ranges>
 #include <set>
 #include <thread>
 

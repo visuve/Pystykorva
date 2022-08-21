@@ -7,8 +7,8 @@ Pystykorva::Options Parse(const CmdArgs& args)
 	Pystykorva::Options options;
 
 	options.Directory = args.Value<std::string>("directory");
-	options.Wildcards = args.Value<std::set<std::string>>("wildcards");
-	options.Excludes = args.Value<std::set<std::string>>("excludes");
+	options.IncludeWildcards = args.Value<std::set<std::string>>("wildcards");
+	options.ExcludedDirectories = args.Value<std::set<std::string>>("excludes");
 
 	options.SearchExpression = args.Value<std::string>("searchexpression");
 	options.ReplacementText = args.Value<std::string>("replacement");
@@ -35,6 +35,7 @@ int main(int argc, char** argv)
 			{ "help", typeid(std::nullopt), "Prints out this help message" },
 			{ "directory", typeid(std::filesystem::path), "The directory to search in" },
 			{ "wildcards", typeid(std::string), "The file names to match"},
+			{ "excludes", typeid(std::string), "The directory names to exclude" },
 			{ "searchexpression", typeid(std::string), "The text to search"},
 			{ "replacement", typeid(std::string), "The text to replace"},
 			{ "mode", typeid(int), "Plain or regex, case sensitive or not"},

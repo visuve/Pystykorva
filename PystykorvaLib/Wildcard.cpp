@@ -3,7 +3,9 @@
 
 inline bool IEquals(char lhs, char rhs)
 {
-	return std::tolower(lhs) == std::tolower(rhs);
+	// https://en.cppreference.com/w/cpp/string/byte/tolower#Notes
+	return std::tolower(static_cast<uint8_t>(lhs)) == 
+		std::tolower(static_cast<uint8_t>(rhs));
 }
 
 bool Wildcard::Matches(std::string_view text, std::string_view wildcard)

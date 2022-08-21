@@ -14,8 +14,8 @@ public:
 	struct Options
 	{
 		std::filesystem::path Directory;
-		std::set<std::string> Wildcards;
-		std::set<std::string> Excludes;
+		std::set<std::string> IncludeWildcards;
+		std::set<std::string> ExcludedDirectories;
 
 		std::string SearchExpression;
 		std::string ReplacementText;
@@ -59,9 +59,9 @@ public:
 	void Wait();
 	void Stop();
 
-	std::filesystem::path Next();
-
 private:
+	bool IsExcludedDirectory(const std::filesystem::path&) const;
+	std::filesystem::path Next();
 	uint32_t FileStatus(const std::filesystem::path&);
 	void Worker(std::stop_token token);
 
