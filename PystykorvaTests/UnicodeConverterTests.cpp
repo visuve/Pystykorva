@@ -1,6 +1,5 @@
 #include "PCH.hpp"
 #include "../PystykorvaLib/UnicodeConverter.hpp"
-
 TEST(UnicodeConverterTests, Simple)
 {
 	UnicodeConverter converter("UTF-8");
@@ -19,4 +18,14 @@ TEST(UnicodeConverterTests, Erase)
 
 	std::u16string expected(u"bar\nxyz");
 	EXPECT_TRUE(converter.Data() == expected);
+}
+
+TEST(UnicodeConverterTests, View)
+{
+	UnicodeConverter converter("UTF-8");
+	converter.Convert("foo\nbar\nxyz", true);
+
+	std::u16string_view actual = converter.View(4, 8);
+	std::u16string expected(u"bar\n");
+	EXPECT_TRUE(actual == expected);
 }

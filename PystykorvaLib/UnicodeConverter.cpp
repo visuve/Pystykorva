@@ -39,6 +39,13 @@ public:
 		return _data;
 	}
 
+	std::u16string_view View(size_t from, size_t to) const
+	{
+		assert(from < to);
+		// Returning a substring directly from _data adds null to the beginning
+		return std::u16string_view(_data).substr(from, to - from);
+	}
+
 	void Erase(size_t index)
 	{
 		_data.erase(0, index);
@@ -70,9 +77,9 @@ std::u16string_view UnicodeConverter::Data() const
 	return _impl->Data();
 }
 
-std::u16string_view UnicodeConverter::Data(size_t from, size_t to) const
+std::u16string_view UnicodeConverter::View(size_t from, size_t to) const
 {
-	return Data().substr(from, to);
+	return _impl->View(from, to);
 }
 
 void UnicodeConverter::Erase(size_t index)

@@ -10,7 +10,7 @@ public:
 
 	void Convert(std::string_view sample, bool flush);
 	std::u16string_view Data() const;
-	std::u16string_view Data(size_t from, size_t to) const;
+	std::u16string_view View(size_t from, size_t to) const;
 
 	void Erase(size_t index);
 
