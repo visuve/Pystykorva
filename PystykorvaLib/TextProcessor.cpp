@@ -133,7 +133,7 @@ std::vector<Pystykorva::Result> TextProcessor::ProcessStream(std::iostream& stre
 	return results;
 }
 
-Pystykorva::Result TextProcessor::ProcessLine(std::u16string_view& line, uint32_t number)
+Pystykorva::Result TextProcessor::ProcessLine(std::u16string_view line, uint32_t number)
 {
 	Pystykorva::Result result;
 	result.LineNumber = number;

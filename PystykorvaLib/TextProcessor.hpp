@@ -14,7 +14,7 @@ public:
 
 	std::vector<Pystykorva::Result> ProcessFile(const std::filesystem::path&);
 	std::vector<Pystykorva::Result> ProcessStream(std::iostream& stream);
-	Pystykorva::Result ProcessLine(std::u16string_view& line, uint32_t number);
+	Pystykorva::Result ProcessLine(std::u16string_view line, uint32_t number);
 
 private:
 	std::stop_token _token;

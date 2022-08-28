@@ -8,7 +8,7 @@ Pystykorva::Options Parse(const CmdArgs& args)
 
 	options.Directory = args.Value<std::filesystem::path>("directory");
 	options.IncludeWildcards = args.Value<std::set<std::string>>("wildcards", {});
-	options.ExcludedDirectories = args.Value<std::set<std::string>>("excludes", { ".bzr", ".git", ".hg", ".svn" });
+	options.ExcludedDirectories = args.Value<std::set<std::string>>("excludes", { ".bzr", ".git", ".hg", ".svn", ".vs" });
 
 	options.SearchExpression = args.Value<std::string>("searchexpression");
 	options.ReplacementText = args.Value<std::string>("replacement", "");
@@ -24,8 +24,8 @@ Pystykorva::Options Parse(const CmdArgs& args)
 	options.MinimumTime = args.Value<std::chrono::file_clock::time_point>("mintime", now - std::chrono::years(1000));
 	options.MaximumTime = args.Value<std::chrono::file_clock::time_point>("maxtime", now + std::chrono::years(1000));
 
-	// Mebibyte should be decent for any operation
-	options.BufferSize = args.Value<uint32_t>("buffersize", 0x100000);
+	// 64 kib should be decent for most text files
+	options.BufferSize = args.Value<uint32_t>("buffersize", 0x10000);
 
 	// On my 16 core CPU, harware_concurrency returns 32, which is fine as I have SMT
 	options.MaximumThreads = args.Value<uint32_t>("maxthreads", std::thread::hardware_concurrency());
