@@ -151,7 +151,7 @@ void Pystykorva::Worker(std::stop_token token)
 
 		if (path.empty())
 		{
-			continue;
+			break;
 		}
 
 		if (_callbacks.Processing)
