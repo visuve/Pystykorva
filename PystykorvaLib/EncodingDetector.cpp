@@ -37,7 +37,7 @@ public:
 		std::string encoding = ucsdet_getName(match, &_status);
 		assert(U_SUCCESS(_status));
 
-		if (confidence <= 10)
+		if (confidence < 15)
 		{
 			return "Binary";
 		}
@@ -48,10 +48,10 @@ public:
 			return "Binary";
 		}
 
-		// Buggy ICU...
+		// Buggy ICU. Many image files are incorrectly reported as UTF-16BE
 		if (confidence <= 30 && encoding == "UTF-16BE")
 		{
-			return "UTF-8";
+			return "Binary";
 		}
 
 		return encoding;
