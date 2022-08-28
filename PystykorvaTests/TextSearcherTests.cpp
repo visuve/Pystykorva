@@ -1,5 +1,5 @@
 #include "PCH.hpp"
-#include "../PystykorvaLib/TextSearcher.hpp"
+#include "TextSearcher.hpp"
 
 TEST(TextSearcherTests, PlainSearch)
 {

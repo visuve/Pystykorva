@@ -1,5 +1,5 @@
 #include "PCH.hpp"
-#include "../PystykorvaLib/LineAnalyzer.hpp"
+#include "LineAnalyzer.hpp"
 
 TEST(LineAnalyzerTests, Empty)
 {

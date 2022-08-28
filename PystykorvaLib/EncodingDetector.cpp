@@ -26,14 +26,30 @@ public:
 		const UCharsetMatch* match = ucsdet_detect(_detector, &_status);
 		assert(U_SUCCESS(_status));
 
+		if (!match)
+		{
+			return "Binary";
+		}
+
 		int32_t confidence = ucsdet_getConfidence(match, &_status);
 		assert(U_SUCCESS(_status));
 
 		std::string encoding = ucsdet_getName(match, &_status);
 		assert(U_SUCCESS(_status));
 
+		if (confidence <= 10)
+		{
+			return "Binary";
+		}
+
+		// I do not have any IBM encoded files and I do not care even if I had
+		if (encoding.starts_with("IBM"))
+		{
+			return "Binary";
+		}
+
 		// Buggy ICU...
-		if (confidence <= 10 || (confidence <= 30 && encoding == "UTF-16BE"))
+		if (confidence <= 30 && encoding == "UTF-16BE")
 		{
 			return "UTF-8";
 		}

@@ -34,9 +34,13 @@ std::ostream& operator << (std::ostream& stream, const CmdArgs::Argument& argume
 	{
 		stream << std::get<0>(argument) + "=<word>";
 	}
+	else if (type == typeid(std::chrono::file_clock::time_point))
+	{
+		stream << std::get<0>(argument) + "=<time>";
+	}
 	else
 	{
-		throw std::invalid_argument("Not supported type");
+		throw std::invalid_argument(std::format("Not supported type: {}", type.name()));
 	}
 
 	return stream << std::get<2>(argument);
@@ -83,8 +87,6 @@ CmdArgs::CmdArgs(const std::vector<std::string>& given, std::initializer_list<Ar
 			return;
 		}
 	}
-
-	throw CmdArgs::Exception("Missing arguments", _usage);
 }
 
 CmdArgs::CmdArgs(int argc, char** argv, std::initializer_list<Argument> expected) :
@@ -166,43 +168,43 @@ std::any CmdArgs::ValueByKey(std::string_view key) const
 	}
 	else if (type == typeid(double))
 	{
-		return std::stod(value);
+		return value.empty() ? double(0) : std::stod(value);
 	}
 	else if (type == typeid(float))
 	{
-		return std::stof(value);
+		return value.empty() ? float(0) : std::stof(value);
 	}
 	else if (type == typeid(uint64_t))
 	{
-		return std::stoull(value);
+		return value.empty() ? uint64_t(0) : static_cast<uint64_t>(std::stoull(value));
 	}
 	else if (type == typeid(uint32_t))
 	{
-		return std::stoul(value);
+		return value.empty() ? uint32_t(0) : static_cast<uint32_t>(std::stoul(value));
 	}
 	else if (type == typeid(uint16_t))
 	{
-		return static_cast<uint16_t>(std::stoul(value));
+		return value.empty() ? uint16_t(0) : static_cast<uint16_t>(std::stoul(value));
 	}
 	else if (type == typeid(uint8_t))
 	{
-		return static_cast<uint8_t>(std::stoul(value));
+		return value.empty() ? uint8_t(0) : static_cast<uint8_t>(std::stoul(value));
 	}
 	else if (type == typeid(int64_t))
 	{
-		return std::stol(value);
+		return value.empty() ? int64_t(0) : static_cast<int64_t>(std::stol(value));
 	}
 	else if (type == typeid(int32_t))
 	{
-		return std::stoi(value);
+		return value.empty() ? int32_t(0) : static_cast<int32_t>(std::stoi(value));
 	}
 	else if (type == typeid(int16_t))
 	{
-		return  static_cast<uint16_t>(std::stoi(value));
+		return value.empty() ? int16_t(0) : static_cast<int16_t>(std::stoi(value));
 	}
 	else if (type == typeid(int8_t))
 	{
-		return  static_cast<uint8_t>(std::stoi(value));
+		return value.empty() ? int8_t(0) : static_cast<int8_t>(std::stoi(value));
 	}
 	else if (type == typeid(std::string))
 	{

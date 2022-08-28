@@ -1,5 +1,5 @@
 #include "PCH.hpp"
-#include "../PystykorvaLib/Wildcard.hpp"
+#include "Wildcard.hpp"
 
 TEST(WildCardTests, NoWildcard)
 {

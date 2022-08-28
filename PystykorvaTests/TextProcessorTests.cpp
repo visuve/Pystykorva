@@ -1,5 +1,5 @@
 #include "PCH.hpp"
-#include "../PystykorvaLib/TextProcessor.hpp"
+#include "TextProcessor.hpp"
 
 TEST(TextProcessorTests, RegexSearch)
 {

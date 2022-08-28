@@ -18,17 +18,16 @@ Pystykorva::~Pystykorva()
 
 void Pystykorva::Start()
 {
-	auto start = std::chrono::high_resolution_clock::now();
+	_start = std::chrono::high_resolution_clock::now();
 
 	if (_callbacks.Started)
 	{
 		_callbacks.Started();
 	}
 
-	uint32_t maxThreads = _options.MaximumThreads == 0 ?
-		std::thread::hardware_concurrency() : _options.MaximumThreads;
+	assert(_options.MaximumThreads >= 1);
 
-	for (uint32_t i = 0; i < maxThreads; ++i)
+	for (uint32_t i = 0; i < _options.MaximumThreads; ++i)
 	{
 		_threads.emplace_back(std::bind_front(&Pystykorva::Worker, this));
 	}
@@ -39,6 +38,12 @@ void Pystykorva::Wait()
 	for (std::jthread& thread : _threads)
 	{
 		thread.join();
+	}
+
+	if (_callbacks.Finished)
+	{
+		auto diff = std::chrono::high_resolution_clock::now() - _start;
+		_callbacks.Finished(std::chrono::duration_cast<std::chrono::milliseconds>(diff));
 	}
 }
 
@@ -68,6 +73,8 @@ std::filesystem::path Pystykorva::Next()
 	{
 		const std::filesystem::path path = _rdi->path();
 
+		assert(!path.empty());
+
 		if (_rdi->is_regular_file())
 		{
 			result = path;
@@ -94,6 +101,11 @@ uint32_t Pystykorva::FileStatus(const std::filesystem::path& path)
 
 	// TODO: check file permission
 
+	if (!std::filesystem::exists(path))
+	{
+		return Status::Missing;
+	}
+
 	if (!_options.IncludeWildcards.empty() && std::none_of(
 		_options.IncludeWildcards.cbegin(),
 		_options.IncludeWildcards.cbegin(),
@@ -102,21 +114,14 @@ uint32_t Pystykorva::FileStatus(const std::filesystem::path& path)
 		return Status::NameExcluded;
 	}
 
-	if (!std::filesystem::exists(path))
-	{
-		return Status::Missing;
-	}
-
 	auto fileSize = std::filesystem::file_size(path);
 
-	if (fileSize > _options.MinimumSize)
+	if (fileSize < _options.MinimumSize || fileSize == 0)
 	{
 		status |= Status::TooSmall;
 	}
 
-	// This is an annoying limitation for now: if the whole file does not fit
-	// into the buffer, it is skipped
-	if (fileSize > _options.MaximumSize || fileSize > _options.BufferSize)
+	if (fileSize > _options.MaximumSize)
 	{
 		status |= Status::TooBig;
 	}
@@ -146,7 +151,7 @@ void Pystykorva::Worker(std::stop_token token)
 
 		if (path.empty())
 		{
-			return;
+			continue;
 		}
 
 		if (_callbacks.Processing)
@@ -155,11 +160,11 @@ void Pystykorva::Worker(std::stop_token token)
 		}
 
 		uint32_t status = FileStatus(path);
-		std::map<uint32_t, std::string> results;
+		std::vector<Pystykorva::Result> results;
 
-		if (status != 0)
+		if (status == 0)
 		{
-			textProcessor.ProcessFile(path);
+			results = textProcessor.ProcessFile(path);
 		}
 
 		if (_callbacks.Processed)

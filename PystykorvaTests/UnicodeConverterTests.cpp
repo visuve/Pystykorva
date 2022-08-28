@@ -1,5 +1,6 @@
 #include "PCH.hpp"
-#include "../PystykorvaLib/UnicodeConverter.hpp"
+#include "UnicodeConverter.hpp"
+
 TEST(UnicodeConverterTests, Simple)
 {
 	UnicodeConverter converter("UTF-8");

@@ -61,9 +61,9 @@ public:
 		}
 	}
 
-	std::vector<TextSearcher::Result> FindIn(std::u16string_view sentence)
+	std::vector<Pystykorva::Match> FindIn(std::u16string_view sentence)
 	{
-		std::vector<TextSearcher::Result> results;
+		std::vector<Pystykorva::Match> results;
 
 		uregex_setText(_regex,
 			sentence.data(),
@@ -106,7 +106,7 @@ TextSearcher::~TextSearcher()
 	delete _impl;
 }
 
-std::vector<TextSearcher::Result> TextSearcher::FindIn(std::u16string_view sentence)
+std::vector<Pystykorva::Match> TextSearcher::FindIn(std::u16string_view sentence)
 {
 	return _impl->FindIn(sentence);
 }

@@ -23,13 +23,17 @@ TextProcessor::~TextProcessor()
 {
 }
 
-std::map<uint32_t, TextProcessor::Result> TextProcessor::ProcessFile(const std::filesystem::path& path)
+std::vector<Pystykorva::Result> TextProcessor::ProcessFile(const std::filesystem::path& path)
 {
-	std::fstream::openmode mode = std::fstream::in | std::fstream::binary;
+	std::fstream::openmode mode;
 
-	if (!_options.ReplacementText.empty())
+	if (_options.ReplacementText.empty())
 	{
-		mode |= std::fstream::out;
+		mode = std::ios::in | std::ios::binary;
+	}
+	else
+	{
+		mode = std::ios::in | std::ios::out | std::ios::binary;
 	}
 
 	std::fstream file(path, mode);
@@ -37,7 +41,7 @@ std::map<uint32_t, TextProcessor::Result> TextProcessor::ProcessFile(const std::
 	return ProcessStream(file);
 }
 
-std::map<uint32_t, TextProcessor::Result> TextProcessor::ProcessStream(std::iostream& stream)
+std::vector<Pystykorva::Result> TextProcessor::ProcessStream(std::iostream& stream)
 {
 	std::streamsize streamSize = StreamSize(stream);
 	std::streamsize bufferSize = std::min(std::streamsize(_options.BufferSize), streamSize);
@@ -45,7 +49,7 @@ std::map<uint32_t, TextProcessor::Result> TextProcessor::ProcessStream(std::iost
 
 	std::unique_ptr<UnicodeConverter> converter;
 
-	std::map<uint32_t, TextProcessor::Result> results;
+	std::vector<Pystykorva::Result> results;
 	uint32_t lineNumber = 0;
 
 	while (!_token.stop_requested() && stream)
@@ -54,17 +58,27 @@ std::map<uint32_t, TextProcessor::Result> TextProcessor::ProcessStream(std::iost
 
 		const size_t bytesRead = static_cast<size_t>(stream.gcount());
 
+		if (bytesRead == 0)
+		{
+			// This seems to happen sometimes
+			break;
+		}
+
 		if (bytesRead < buffer.size())
 		{
 			// This should happen only once, i.e. when the last chunk is read
 			buffer.resize(bytesRead);
 		}
 
-		// TODO: detect binary garble
-
 		if (!converter)
 		{
 			std::string encoding = _encodingDetector.DetectEncoding(buffer);
+
+			if (encoding == "Binary")
+			{
+				break;
+			}
+
 			converter = std::make_unique<UnicodeConverter>(encoding);
 		}
 
@@ -97,14 +111,14 @@ std::map<uint32_t, TextProcessor::Result> TextProcessor::ProcessStream(std::iost
 			std::u16string_view line =
 				converter->View(boundary.Begin, boundary.End.value());
 
-			Result result = ProcessLine(line);
+			Pystykorva::Result result = ProcessLine(line, lineNumber);
 
-			if (result.Hits.empty())
+			if (result.Matches.empty())
 			{
 				continue;
 			}
 
-			results[lineNumber] = result;
+			results.emplace_back(result);
 		}
 
 		if (!boundaries.empty() && stream)
@@ -119,10 +133,11 @@ std::map<uint32_t, TextProcessor::Result> TextProcessor::ProcessStream(std::iost
 	return results;
 }
 
-TextProcessor::Result TextProcessor::ProcessLine(std::u16string_view& line)
+Pystykorva::Result TextProcessor::ProcessLine(std::u16string_view& line, uint32_t number)
 {
-	Result result;
+	Pystykorva::Result result;
+	result.LineNumber = number;
 	result.Content = line;
-	result.Hits = _textSearcher.FindIn(line);
+	result.Matches = _textSearcher.FindIn(line);
 	return result;
 }

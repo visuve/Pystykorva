@@ -29,7 +29,7 @@ public:
 		std::chrono::time_point<std::chrono::file_clock> MaximumTime;
 
 		uint32_t BufferSize = 0;
-		uint32_t MaximumThreads = 0;
+		uint32_t MaximumThreads = 1;
 	};
 
 	enum Status : uint32_t
@@ -44,11 +44,24 @@ public:
 		TooLate = (1u << 6)
 	};
 
+	struct Match
+	{
+		size_t Start = 0;
+		size_t End = 0;
+	};
+
+	struct Result
+	{
+		std::u16string Content;
+		uint32_t LineNumber;
+		std::vector<Match> Matches;
+	};
+
 	struct Callbacks
 	{
 		std::function<void()> Started;
 		std::function<void(std::filesystem::path)> Processing;
-		std::function<void(std::filesystem::path, std::map<uint32_t, std::string>, uint32_t statusMask)> Processed;
+		std::function<void(std::filesystem::path, std::vector<Result>, uint32_t statusMask)> Processed;
 		std::function<void(std::chrono::milliseconds)> Finished;
 	};
 
@@ -68,6 +81,7 @@ private:
 	Options _options;
 	Callbacks _callbacks;
 
+	std::chrono::high_resolution_clock::time_point _start;
 	std::vector<std::jthread> _threads;
 	std::filesystem::recursive_directory_iterator _rdi;
 	std::mutex _mutex;
