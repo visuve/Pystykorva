@@ -2,6 +2,7 @@
 
 - A C++ library containing Grep-like functionality
 	- Made using vanilla C++ and ICU
+- TOTALLY INCOMPLETE
 
 ## Design principles
 
@@ -9,4 +10,5 @@
 
 ## TODO: 
 
+- Port to CMake
 - Consider using vcpkg with the project
