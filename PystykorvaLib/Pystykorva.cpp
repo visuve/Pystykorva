@@ -159,7 +159,7 @@ void Pystykorva::Worker(std::stop_token token)
 
 		if (status != 0)
 		{
-			puukko.Process(path);
+			puukko.ProcessFile(path);
 		}
 
 		if (_callbacks.Processed)

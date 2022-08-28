@@ -4,7 +4,8 @@
 
 Puukko::Puukko(const Pystykorva::Options& options, std::stop_token token) :
 	_options(options),
-	_token(token)
+	_token(token),
+	_textSearcher(u"TODO!", options.Mode)
 {
 }
 
@@ -12,7 +13,7 @@ Puukko::~Puukko()
 {
 }
 
-std::map<uint32_t, std::string> Puukko::Process(const std::filesystem::path& path)
+std::map<uint32_t, Puukko::Result> Puukko::ProcessFile(const std::filesystem::path& path)
 {
 	const uintmax_t fileSize = std::filesystem::file_size(path);
 	std::string buffer(std::min(uintmax_t(_options.BufferSize), fileSize), 0);
@@ -40,6 +41,8 @@ std::map<uint32_t, std::string> Puukko::Process(const std::filesystem::path& pat
 			buffer.resize(bytesRead);
 		}
 
+		// TODO: detect binary garble
+
 		if (!converter)
 		{
 			std::string encoding = _encodingDetector.DetectEncoding(buffer);
@@ -59,7 +62,10 @@ std::map<uint32_t, std::string> Puukko::Process(const std::filesystem::path& pat
 
 			++line;
 
-			// TODO: search!
+			std::u16string_view view = 
+				converter->View(boundary.Begin, boundary.End.value());
+
+			ProcessLine(view);
 		}
 
 		if (!boundaries.empty())
@@ -68,5 +74,11 @@ std::map<uint32_t, std::string> Puukko::Process(const std::filesystem::path& pat
 		}
 	}
 
+	return {};
+}
+
+std::vector<TextSearcher::Result> Puukko::ProcessLine(std::u16string_view& line)
+{
+	// TODO: call searcher
 	return {};
 }

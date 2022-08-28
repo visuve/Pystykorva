@@ -19,6 +19,7 @@
     <ClCompile Include="PCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TextSearcher.cpp" />
     <ClCompile Include="UnicodeConverter.cpp" />
     <ClCompile Include="Wildcard.cpp" />
   </ItemGroup>
@@ -28,6 +29,7 @@
     <ClInclude Include="Puukko.hpp" />
     <ClInclude Include="Pystykorva.hpp" />
     <ClInclude Include="PCH.hpp" />
+    <ClInclude Include="TextSearcher.hpp" />
     <ClInclude Include="UnicodeConverter.hpp" />
     <ClInclude Include="Wildcard.hpp" />
   </ItemGroup>

@@ -25,6 +25,7 @@
     <ClCompile Include="PCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TextSearcherTests.cpp" />
     <ClCompile Include="UnicodeConverterTests.cpp" />
     <ClCompile Include="WildcardTest.cpp" />
   </ItemGroup>
