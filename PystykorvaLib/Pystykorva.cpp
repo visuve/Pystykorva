@@ -1,6 +1,6 @@
 #include "PCH.hpp"
 #include "Pystykorva.hpp"
-#include "Puukko.hpp"
+#include "TextProcessor.hpp"
 #include "Wildcard.hpp"
 
 Pystykorva::Pystykorva(const Options& options, const Callbacks& callbacks) :
@@ -138,7 +138,7 @@ uint32_t Pystykorva::FileStatus(const std::filesystem::path& path)
 
 void Pystykorva::Worker(std::stop_token token)
 {
-	Puukko puukko(_options, token);
+	TextProcessor textProcessor(_options, token);
 
 	while (!token.stop_requested())
 	{
@@ -159,7 +159,7 @@ void Pystykorva::Worker(std::stop_token token)
 
 		if (status != 0)
 		{
-			puukko.ProcessFile(path);
+			textProcessor.ProcessFile(path);
 		}
 
 		if (_callbacks.Processed)

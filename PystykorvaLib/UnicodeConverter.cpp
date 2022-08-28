@@ -39,6 +39,12 @@ public:
 		return _data;
 	}
 
+	size_t End() const
+	{
+		// The size of the data equals the last possible index, duh
+		return _data.size();
+	}
+
 	std::u16string_view View(size_t from, size_t to) const
 	{
 		assert(from < to);
@@ -75,6 +81,11 @@ void UnicodeConverter::Convert(std::string_view sample, bool flush)
 std::u16string_view UnicodeConverter::Data() const
 {
 	return _impl->Data();
+}
+
+size_t UnicodeConverter::End() const
+{
+	return _impl->End();
 }
 
 std::u16string_view UnicodeConverter::View(size_t from, size_t to) const

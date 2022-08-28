@@ -2,10 +2,11 @@
 
 #include "Pystykorva.hpp"
 #include "EncodingDetector.hpp"
+#include "UnicodeConverter.hpp"
 #include "LineAnalyzer.hpp"
 #include "TextSearcher.hpp"
 
-class Puukko
+class TextProcessor
 {
 public:
 	struct Result
@@ -14,11 +15,12 @@ public:
 		std::vector<TextSearcher::Result> Hits;
 	};
 
-	Puukko(const Pystykorva::Options& options, std::stop_token);
-	~Puukko();
+	TextProcessor(const Pystykorva::Options& options, std::stop_token);
+	~TextProcessor();
 
-	std::map<uint32_t, Puukko::Result> ProcessFile(const std::filesystem::path&);
-	std::vector<TextSearcher::Result> ProcessLine(std::u16string_view& line);
+	std::map<uint32_t, TextProcessor::Result> ProcessFile(const std::filesystem::path&);
+	std::map<uint32_t, TextProcessor::Result> ProcessStream(std::iostream& stream);
+	TextProcessor::Result ProcessLine(std::u16string_view& line);
 
 private:
 	std::stop_token _token;

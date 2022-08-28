@@ -14,7 +14,7 @@
   <ItemGroup>
     <ClCompile Include="EncodingDetector.cpp" />
     <ClCompile Include="LineAnalyzer.cpp" />
-    <ClCompile Include="Puukko.cpp" />
+    <ClCompile Include="TextProcessor.cpp" />
     <ClCompile Include="Pystykorva.cpp" />
     <ClCompile Include="PCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -26,7 +26,7 @@
   <ItemGroup>
     <ClInclude Include="EncodingDetector.hpp" />
     <ClInclude Include="LineAnalyzer.hpp" />
-    <ClInclude Include="Puukko.hpp" />
+    <ClInclude Include="TextProcessor.hpp" />
     <ClInclude Include="Pystykorva.hpp" />
     <ClInclude Include="PCH.hpp" />
     <ClInclude Include="TextSearcher.hpp" />

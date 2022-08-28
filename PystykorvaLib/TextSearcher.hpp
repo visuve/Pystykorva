@@ -14,6 +14,7 @@ public:
 	};
 
 	TextSearcher(std::u16string_view expression, Pystykorva::MatchMode mode);
+	TextSearcher(std::string_view expression, Pystykorva::MatchMode mode);
 	~TextSearcher();
 
 	std::vector<Result> FindIn(std::u16string_view sentence);

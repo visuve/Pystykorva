@@ -1,37 +1,52 @@
 #include "PCH.hpp"
 #include "TextSearcher.hpp"
+#include "UnicodeConverter.hpp"
+
+constexpr int32_t ModeToFlags(Pystykorva::MatchMode mode)
+{
+	switch (mode)
+	{
+		case Pystykorva::PlainCaseSensitive:
+			return UREGEX_LITERAL;
+			break;
+		case Pystykorva::PlainCaseInsensitive:
+			return UREGEX_CASE_INSENSITIVE | UREGEX_LITERAL;
+			break;
+		case Pystykorva::RegexCaseSensitive:
+			return 0;
+			break;
+		case Pystykorva::RegexCaseInsensitive:
+			return UREGEX_CASE_INSENSITIVE;
+			break;
+	}
+
+	std::unreachable();
+}
 
 class TextSearcherImpl
 {
 public:
 	TextSearcherImpl(std::u16string_view expression, Pystykorva::MatchMode mode)
 	{
-		int32_t flags;
-
-		switch (mode)
-		{
-			case Pystykorva::PlainCaseSensitive:
-				flags = UREGEX_LITERAL;
-				break;
-			case Pystykorva::PlainCaseInsensitive:
-				flags = UREGEX_CASE_INSENSITIVE | UREGEX_LITERAL;
-				break;
-			case Pystykorva::RegexCaseSensitive:
-				flags = 0;
-				break;
-			case Pystykorva::RegexCaseInsensitive:
-				flags = UREGEX_CASE_INSENSITIVE;
-				break;
-			default:
-				std::unreachable();
-		}
-
 		UParseError error;
 
 		_regex = uregex_open(
 			expression.data(),
 			static_cast<int32_t>(expression.size()),
-			flags,
+			ModeToFlags(mode),
+			&error,
+			&_status);
+
+		assert(U_SUCCESS(_status));
+	}
+
+	TextSearcherImpl(const std::string& expression, Pystykorva::MatchMode mode)
+	{
+		UParseError error;
+
+		_regex = uregex_openC(
+			expression.c_str(),
+			ModeToFlags(mode),
 			&error,
 			&_status);
 
@@ -64,7 +79,7 @@ public:
 			assert(U_SUCCESS(_status) && end > 0);
 
 			results.emplace_back(
-				static_cast<size_t>(start), 
+				static_cast<size_t>(start),
 				static_cast<size_t>(end));
 		}
 
@@ -78,6 +93,11 @@ private:
 
 TextSearcher::TextSearcher(std::u16string_view expression, Pystykorva::MatchMode mode) :
 	_impl(new TextSearcherImpl(expression, mode))
+{
+}
+
+TextSearcher::TextSearcher(std::string_view expression, Pystykorva::MatchMode mode) :
+	_impl(new TextSearcherImpl(std::string(expression), mode))
 {
 }
 
