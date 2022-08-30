@@ -76,7 +76,7 @@ std::vector<Pystykorva::Result> TextProcessor::ProcessStream(std::iostream& stre
 
 			if (encoding == "Binary")
 			{
-				break;
+				break; // TODO: return Pystykorva::Status::Binary somehow
 			}
 
 			converter = std::make_unique<UnicodeConverter>(encoding);

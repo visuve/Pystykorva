@@ -9,7 +9,6 @@
 
 ## TODO:
 
-- Finish the CLI code reporting
+- Improve error handling
 - Finish text replacing
 - Port to CMake
-- Consider using vcpkg with the project

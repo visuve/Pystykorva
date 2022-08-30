@@ -169,7 +169,7 @@ void Pystykorva::Worker(std::stop_token token)
 
 		if (_callbacks.Processed)
 		{
-			_callbacks.Processed(path, results, status);
+			_callbacks.Processed(path, status, results);
 		}
 	}
 }

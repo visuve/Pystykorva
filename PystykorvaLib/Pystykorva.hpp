@@ -41,7 +41,8 @@ public:
 		TooSmall = (1u << 3),
 		TooBig = (1u << 4),
 		TooEarly = (1u << 5),
-		TooLate = (1u << 6)
+		TooLate = (1u << 6),
+		UnknownEncoding = (1u << 7)
 	};
 
 	struct Match
@@ -61,7 +62,7 @@ public:
 	{
 		std::function<void()> Started;
 		std::function<void(std::filesystem::path)> Processing;
-		std::function<void(std::filesystem::path, std::vector<Result>, uint32_t statusMask)> Processed;
+		std::function<void(std::filesystem::path, uint32_t statusMask, std::vector<Result>)> Processed;
 		std::function<void(std::chrono::milliseconds)> Finished;
 	};
 
