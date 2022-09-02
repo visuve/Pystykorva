@@ -12,9 +12,9 @@ public:
 	TextProcessor(const Pystykorva::Options& options, std::stop_token);
 	~TextProcessor();
 
-	std::vector<Pystykorva::Result> ProcessFile(const std::filesystem::path&);
-	std::vector<Pystykorva::Result> ProcessStream(std::iostream& stream);
-	Pystykorva::Result ProcessLine(std::u16string_view line, uint32_t number);
+	Pystykorva::Result ProcessFile(const std::filesystem::path&);
+	void ProcessStream(std::vector<Pystykorva::Match>& matches, std::iostream& stream, std::streamsize size = -1);
+	Pystykorva::Match ProcessLine(std::u16string_view line, uint32_t number);
 
 private:
 	std::stop_token _token;

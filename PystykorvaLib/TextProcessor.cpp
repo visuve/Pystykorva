@@ -1,5 +1,6 @@
 #include "PCH.hpp"
 #include "TextProcessor.hpp"
+#include "Wildcard.hpp"
 
 std::streamsize StreamSize(std::iostream& stream)
 {
@@ -23,33 +24,101 @@ TextProcessor::~TextProcessor()
 {
 }
 
-std::vector<Pystykorva::Result> TextProcessor::ProcessFile(const std::filesystem::path& path)
+Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 {
-	std::fstream::openmode mode;
+	Pystykorva::Result result;
 
-	if (_options.ReplacementText.empty())
+	try
 	{
-		mode = std::ios::in | std::ios::binary;
+		if (!std::filesystem::exists(path))
+		{
+			result.StatusMask |= Pystykorva::Status::Missing;
+			return result;
+		}
+
+		if (!_options.IncludeWildcards.empty() && std::none_of(
+			_options.IncludeWildcards.cbegin(),
+			_options.IncludeWildcards.cbegin(),
+			std::bind(Wildcard::Matches, path.string(), std::placeholders::_1)))
+		{
+			result.StatusMask |= Pystykorva::Status::NameExcluded;
+		}
+
+		// TODO: check file permission
+
+		auto fileSize = std::filesystem::file_size(path);
+
+		if (fileSize < _options.MinimumSize || fileSize == 0)
+		{
+			result.StatusMask |= Pystykorva::Status::TooSmall;
+		}
+		else if (fileSize > _options.MaximumSize)
+		{
+			result.StatusMask |= Pystykorva::Status::TooBig;
+		}
+
+		auto writeTime = std::filesystem::last_write_time(path);
+
+		if (writeTime < _options.MinimumTime)
+		{
+			result.StatusMask |= Pystykorva::Status::TooEarly;
+		}
+		else if (writeTime > _options.MaximumTime)
+		{
+			result.StatusMask |= Pystykorva::Status::TooLate;
+		}
+
+		if (result.StatusMask != 0)
+		{
+			return result;
+		}
+
+		std::fstream::openmode mode;
+
+		if (_options.ReplacementText.empty())
+		{
+			mode = std::ios::in | std::ios::binary;
+		}
+		else
+		{
+			mode = std::ios::in | std::ios::out | std::ios::binary;
+		}
+
+		std::fstream file(path, mode);
+
+		ProcessStream(result.Matches, file, fileSize);
+
 	}
-	else
+	catch (const EncodingException&)
 	{
-		mode = std::ios::in | std::ios::out | std::ios::binary;
+		result.StatusMask |= Pystykorva::Status::UnknownEncoding;
+	}
+	catch (const ConversionException&)
+	{
+		result.StatusMask |= Pystykorva::Status::ConversionError;
+	}
+	catch (const std::exception&)
+	{
+		result.StatusMask |= Pystykorva::Status::IOError;
 	}
 
-	std::fstream file(path, mode);
-
-	return ProcessStream(file);
+	return result;
 }
 
-std::vector<Pystykorva::Result> TextProcessor::ProcessStream(std::iostream& stream)
+void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, std::iostream& stream, std::streamsize size)
 {
-	std::streamsize streamSize = StreamSize(stream);
-	std::streamsize bufferSize = std::min(std::streamsize(_options.BufferSize), streamSize);
+	if (size <= 0)
+	{
+		size = StreamSize(stream);
+	}
+	
+	assert(size > 0);
+
+	std::streamsize bufferSize = std::min(std::streamsize(_options.BufferSize), size);
 	std::string buffer(static_cast<size_t>(bufferSize), 0);
 
 	std::unique_ptr<UnicodeConverter> converter;
 
-	std::vector<Pystykorva::Result> results;
 	uint32_t lineNumber = 0;
 
 	while (!_token.stop_requested() && stream)
@@ -72,13 +141,7 @@ std::vector<Pystykorva::Result> TextProcessor::ProcessStream(std::iostream& stre
 
 		if (!converter)
 		{
-			std::string encoding = _encodingDetector.DetectEncoding(buffer);
-
-			if (encoding == "Binary")
-			{
-				break; // TODO: return Pystykorva::Status::Binary somehow
-			}
-
+			const std::string encoding = _encodingDetector.DetectEncoding(buffer);
 			converter = std::make_unique<UnicodeConverter>(encoding);
 		}
 
@@ -111,14 +174,14 @@ std::vector<Pystykorva::Result> TextProcessor::ProcessStream(std::iostream& stre
 			std::u16string_view line =
 				converter->View(boundary.Begin, boundary.End.value());
 
-			Pystykorva::Result result = ProcessLine(line, lineNumber);
+			Pystykorva::Match match = ProcessLine(line, lineNumber);
 
-			if (result.Matches.empty())
+			if (match.Positions.empty())
 			{
 				continue;
 			}
 
-			results.emplace_back(result);
+			matches.emplace_back(match);
 		}
 
 		if (!boundaries.empty() && stream)
@@ -129,15 +192,13 @@ std::vector<Pystykorva::Result> TextProcessor::ProcessStream(std::iostream& stre
 			converter->Erase(boundaries.back().Begin);
 		}
 	}
-
-	return results;
 }
 
-Pystykorva::Result TextProcessor::ProcessLine(std::u16string_view line, uint32_t number)
+Pystykorva::Match TextProcessor::ProcessLine(std::u16string_view line, uint32_t number)
 {
-	Pystykorva::Result result;
+	Pystykorva::Match result;
 	result.LineNumber = number;
 	result.Content = line;
-	result.Matches = _textSearcher.FindIn(line);
+	result.Positions = _textSearcher.FindIn(line);
 	return result;
 }

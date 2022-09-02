@@ -2,6 +2,14 @@
 
 class UnicodeConverterImpl;
 
+struct ConversionException : std::exception
+{
+	inline ConversionException(const char* message) :
+		std::exception(message)
+	{
+	}
+};
+
 class UnicodeConverter
 {
 public:

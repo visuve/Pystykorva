@@ -24,11 +24,10 @@ public:
 		assert(U_SUCCESS(_status));
 
 		const UCharsetMatch* match = ucsdet_detect(_detector, &_status);
-		assert(U_SUCCESS(_status));
 
-		if (!match)
+		if (U_FAILURE(_status) || !match)
 		{
-			return "Binary";
+			throw EncodingException("ucsdet_detect failed");
 		}
 
 		int32_t confidence = ucsdet_getConfidence(match, &_status);
@@ -39,19 +38,19 @@ public:
 
 		if (confidence < 15)
 		{
-			return "Binary";
+			throw EncodingException("Too low confidence");
 		}
 
 		// I do not have any IBM encoded files and I do not care even if I had
 		if (encoding.starts_with("IBM"))
 		{
-			return "Binary";
+			throw EncodingException("IBM crap");
 		}
 
 		// Buggy ICU. Many image files are incorrectly reported as UTF-16BE
 		if (confidence <= 30 && encoding == "UTF-16BE")
 		{
-			return "Binary";
+			throw EncodingException("Probably misinterpreted UTF-16BE");
 		}
 
 		return encoding;

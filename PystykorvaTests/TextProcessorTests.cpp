@@ -15,10 +15,11 @@ TEST(TextProcessorTests, RegexSearch)
 	std::stringstream stream;
 	stream << "foo\nbar\nxyz";
 
-	auto results = processor.ProcessStream(stream);
+	std::vector<Pystykorva::Match> matches;
+	processor.ProcessStream(matches, stream);
 
-	EXPECT_EQ(results.size(), 3);
-	EXPECT_TRUE(results[1].Content == u"foo\n");
-	EXPECT_TRUE(results[2].Content == u"bar\n");
-	EXPECT_TRUE(results[3].Content == u"xyz");
+	EXPECT_EQ(matches.size(), 3);
+	EXPECT_TRUE(matches[0].Content == u"foo\n");
+	EXPECT_TRUE(matches[1].Content == u"bar\n");
+	EXPECT_TRUE(matches[2].Content == u"xyz");
 }

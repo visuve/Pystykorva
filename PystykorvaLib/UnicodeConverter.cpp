@@ -28,7 +28,11 @@ public:
 		const char* sourceDataLimit = sample.data() + sample.size();
 
 		ucnv_toUnicode(_converter, &target, targetLimit, &sourceData, sourceDataLimit, nullptr, flush, &_status);
-		assert(U_SUCCESS(_status));
+		
+		if (U_FAILURE(_status))
+		{
+			throw ConversionException("ucnv_toUnicode failed");
+		}
 
 		size_t end = targetLimit - target;
 		_data.append(buffer, 0, buffer.size() - end);

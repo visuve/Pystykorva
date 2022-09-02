@@ -37,7 +37,10 @@ public:
 			&error,
 			&_status);
 
-		assert(U_SUCCESS(_status));
+		if (U_FAILURE(_status))
+		{
+			throw SearchException("uregex_open failed");
+		}
 	}
 
 	TextSearcherImpl(const std::string& expression, Pystykorva::MatchMode mode)
@@ -50,7 +53,10 @@ public:
 			&error,
 			&_status);
 
-		assert(U_SUCCESS(_status));
+		if (U_FAILURE(_status))
+		{
+			throw SearchException("uregex_openC failed");
+		}
 	}
 
 	~TextSearcherImpl()
@@ -61,9 +67,9 @@ public:
 		}
 	}
 
-	std::vector<Pystykorva::Match> FindIn(std::u16string_view sentence)
+	std::vector<Pystykorva::MatchPosition> FindIn(std::u16string_view sentence)
 	{
-		std::vector<Pystykorva::Match> results;
+		std::vector<Pystykorva::MatchPosition> results;
 
 		uregex_setText(_regex,
 			sentence.data(),
@@ -106,7 +112,7 @@ TextSearcher::~TextSearcher()
 	delete _impl;
 }
 
-std::vector<Pystykorva::Match> TextSearcher::FindIn(std::u16string_view sentence)
+std::vector<Pystykorva::MatchPosition> TextSearcher::FindIn(std::u16string_view sentence)
 {
 	return _impl->FindIn(sentence);
 }

@@ -18,7 +18,7 @@ Pystykorva::Options Parse(const CmdArgs& args)
 	options.MinimumSize = args.Value<uint64_t>("minsize", 0);
 	options.MaximumSize = args.Value<uint64_t>("maxsize", std::numeric_limits<uint64_t>::max());
 
-	auto now = std::chrono::file_clock::now();
+	const auto now = std::chrono::file_clock::now();
 
 	// I think two milleania is wide enough scale for defaults...
 	options.MinimumTime = args.Value<std::chrono::file_clock::time_point>("mintime", now - std::chrono::years(1000));
@@ -78,17 +78,25 @@ void PrintStatusMask(uint32_t statusMask)
 				std::cout << delimiter << "probably a binary file";
 				delimiter = ", ";
 				break;
+			case Pystykorva::Status::ConversionError:
+				std::cout << delimiter << "Unicode conversion error";
+				delimiter = ", ";
+				break;
+			case Pystykorva::Status::IOError:
+				std::cout << delimiter << "I/O error";
+				delimiter = ", ";
+				break;
 		}
 	}
 
 	std::cout << '\n';
 }
 
-std::ostream& operator << (std::ostream& stream, const Pystykorva::Result& result)
+std::ostream& operator << (std::ostream& stream, const Pystykorva::Match& result)
 {
 	stream << result.LineNumber << "\n";
 
-	if (result.Matches.empty())
+	if (result.Positions.empty())
 	{
 		return stream;
 	}
@@ -96,14 +104,14 @@ std::ostream& operator << (std::ostream& stream, const Pystykorva::Result& resul
 	std::u16string line = result.Content;
 	size_t offset = 0;
 	
-	for (const auto& match : result.Matches)
+	for (const auto& position : result.Positions)
 	{
 		// Red color tag begin
-		line.insert(match.Start + offset, u"\033[31m");
+		line.insert(position.Start + offset, u"\033[31m");
 		offset += 5;
 
 		// Color tag end
-		line.insert(match.End + offset, u"\033[0m");
+		line.insert(position.End + offset, u"\033[0m");
 		offset += 4;
 	}
 
@@ -119,29 +127,31 @@ std::ostream& operator << (std::ostream& stream, const Pystykorva::Result& resul
 	assert(written > 0);
 #else
 	UErrorCode status = U_ZERO_ERROR;
-	int32_t len = 0;
+	int32_t length = 0;
 
 	u_strToUTF8(
 		nullptr,
 		0,
-		&len,
+		&length,
 		line.data(),
-		line.size(),
+		static_cast<int32_t>(line.size()),
 		&status);
 
 	assert(status == U_BUFFER_OVERFLOW_ERROR);
 
-	std::string buffer(len, 0);
+	status = U_ZERO_ERROR;
+
+	std::string buffer(static_cast<size_t>(length), 0);
 
 	u_strToUTF8(
 		buffer.data(),
-		len,
-		&len,
+		length,
+		&length,
 		line.data(),
-		line.size(),
+		static_cast<int32_t>(line.size()),
 		&status);
 
-	assert(status == U_ZERO_ERROR);
+	assert(status == U_STRING_NOT_TERMINATED_WARNING);
 
 	std::cout << buffer;
 #endif
@@ -152,15 +162,17 @@ std::ostream& operator << (std::ostream& stream, const Pystykorva::Result& resul
 
 std::mutex _mutex;
 
-void ReportResults(std::filesystem::path path, uint32_t mask, std::vector<Pystykorva::Result> results)
+void ReportResults(std::filesystem::path path, Pystykorva::Result result)
 {
 	std::lock_guard<std::mutex> guard(_mutex);
 
-	std::wcout << L"Processed: " << path << L" status: ";
+	// wcout to display paths correctly in Windows
+	std::wcout << path;
+	std::cout << " processed, status: ";
 
-	PrintStatusMask(mask);
+	PrintStatusMask(result.StatusMask);
 
-	for (const Pystykorva::Result& result : results)
+	for (const Pystykorva::Match& result : result.Matches)
 	{
 		std::wcout << path;
 		std::cout << " @ " << result << std::endl;

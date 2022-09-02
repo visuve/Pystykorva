@@ -36,25 +36,33 @@ public:
 	{
 		Ok = 0x00,
 		Missing = (1u << 0),
-		NoPermission = (1u << 1),
-		NameExcluded = (1u << 2),
+		NameExcluded = (1u << 1),
+		NoPermission = (1u << 2),
 		TooSmall = (1u << 3),
 		TooBig = (1u << 4),
 		TooEarly = (1u << 5),
 		TooLate = (1u << 6),
-		UnknownEncoding = (1u << 7)
+		UnknownEncoding = (1u << 7),
+		ConversionError = (1u << 8),
+		IOError = (1u << 9)
 	};
 
-	struct Match
+	struct MatchPosition
 	{
 		size_t Start = 0;
 		size_t End = 0;
 	};
 
-	struct Result
+	struct Match
 	{
 		std::u16string Content;
 		uint32_t LineNumber;
+		std::vector<MatchPosition> Positions;
+	};
+
+	struct Result
+	{
+		uint32_t StatusMask = 0;
 		std::vector<Match> Matches;
 	};
 
@@ -62,7 +70,7 @@ public:
 	{
 		std::function<void()> Started;
 		std::function<void(std::filesystem::path)> Processing;
-		std::function<void(std::filesystem::path, uint32_t statusMask, std::vector<Result>)> Processed;
+		std::function<void(std::filesystem::path, Result)> Processed;
 		std::function<void(std::chrono::milliseconds)> Finished;
 	};
 
@@ -76,7 +84,6 @@ public:
 private:
 	bool IsExcludedDirectory(const std::filesystem::path&) const;
 	std::filesystem::path Next();
-	uint32_t FileStatus(const std::filesystem::path&);
 	void Worker(std::stop_token token);
 
 	Options _options;

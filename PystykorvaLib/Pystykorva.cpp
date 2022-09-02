@@ -95,52 +95,6 @@ std::filesystem::path Pystykorva::Next()
 	return result;
 }
 
-uint32_t Pystykorva::FileStatus(const std::filesystem::path& path)
-{
-	uint32_t status = Status::Ok;
-
-	// TODO: check file permission
-
-	if (!std::filesystem::exists(path))
-	{
-		return Status::Missing;
-	}
-
-	if (!_options.IncludeWildcards.empty() && std::none_of(
-		_options.IncludeWildcards.cbegin(),
-		_options.IncludeWildcards.cbegin(),
-		std::bind(Wildcard::Matches, path.string(), std::placeholders::_1)))
-	{
-		return Status::NameExcluded;
-	}
-
-	auto fileSize = std::filesystem::file_size(path);
-
-	if (fileSize < _options.MinimumSize || fileSize == 0)
-	{
-		status |= Status::TooSmall;
-	}
-
-	if (fileSize > _options.MaximumSize)
-	{
-		status |= Status::TooBig;
-	}
-
-	auto writeTime = std::filesystem::last_write_time(path);
-
-	if (writeTime < _options.MinimumTime)
-	{
-		status |= Status::TooEarly;
-	}
-
-	if (writeTime > _options.MaximumTime)
-	{
-		status |= Status::TooLate;
-	}
-
-	return status;
-}
-
 void Pystykorva::Worker(std::stop_token token)
 {
 	TextProcessor textProcessor(_options, token);
@@ -159,17 +113,11 @@ void Pystykorva::Worker(std::stop_token token)
 			_callbacks.Processing(path);
 		}
 
-		uint32_t status = FileStatus(path);
-		std::vector<Pystykorva::Result> results;
-
-		if (status == 0)
-		{
-			results = textProcessor.ProcessFile(path);
-		}
+		Result result = textProcessor.ProcessFile(path);
 
 		if (_callbacks.Processed)
 		{
-			_callbacks.Processed(path, status, results);
+			_callbacks.Processed(path, result);
 		}
 	}
 }

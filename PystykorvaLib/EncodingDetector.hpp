@@ -2,6 +2,14 @@
 
 class EncodingDetectorImpl;
 
+struct EncodingException : std::exception
+{
+	inline EncodingException(const char* message) :
+		std::exception(message)
+	{
+	}
+};
+
 class EncodingDetector
 {
 public:
