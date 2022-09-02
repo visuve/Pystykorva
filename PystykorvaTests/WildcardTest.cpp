@@ -32,6 +32,12 @@ TEST(WildCardTests, NoWildcard)
 	EXPECT_FALSE(Wildcard::Matches("foobar", "FOOBAX"));
 }
 
+TEST(WildCardTests, AsteriskOnly)
+{
+	EXPECT_TRUE(Wildcard::Matches("foobar", "*"));
+	EXPECT_TRUE(Wildcard::Matches("FOOBAR", "*"));
+	EXPECT_TRUE(Wildcard::Matches("foobar", "*"));
+}
 TEST(WildCardTests, AsteriskStart)
 {
 	EXPECT_TRUE(Wildcard::Matches("foobar", "*bar"));
@@ -57,6 +63,13 @@ TEST(WildCardTests, AsteriskMulti)
 	EXPECT_TRUE(Wildcard::Matches("foobar", "f*b*r"));
 	EXPECT_TRUE(Wildcard::Matches("FOOBAR", "f*b*r"));
 	EXPECT_TRUE(Wildcard::Matches("foobar", "F*B*R"));
+}
+
+TEST(WildCardTests, QuestionOnly)
+{
+	EXPECT_TRUE(Wildcard::Matches("f", "?"));
+	EXPECT_TRUE(Wildcard::Matches("fo", "??"));
+	EXPECT_TRUE(Wildcard::Matches("foo", "???"));
 }
 
 TEST(WildCardTests, QuestionStart)
