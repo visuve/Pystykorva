@@ -38,7 +38,7 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 
 		if (!_options.IncludeWildcards.empty() && std::none_of(
 			_options.IncludeWildcards.cbegin(),
-			_options.IncludeWildcards.cbegin(),
+			_options.IncludeWildcards.cend(),
 			std::bind(Wildcard::Matches, path.string(), std::placeholders::_1)))
 		{
 			result.StatusMask |= Pystykorva::Status::NameExcluded;
