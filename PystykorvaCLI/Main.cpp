@@ -2,33 +2,30 @@
 #include "Pystykorva.hpp"
 #include "CmdArgs.hpp"
 
-Pystykorva::Options Parse(const CmdArgs& args)
+Pystykorva::Options Deserialize(const CmdArgs& args)
 {
 	Pystykorva::Options options;
 
 	options.Directory = args.Value<std::filesystem::path>("directory");
-	options.IncludeWildcards = args.Value<std::set<std::string>>("wildcards", {});
-	options.ExcludedDirectories = args.Value<std::set<std::string>>("excludes", { ".bzr", ".git", ".hg", ".svn", ".vs" });
+	options.IncludeWildcards = args.Value<std::set<std::string>>("wildcards");
+	options.ExcludedDirectories = args.Value<std::set<std::string>>("excludes");
 
 	options.SearchExpression = args.Value<std::string>("searchexpression");
-	options.ReplacementText = args.Value<std::string>("replacement", "");
+	options.ReplacementText = args.Value<std::string>("replacement");
 
-	options.Mode = static_cast<Pystykorva::MatchMode>(args.Value<uint8_t>("mode"), Pystykorva::PlainCaseInsensitive);
+	options.Mode = static_cast<Pystykorva::MatchMode>(args.Value<uint8_t>("mode"));
 
-	options.MinimumSize = args.Value<uint64_t>("minsize", 0);
-	options.MaximumSize = args.Value<uint64_t>("maxsize", std::numeric_limits<uint64_t>::max());
+	options.MinimumSize = args.Value<uint64_t>("minsize");
+	options.MaximumSize = args.Value<uint64_t>("maxsize");
 
-	const auto now = std::chrono::file_clock::now();
-
-	// I think two milleania is wide enough scale for defaults...
-	options.MinimumTime = args.Value<std::chrono::file_clock::time_point>("mintime", now - std::chrono::years(1000));
-	options.MaximumTime = args.Value<std::chrono::file_clock::time_point>("maxtime", now + std::chrono::years(1000));
+	options.MinimumTime = args.Value<std::chrono::file_clock::time_point>("mintime");
+	options.MaximumTime = args.Value<std::chrono::file_clock::time_point>("maxtime");
 
 	// 64 kib should be decent for most text files
-	options.BufferSize = args.Value<uint32_t>("buffersize", 0x10000);
+	options.BufferSize = args.Value<uint32_t>("buffersize");
 
 	// On my 16 core CPU, harware_concurrency returns 32, which is fine as I have SMT
-	options.MaximumThreads = args.Value<uint32_t>("maxthreads", std::thread::hardware_concurrency());
+	options.MaximumThreads = args.Value<uint32_t>("maxthreads");
 
 	return options;
 }
@@ -183,24 +180,26 @@ int main(int argc, char** argv)
 {
 	try
 	{
-		CmdArgs cmdArgs(argc, argv,
+		const auto now = std::chrono::file_clock::now();
+
+		const CmdArgs cmdArgs(argc, argv,
 		{
 			{ "help", typeid(std::nullopt), "Prints out this help message" },
 			{ "directory", typeid(std::filesystem::path), "The directory to search in" },
-			{ "wildcards", typeid(std::string), "The file names to match" },
-			{ "excludes", typeid(std::string), "The directory names to exclude" },
+			{ "wildcards", typeid(std::string), "The file names to match", std::set<std::string>({ "*" }) },
+			{ "excludes", typeid(std::string), "The directory names to exclude", std::set<std::string>({ ".bzr", ".git", ".hg", ".svn", ".vs" }) },
 			{ "searchexpression", typeid(std::string), "The text to search" },
-			{ "replacement", typeid(std::string), "The text to replace" },
-			{ "mode", typeid(uint8_t), "Plain or regex, case sensitive or not" },
-			{ "minsize", typeid(uint64_t), "Minimum file size" },
-			{ "maxsize", typeid(uint64_t), "Maximum file size" },
-			{ "mintime", typeid(std::chrono::file_clock::time_point), "Minimum file time" },
-			{ "maxtime", typeid(std::chrono::file_clock::time_point), "Maximum file time" },
-			{ "buffersize", typeid(uint32_t), "Buffer size threads" },
-			{ "maxthreads", typeid(uint32_t), "Maximum number of threads" },
+			{ "replacement", typeid(std::string), "The text to replace", std::string() },
+			{ "mode", typeid(uint8_t), "Plain or regex, case sensitive or not", uint8_t(1)},
+			{ "minsize", typeid(uint64_t), "Minimum file size", uint64_t(0) },
+			{ "maxsize", typeid(uint64_t), "Maximum file size", std::numeric_limits<uint64_t>::max() },
+			{ "mintime", typeid(std::chrono::file_clock::time_point), "Minimum file time", now - std::chrono::years(100) },
+			{ "maxtime", typeid(std::chrono::file_clock::time_point), "Maximum file time", now + std::chrono::years(100) },
+			{ "buffersize", typeid(uint32_t), "Buffer size", 0x10000u },
+			{ "maxthreads", typeid(uint32_t), "Maximum number of threads", std::thread::hardware_concurrency() }
 		});
 
-		Pystykorva::Options options = Parse(cmdArgs);
+		Pystykorva::Options options = Deserialize(cmdArgs);
 		Pystykorva::Callbacks callbacks;
 
 		std::ios::sync_with_stdio(false);
@@ -230,9 +229,15 @@ int main(int argc, char** argv)
 		pystykorva.Start();
 		pystykorva.Wait();
 	}
+	catch (const CmdArgs::Exception& e)
+	{
+		std::cerr << e.what() << "\n";
+		std::cerr << e.Usage();
+		return ERROR_BAD_ARGUMENTS;
+	}
 	catch (std::exception& e)
 	{
-		std::cerr << "Error: " << e.what() << std::endl;
+		std::cerr << e.what() << std::endl;
 		return 1;
 	}
 

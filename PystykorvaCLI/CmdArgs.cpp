@@ -3,47 +3,45 @@
 
 std::ostream& operator << (std::ostream& stream, const CmdArgs::Argument& argument)
 {
-	stream << std::left << std::setw(20);
+	stream << std::left << std::setw(25);
 
-	std::type_index type = std::get<1>(argument);
-
-	if (type == typeid(std::nullopt))
+	if (argument.Type == typeid(std::nullopt))
 	{
-		stream << std::get<0>(argument);
+		stream << argument.Key;
 	}
-	else if (type == typeid(std::filesystem::path))
+	else if (argument.Type == typeid(std::filesystem::path))
 	{
-		stream << std::get<0>(argument) + "=<file>";
+		stream << argument.Key + "=<file>";
 	}
-	else if (type == typeid(double) || type == typeid(float))
+	else if (argument.Type == typeid(double) || argument.Type == typeid(float))
 	{
-		stream << std::get<0>(argument) + "=<float>";
+		stream << argument.Key + "=<float>";
 	}
-	else if (type == typeid(uint64_t) ||
-		type == typeid(uint32_t) ||
-		type == typeid(uint16_t) ||
-		type == typeid(uint8_t) ||
-		type == typeid(int64_t) ||
-		type == typeid(int32_t) ||
-		type == typeid(int16_t) ||
-		type == typeid(int8_t))
+	else if (argument.Type == typeid(uint64_t) ||
+		argument.Type == typeid(uint32_t) ||
+		argument.Type == typeid(uint16_t) ||
+		argument.Type == typeid(uint8_t) ||
+		argument.Type == typeid(int64_t) ||
+		argument.Type == typeid(int32_t) ||
+		argument.Type == typeid(int16_t) ||
+		argument.Type == typeid(int8_t))
 	{
-		stream << std::get<0>(argument) + "=<integer>";
+		stream << argument.Key + "=<integer>";
 	}
-	else if (type == typeid(std::string))
+	else if (argument.Type == typeid(std::string))
 	{
-		stream << std::get<0>(argument) + "=<word>";
+		stream << argument.Key + + "=<word>";
 	}
-	else if (type == typeid(std::chrono::file_clock::time_point))
+	else if (argument.Type == typeid(std::chrono::file_clock::time_point))
 	{
-		stream << std::get<0>(argument) + "=<time>";
+		stream << argument.Key + "=<time>";
 	}
 	else
 	{
-		throw std::invalid_argument(std::format("Not supported type: {}", type.name()));
+		throw std::invalid_argument(std::format("Not supported type: {}", argument.Type.name()));
 	}
 
-	return stream << std::get<2>(argument);
+	return stream << argument.Description;
 }
 
 CmdArgs::Exception::Exception(
@@ -82,7 +80,7 @@ CmdArgs::CmdArgs(const std::vector<std::string>& given, std::initializer_list<Ar
 
 	for (const Argument& argument : _expected)
 	{
-		if (Contains(std::get<0>(argument)))
+		if (Contains(argument.Key))
 		{
 			return;
 		}
@@ -109,11 +107,11 @@ std::string CmdArgs::Usage() const
 	return _usage;
 }
 
-std::type_index CmdArgs::TypeByKey(std::string_view key) const
+CmdArgs::Argument CmdArgs::ExpectedArgumentByKey(std::string_view key) const
 {
 	const auto keyEquals = [&](const Argument& argument)->bool
 	{
-		return std::get<0>(argument) == key;
+		return argument.Key == key;
 	};
 
 	auto expectedArgument = std::find_if(_expected.cbegin(), _expected.cend(), keyEquals);
@@ -123,14 +121,14 @@ std::type_index CmdArgs::TypeByKey(std::string_view key) const
 		throw CmdArgs::Exception("Unknown key requested", _usage);
 	}
 
-	return std::get<1>(*expectedArgument);
+	return *expectedArgument;
 }
 
-std::any CmdArgs::ValueByKey(std::string_view key) const
+std::any CmdArgs::ProvidedValueByKey(std::string_view key) const
 {
-	std::type_index type = TypeByKey(key);
+	Argument expected = ExpectedArgumentByKey(key);
 
-	if (type == typeid(std::nullopt))
+	if (expected.Type == typeid(std::nullopt))
 	{
 		if (!Contains(key))
 		{
@@ -161,56 +159,66 @@ std::any CmdArgs::ValueByKey(std::string_view key) const
 		value = providedArgument;
 		break;
 	}
-	
-	if (type == typeid(std::filesystem::path))
+
+	if (value.empty())
+	{
+		if (!expected.DefaultValue.has_value())
+		{
+			throw CmdArgs::Exception(std::format("Required argument \"{}\" not provided!", key), _usage);
+		}
+
+		return expected.DefaultValue.value();
+	}
+
+	if (expected.Type == typeid(std::filesystem::path))
 	{
 		return std::filesystem::path(value);
 	}
-	else if (type == typeid(double))
+	else if (expected.Type == typeid(double))
 	{
-		return value.empty() ? double(0) : std::stod(value);
+		return std::stod(value);
 	}
-	else if (type == typeid(float))
+	else if (expected.Type == typeid(float))
 	{
-		return value.empty() ? float(0) : std::stof(value);
+		return std::stof(value);
 	}
-	else if (type == typeid(uint64_t))
+	else if (expected.Type == typeid(uint64_t))
 	{
-		return value.empty() ? uint64_t(0) : static_cast<uint64_t>(std::stoull(value));
+		return static_cast<uint64_t>(std::stoull(value));
 	}
-	else if (type == typeid(uint32_t))
+	else if (expected.Type == typeid(uint32_t))
 	{
-		return value.empty() ? uint32_t(0) : static_cast<uint32_t>(std::stoul(value));
+		return static_cast<uint32_t>(std::stoul(value));
 	}
-	else if (type == typeid(uint16_t))
+	else if (expected.Type == typeid(uint16_t))
 	{
-		return value.empty() ? uint16_t(0) : static_cast<uint16_t>(std::stoul(value));
+		return static_cast<uint16_t>(std::stoul(value));
 	}
-	else if (type == typeid(uint8_t))
+	else if (expected.Type == typeid(uint8_t))
 	{
-		return value.empty() ? uint8_t(0) : static_cast<uint8_t>(std::stoul(value));
+		return static_cast<uint8_t>(std::stoul(value));
 	}
-	else if (type == typeid(int64_t))
+	else if (expected.Type == typeid(int64_t))
 	{
-		return value.empty() ? int64_t(0) : static_cast<int64_t>(std::stol(value));
+		return static_cast<int64_t>(std::stol(value));
 	}
-	else if (type == typeid(int32_t))
+	else if (expected.Type == typeid(int32_t))
 	{
-		return value.empty() ? int32_t(0) : static_cast<int32_t>(std::stoi(value));
+		return static_cast<int32_t>(std::stoi(value));
 	}
-	else if (type == typeid(int16_t))
+	else if (expected.Type == typeid(int16_t))
 	{
-		return value.empty() ? int16_t(0) : static_cast<int16_t>(std::stoi(value));
+		return static_cast<int16_t>(std::stoi(value));
 	}
-	else if (type == typeid(int8_t))
+	else if (expected.Type == typeid(int8_t))
 	{
-		return value.empty() ? int8_t(0) : static_cast<int8_t>(std::stoi(value));
+		return static_cast<int8_t>(std::stoi(value));
 	}
-	else if (type == typeid(std::string))
+	else if (expected.Type == typeid(std::string))
 	{
 		return value;
 	}
-	else if (type == typeid(std::set<std::string>))
+	else if (expected.Type == typeid(std::set<std::string>))
 	{
 		std::set<std::string> result;
 
@@ -221,7 +229,7 @@ std::any CmdArgs::ValueByKey(std::string_view key) const
 
 		return result;
 	}
-	else if (type == typeid(std::chrono::file_clock::time_point))
+	else if (expected.Type == typeid(std::chrono::file_clock::time_point))
 	{
 		std::istringstream stream(value);
 		std::chrono::file_clock::time_point time;
