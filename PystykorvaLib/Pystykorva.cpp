@@ -67,32 +67,23 @@ std::filesystem::path Pystykorva::Next()
 {
 	std::lock_guard<std::mutex> lock(_mutex);
 
-	std::filesystem::path result;
-
-	while (_rdi != std::filesystem::recursive_directory_iterator())
+	for (;_rdi != std::filesystem::recursive_directory_iterator(); ++_rdi)
 	{
 		const std::filesystem::path path = _rdi->path();
 
-		assert(!path.empty());
-
 		if (_rdi->is_regular_file())
 		{
-			result = path;
+			++_rdi; // Prepare iterator for the next caller
+			return path;
 		}
-		else if (_rdi->is_directory() && IsExcludedDirectory(path))
+		
+		if (_rdi->is_directory() && IsExcludedDirectory(path))
 		{
 			_rdi.disable_recursion_pending();
 		}
-
-		++_rdi;
-
-		if (!result.empty())
-		{
-			break;
-		}
 	}
 
-	return result;
+	return {};
 }
 
 void Pystykorva::Worker(std::stop_token token)
