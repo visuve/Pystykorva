@@ -20,7 +20,8 @@ constexpr int32_t ModeToFlags(Pystykorva::MatchMode mode)
 			break;
 	}
 
-	std::unreachable();
+	// std::unreachable();
+	throw std::invalid_argument("Unknown mode");
 }
 
 class TextSearcherImpl

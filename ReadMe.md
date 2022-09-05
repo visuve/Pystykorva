@@ -9,6 +9,4 @@
 
 ## TODO:
 
-- Improve error handling
 - Finish text replacing
-- Port to CMake

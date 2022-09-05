@@ -89,7 +89,7 @@ public:
 		return *this;
 	}
 
-	template <typename size_t N>
+	template <size_t N>
 	Console& operator << (const char(&value)[N])
 	{
 		WriteA(value, N);

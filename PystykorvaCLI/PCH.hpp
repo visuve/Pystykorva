@@ -4,6 +4,7 @@
 #include <algorithm> 
 #include <cassert>
 #include <chrono>
+#include <cstring>
 #include <filesystem>
 #include <functional>
 #include <iostream>
@@ -15,4 +16,8 @@
 #include <thread>
 #include <typeindex>
 
+#ifdef _WIN32
 #include <icu.h>
+#else
+#include <unicode/uchar.h>
+#endif

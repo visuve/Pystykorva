@@ -2,10 +2,10 @@
 
 class EncodingDetectorImpl;
 
-struct EncodingException : std::exception
+struct EncodingException : std::runtime_error
 {
-	inline EncodingException(const char* message) :
-		std::exception(message)
+	inline EncodingException(const std::string& message) :
+		std::runtime_error(message)
 	{
 	}
 };

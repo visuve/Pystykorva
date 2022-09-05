@@ -2,10 +2,10 @@
 
 class UnicodeConverterImpl;
 
-struct ConversionException : std::exception
+struct ConversionException : std::runtime_error
 {
-	inline ConversionException(const char* message) :
-		std::exception(message)
+	inline ConversionException(const std::string& message) :
+		std::runtime_error(message)
 	{
 	}
 };

@@ -5,6 +5,7 @@
 #include <cassert>
 #include <chrono>
 #include <condition_variable>
+#include <exception>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -17,4 +18,11 @@
 #include <thread>
 #include <utility>
 
+#ifdef _WIN32
 #include <icu.h>
+#else
+#include <unicode/ubrk.h>
+#include <unicode/ucnv.h>
+#include <unicode/ucsdet.h>
+#include <unicode/uregex.h>
+#endif

@@ -2,10 +2,10 @@
 
 #include "Pystykorva.hpp"
 
-struct SearchException : std::exception
+struct SearchException : std::runtime_error
 {
-	inline SearchException(const char* message) :
-		std::exception(message)
+	inline SearchException(const std::string& message) :
+		std::runtime_error(message)
 	{
 	}
 };
