@@ -1,6 +1,10 @@
 #include "PCH.hpp"
 #include "Pystykorva.hpp"
 #include "CmdArgs.hpp"
+#include "Console.hpp"
+
+Console Cout(Console::StandardOutput);
+Console Cerr(Console::StandardError);
 
 Pystykorva::Options Deserialize(const CmdArgs& args)
 {
@@ -30,13 +34,14 @@ Pystykorva::Options Deserialize(const CmdArgs& args)
 	return options;
 }
 
-void PrintStatusMask(uint32_t statusMask)
+std::string StatusMaskToString(uint32_t statusMask)
 {
 	if (!statusMask)
 	{
-		std::cout << "ok\n";
+		return "ok";
 	}
 
+	std::string result;
 	std::string delimiter;
 
 	for (uint32_t bit = 1; statusMask; statusMask &= ~bit, bit <<= 1)
@@ -44,52 +49,52 @@ void PrintStatusMask(uint32_t statusMask)
 		switch (statusMask & bit)
 		{
 			case Pystykorva::Status::Missing:
-				std::cout << delimiter << "the file is missing";
+				result += delimiter + "the file is missing";
 				delimiter = ", ";
 				break;
 			case Pystykorva::Status::NoPermission:
-				std::cout << delimiter << "incorrect permissions";
+				result += delimiter + "incorrect permissions";
 				delimiter = ", ";
 				break;
 			case Pystykorva::Status::NameExcluded:
-				std::cout << delimiter << "excluded by name";
+				result += delimiter + "excluded by name";
 				delimiter = ", ";
 				break;
 			case Pystykorva::Status::TooSmall:
-				std::cout << delimiter << "too small file size";
+				result += delimiter + "too small file size";
 				delimiter = ", ";
 				break;
 			case Pystykorva::Status::TooBig:
-				std::cout << delimiter << "too large file size";
+				result += delimiter + "too large file size";
 				delimiter = ", ";
 				break;
 			case Pystykorva::Status::TooEarly:
-				std::cout << delimiter << "file cretead too early";
+				result += delimiter + "file cretead too early";
 				delimiter = ", ";
 				break;
 			case Pystykorva::Status::TooLate:
-				std::cout << delimiter << "file cretead too late";
+				result += delimiter + "file cretead too late";
 				delimiter = ", ";
 				break;
 			case Pystykorva::Status::UnknownEncoding:
-				std::cout << delimiter << "probably a binary file";
+				result += delimiter + "probably a binary file";
 				delimiter = ", ";
 				break;
 			case Pystykorva::Status::ConversionError:
-				std::cout << delimiter << "Unicode conversion error";
+				result += delimiter + "unicode conversion error";
 				delimiter = ", ";
 				break;
 			case Pystykorva::Status::IOError:
-				std::cout << delimiter << "I/O error";
+				result += delimiter + "i/o error";
 				delimiter = ", ";
 				break;
 		}
 	}
 
-	std::cout << '\n';
+	return result;
 }
 
-std::ostream& operator << (std::ostream& stream, const Pystykorva::Match& result)
+Console& operator << (Console& stream, const Pystykorva::Match& result)
 {
 	stream << result.LineNumber << "\n";
 
@@ -112,50 +117,18 @@ std::ostream& operator << (std::ostream& stream, const Pystykorva::Match& result
 		offset += 4;
 	}
 
-#ifdef _WIN32
-	static HANDLE out(GetStdHandle(STD_OUTPUT_HANDLE));
-	DWORD written = 0;
-
-	if (!WriteConsoleW(out, line.data(), static_cast<DWORD>(line.size()), &written, nullptr))
+	const auto notSpace = [](char16_t x)->bool
 	{
-		std::unreachable();
-	}
+		return u_isWhitespace(x) == 0;
+	};
 
-	assert(written > 0);
-#else
-	UErrorCode status = U_ZERO_ERROR;
-	int32_t length = 0;
+	// Trim trailing whitespace, may have a lot
+	line.erase(std::find_if(line.rbegin(), line.rend(), notSpace).base(), line.end());
 
-	u_strToUTF8(
-		nullptr,
-		0,
-		&length,
-		line.data(),
-		static_cast<int32_t>(line.size()),
-		&status);
-
-	assert(status == U_BUFFER_OVERFLOW_ERROR);
-
-	status = U_ZERO_ERROR;
-
-	std::string buffer(static_cast<size_t>(length), 0);
-
-	u_strToUTF8(
-		buffer.data(),
-		length,
-		&length,
-		line.data(),
-		static_cast<int32_t>(line.size()),
-		&status);
-
-	assert(status == U_STRING_NOT_TERMINATED_WARNING);
-
-	std::cout << buffer;
-#endif
+	Cout << line << '\n';
 
 	return stream;
 }
-
 
 std::mutex _mutex;
 
@@ -163,16 +136,11 @@ void ReportResults(std::filesystem::path path, Pystykorva::Result result)
 {
 	std::lock_guard<std::mutex> guard(_mutex);
 
-	// wcout to display paths correctly in Windows
-	std::wcout << path;
-	std::cout << " processed, status: ";
+	Cout << path << " processed, status: " << StatusMaskToString(result.StatusMask) << '\n';
 
-	PrintStatusMask(result.StatusMask);
-
-	for (const Pystykorva::Match& result : result.Matches)
+	for (const Pystykorva::Match& match : result.Matches)
 	{
-		std::wcout << path;
-		std::cout << " @ " << result << std::endl;
+		Cout << path << " @ " << match << '\n';
 	}
 }
 
@@ -202,17 +170,15 @@ int main(int argc, char** argv)
 		Pystykorva::Options options = Deserialize(cmdArgs);
 		Pystykorva::Callbacks callbacks;
 
-		std::ios::sync_with_stdio(false);
-
 		callbacks.Started = []()
 		{
-			std::cout << "Pystykorva started!\n";
+			Cout << "Pystykorva started!\n";
 		};
 
 		callbacks.Processing = [](std::filesystem::path path)
 		{
 			_mutex.lock();
-			std::cout << "Processing: " << path << '\n';
+			Cout << "Processing: " << path << '\n';
 			_mutex.unlock();
 		};
 
@@ -220,8 +186,8 @@ int main(int argc, char** argv)
 
 		callbacks.Finished = [](std::chrono::milliseconds ms)
 		{
-			std::cout << "Pystykorva started!\n";
-			std::cout << "Took: " << ms << std::endl;
+			Cout << "Pystykorva finished!\n";
+			Cout << "Took: " << ms << '\n';
 		};
 
 		Pystykorva pystykorva(options, callbacks);
@@ -231,14 +197,14 @@ int main(int argc, char** argv)
 	}
 	catch (const CmdArgs::Exception& e)
 	{
-		std::cerr << e.what() << "\n";
-		std::cerr << e.Usage();
-		return ERROR_BAD_ARGUMENTS;
-	}
-	catch (std::exception& e)
-	{
-		std::cerr << e.what() << std::endl;
+		Cerr << e.what() << "\n";
+		Cerr << e.Usage();
 		return 1;
+	}
+	catch (const std::exception& e)
+	{
+		Cerr << e.what() << '\n';
+		return 2;
 	}
 
 	return 0;

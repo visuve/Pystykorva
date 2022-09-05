@@ -1,6 +1,7 @@
 #pragma once
 
 #include <any>
+#include <algorithm> 
 #include <cassert>
 #include <chrono>
 #include <filesystem>
@@ -14,9 +15,4 @@
 #include <thread>
 #include <typeindex>
 
-#ifdef _WIN32
-#define NOMINMAX
-#include <Windows.h>
-#else
 #include <icu.h>
-#endif
