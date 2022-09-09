@@ -1,5 +1,6 @@
 #include "PCH.hpp"
 #include "CmdArgs.hpp"
+#include "UnicodeConverter.hpp"
 
 std::ostream& operator << (std::ostream& stream, const CmdArgs::Argument& argument)
 {
@@ -28,9 +29,14 @@ std::ostream& operator << (std::ostream& stream, const CmdArgs::Argument& argume
 	{
 		stream << argument.Key + "=<integer>";
 	}
-	else if (argument.Type == typeid(std::string))
+	else if (argument.Type == typeid(std::string) ||
+		argument.Type == typeid(std::u16string))
 	{
-		stream << argument.Key + + "=<word>";
+		stream << argument.Key + + "=<text>";
+	}
+	else if (argument.Type == typeid(std::set<std::string>))
+	{
+		stream << argument.Key + +"=<set>";
 	}
 	else if (argument.Type == typeid(std::chrono::file_clock::time_point))
 	{
@@ -218,11 +224,15 @@ std::any CmdArgs::ProvidedValueByKey(std::string_view key) const
 	{
 		return value;
 	}
+	else if (expected.Type == typeid(std::u16string))
+	{
+		return UnicodeConverter::FromUtf8(value);
+	}
 	else if (expected.Type == typeid(std::set<std::string>))
 	{
 		std::set<std::string> result;
 
-		for (std::string_view x : std::views::split(value, '|'))
+		for (std::string_view x : std::views::split(value, ','))
 		{
 			result.emplace(x);
 		}

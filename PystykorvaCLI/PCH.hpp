@@ -15,9 +15,3 @@
 #include <stop_token>
 #include <thread>
 #include <typeindex>
-
-#ifdef _WIN32
-#include <icu.h>
-#else
-#include <unicode/uchar.h>
-#endif

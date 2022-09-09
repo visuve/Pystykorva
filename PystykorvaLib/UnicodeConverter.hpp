@@ -23,6 +23,10 @@ public:
 
 	void Erase(size_t index);
 
+	static void RightTrim(std::u16string& text);
+
+	static std::u16string FromUtf8(std::string_view text);
+
 private:
 	UnicodeConverterImpl* _impl;
 };

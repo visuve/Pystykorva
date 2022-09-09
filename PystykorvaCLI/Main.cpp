@@ -2,6 +2,7 @@
 #include "Pystykorva.hpp"
 #include "CmdArgs.hpp"
 #include "Console.hpp"
+#include "UnicodeConverter.hpp"
 
 Console Cout(Console::StandardOutput);
 Console Cerr(Console::StandardError);
@@ -15,7 +16,7 @@ Pystykorva::Options Deserialize(const CmdArgs& args)
 	options.ExcludedDirectories = args.Value<std::set<std::string>>("excludes");
 
 	options.SearchExpression = args.Value<std::string>("searchexpression");
-	options.ReplacementText = args.Value<std::string>("replacement");
+	options.ReplacementText = args.Value<std::u16string>("replacement");
 
 	options.Mode = static_cast<Pystykorva::MatchMode>(args.Value<uint8_t>("mode"));
 
@@ -117,13 +118,8 @@ Console& operator << (Console& stream, const Pystykorva::Match& result)
 		offset += 4;
 	}
 
-	const auto notSpace = [](char16_t x)->bool
-	{
-		return u_isWhitespace(x) == 0;
-	};
-
 	// Trim trailing whitespace, may have a lot
-	line.erase(std::find_if(line.rbegin(), line.rend(), notSpace).base(), line.end());
+	UnicodeConverter::RightTrim(line);
 
 	Cout << line << '\n';
 
@@ -154,10 +150,10 @@ int main(int argc, char** argv)
 		{
 			{ "help", typeid(std::nullopt), "Prints out this help message" },
 			{ "directory", typeid(std::filesystem::path), "The directory to search in" },
-			{ "wildcards", typeid(std::string), "The file names to match", std::set<std::string>({ "*" }) },
-			{ "excludes", typeid(std::string), "The directory names to exclude", std::set<std::string>({ ".bzr", ".git", ".hg", ".svn", ".vs" }) },
+			{ "wildcards", typeid(std::set<std::string>), "The file names to match", std::set<std::string>({ "*" }) },
+			{ "excludes", typeid(std::set<std::string>), "The directory names to exclude", std::set<std::string>({ ".bzr", ".git", ".hg", ".svn", ".vs" }) },
 			{ "searchexpression", typeid(std::string), "The text to search" },
-			{ "replacement", typeid(std::string), "The text to replace", std::string() },
+			{ "replacement", typeid(std::u16string), "The text to replace", std::u16string() },
 			{ "mode", typeid(uint8_t), "Plain or regex, case sensitive or not", uint8_t(1)},
 			{ "minsize", typeid(uint64_t), "Minimum file size", uint64_t(0) },
 			{ "maxsize", typeid(uint64_t), "Maximum file size", std::numeric_limits<uint64_t>::max() },

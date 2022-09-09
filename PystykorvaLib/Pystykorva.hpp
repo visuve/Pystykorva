@@ -18,7 +18,7 @@ public:
 		std::set<std::string> ExcludedDirectories;
 
 		std::string SearchExpression;
-		std::string ReplacementText;
+		std::u16string ReplacementText;
 
 		MatchMode Mode;
 
