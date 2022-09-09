@@ -4,13 +4,15 @@
 TEST(UnicodeConverterTests, Simple)
 {
 	const std::string utf8 = "\xF0\x9F\x98\x98";
+	const std::u16string utf16(u"\xD83D\xDE18");
+
+	EXPECT_TRUE(UnicodeConverter::U8toU16(utf8) == utf16);
+	EXPECT_TRUE(UnicodeConverter::U16toU8(utf16) == utf8);
+
 	UnicodeConverter converter("UTF-8");
 	converter.Convert(utf8, true);
 
-	std::u16string expected({ 0xD83D, 0xDE18 });
-	EXPECT_TRUE(converter.Data() == expected);
-
-	EXPECT_TRUE(UnicodeConverter::FromUtf8(utf8) == expected);
+	EXPECT_TRUE(converter.Data() == utf16);
 }
 
 TEST(UnicodeConverterTests, Erase)

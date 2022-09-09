@@ -39,7 +39,6 @@ public:
 	};
 
 	CmdArgs(const std::vector<std::string>& given, std::initializer_list<Argument> expected);
-	CmdArgs(int argc, char** argv, std::initializer_list<Argument> expected);
 	
 	CmdArgs(const CmdArgs&) = delete;
 	CmdArgs(CmdArgs&&) = delete;
@@ -54,8 +53,6 @@ public:
 	{
 		return std::any_cast<T>(ProvidedValueByKey(key));
 	}
-
-	std::string Usage() const;
 
 private:
 	Argument ExpectedArgumentByKey(std::string_view key) const;

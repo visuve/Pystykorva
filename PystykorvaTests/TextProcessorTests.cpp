@@ -5,7 +5,7 @@ TEST(TextProcessorTests, RegexSearch)
 {
 	Pystykorva::Options options = {};
 	options.Mode = Pystykorva::MatchMode::RegexCaseInsensitive;
-	options.SearchExpression = "\\w+";
+	options.SearchExpression = u"\\w+";
 	options.BufferSize = 3;
 
 	std::stop_token token;

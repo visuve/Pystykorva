@@ -15,7 +15,7 @@ Pystykorva::Options Deserialize(const CmdArgs& args)
 	options.IncludeWildcards = args.Value<std::set<std::string>>("wildcards");
 	options.ExcludedDirectories = args.Value<std::set<std::string>>("excludes");
 
-	options.SearchExpression = args.Value<std::string>("searchexpression");
+	options.SearchExpression = args.Value<std::u16string>("searchexpression");
 	options.ReplacementText = args.Value<std::u16string>("replacement");
 
 	options.Mode = static_cast<Pystykorva::MatchMode>(args.Value<uint8_t>("mode"));
@@ -146,15 +146,15 @@ int main(int argc, char** argv)
 	{
 		const auto now = std::chrono::file_clock::now();
 
-		const CmdArgs cmdArgs(argc, argv,
+		const CmdArgs cmdArgs(args,
 		{
 			{ "help", typeid(std::nullopt), "Prints out this help message" },
 			{ "directory", typeid(std::filesystem::path), "The directory to search in" },
 			{ "wildcards", typeid(std::set<std::string>), "The file names to match", std::set<std::string>({ "*" }) },
 			{ "excludes", typeid(std::set<std::string>), "The directory names to exclude", std::set<std::string>({ ".bzr", ".git", ".hg", ".svn", ".vs" }) },
-			{ "searchexpression", typeid(std::string), "The text to search" },
+			{ "searchexpression", typeid(std::u16string), "The text to search" },
 			{ "replacement", typeid(std::u16string), "The text to replace", std::u16string() },
-			{ "mode", typeid(uint8_t), "Plain or regex, case sensitive or not", uint8_t(1)},
+			{ "mode", typeid(uint8_t), "Plain or regex, case sensitive or not", uint8_t(1) },
 			{ "minsize", typeid(uint64_t), "Minimum file size", uint64_t(0) },
 			{ "maxsize", typeid(uint64_t), "Maximum file size", std::numeric_limits<uint64_t>::max() },
 			{ "mintime", typeid(std::chrono::file_clock::time_point), "Minimum file time", now - std::chrono::years(100) },

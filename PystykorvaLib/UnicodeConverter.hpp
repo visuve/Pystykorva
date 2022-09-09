@@ -25,7 +25,8 @@ public:
 
 	static void RightTrim(std::u16string& text);
 
-	static std::u16string FromUtf8(std::string_view text);
+	static std::u16string U8toU16(std::string_view text);
+	static std::string U16toU8(std::u16string_view text);
 
 private:
 	UnicodeConverterImpl* _impl;

@@ -93,11 +93,6 @@ CmdArgs::CmdArgs(const std::vector<std::string>& given, std::initializer_list<Ar
 	}
 }
 
-CmdArgs::CmdArgs(int argc, char** argv, std::initializer_list<Argument> expected) :
-	CmdArgs({ argv, argv + argc }, expected)
-{
-}
-
 bool CmdArgs::Contains(std::string_view key) const
 {
 	const auto equals = [&](const std::string& argument)
@@ -106,11 +101,6 @@ bool CmdArgs::Contains(std::string_view key) const
 	};
 
 	return std::any_of(_arguments.cbegin(), _arguments.cend(), equals);
-}
-
-std::string CmdArgs::Usage() const
-{
-	return _usage;
 }
 
 CmdArgs::Argument CmdArgs::ExpectedArgumentByKey(std::string_view key) const
@@ -226,7 +216,7 @@ std::any CmdArgs::ProvidedValueByKey(std::string_view key) const
 	}
 	else if (expected.Type == typeid(std::u16string))
 	{
-		return UnicodeConverter::FromUtf8(value);
+		return UnicodeConverter::U8toU16(value);
 	}
 	else if (expected.Type == typeid(std::set<std::string>))
 	{

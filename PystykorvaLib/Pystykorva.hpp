@@ -17,7 +17,7 @@ public:
 		std::set<std::string> IncludeWildcards;
 		std::set<std::string> ExcludedDirectories;
 
-		std::string SearchExpression;
+		std::u16string SearchExpression;
 		std::u16string ReplacementText;
 
 		MatchMode Mode;

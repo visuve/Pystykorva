@@ -44,22 +44,6 @@ public:
 		}
 	}
 
-	TextSearcherImpl(const std::string& expression, Pystykorva::MatchMode mode)
-	{
-		UParseError error;
-
-		_regex = uregex_openC(
-			expression.c_str(),
-			ModeToFlags(mode),
-			&error,
-			&_status);
-
-		if (U_FAILURE(_status))
-		{
-			throw SearchException("uregex_openC failed");
-		}
-	}
-
 	~TextSearcherImpl()
 	{
 		if (_regex)
@@ -100,11 +84,6 @@ private:
 
 TextSearcher::TextSearcher(std::u16string_view expression, Pystykorva::MatchMode mode) :
 	_impl(new TextSearcherImpl(expression, mode))
-{
-}
-
-TextSearcher::TextSearcher(std::string_view expression, Pystykorva::MatchMode mode) :
-	_impl(new TextSearcherImpl(std::string(expression), mode))
 {
 }
 

@@ -112,7 +112,7 @@ void UnicodeConverter::RightTrim(std::u16string& text)
 	text.erase(std::find_if(text.rbegin(), text.rend(), notSpace).base(), text.end());
 }
 
-std::u16string UnicodeConverter::FromUtf8(std::string_view text)
+std::u16string UnicodeConverter::U8toU16(std::string_view text)
 {
 	int32_t required = 0;
 
@@ -149,5 +149,43 @@ std::u16string UnicodeConverter::FromUtf8(std::string_view text)
 	}
 
 	return result;
+}
 
+std::string UnicodeConverter::U16toU8(std::u16string_view text)
+{
+	int32_t required = 0;
+
+	{
+		UErrorCode error = U_ZERO_ERROR;
+
+		u_strToUTF8(
+			nullptr,
+			0,
+			&required,
+			text.data(),
+			static_cast<int32_t>(text.length()),
+			&error);
+
+		assert(error == U_BUFFER_OVERFLOW_ERROR);
+		assert(required >= 0);
+	}
+
+	std::string result(static_cast<size_t>(required), '\0');
+
+	{
+		UErrorCode error = U_ZERO_ERROR;
+
+		u_strToUTF8(
+			result.data(),
+			required,
+			&required,
+			text.data(),
+			static_cast<int32_t>(text.length()),
+			&error);
+
+		assert(error == U_STRING_NOT_TERMINATED_WARNING);
+		assert(required >= 0);
+	}
+
+	return result;
 }
