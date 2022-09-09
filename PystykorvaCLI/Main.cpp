@@ -140,7 +140,7 @@ void ReportResults(std::filesystem::path path, Pystykorva::Result result)
 	}
 }
 
-int main(int argc, char** argv)
+int Run(const std::vector<std::string>& args)
 {
 	try
 	{
@@ -205,3 +205,23 @@ int main(int argc, char** argv)
 
 	return 0;
 }
+
+#ifdef _WIN32
+
+int wmain(int argc, char16_t** argv)
+{
+	std::vector<std::string> args;
+
+	for (int i = 0; i < argc; ++i)
+	{
+		args.emplace_back(UnicodeConverter::U16toU8(argv[i]));
+	}
+
+	return Run(args);
+}
+#else
+int main(int argc, char** argv)
+{
+	return Run({ argv, argv + argc });
+}
+#endif
