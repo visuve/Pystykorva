@@ -39,7 +39,7 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 		if (!_options.IncludeWildcards.empty() && std::none_of(
 			_options.IncludeWildcards.cbegin(),
 			_options.IncludeWildcards.cend(),
-			std::bind(Wildcard::Matches, path.string(), std::placeholders::_1)))
+			std::bind(Wildcard::Matches, path.filename().string(), std::placeholders::_1)))
 		{
 			result.StatusMask |= Pystykorva::Status::NameExcluded;
 		}
@@ -121,22 +121,18 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, std::
 
 	uint32_t lineNumber = 0;
 
-	while (!_token.stop_requested() && stream)
+	while (!_token.stop_requested() && size > 0)
 	{
-		stream.read(buffer.data(), buffer.size());
+		std::streamsize bytesRead = stream.read(buffer.data(), buffer.size()).gcount();
 
-		const size_t bytesRead = static_cast<size_t>(stream.gcount());
+		assert(bytesRead > 0);
 
-		if (bytesRead == 0)
-		{
-			// This seems to happen sometimes
-			break;
-		}
+		size -= bytesRead;
 
-		if (bytesRead < buffer.size())
+		if (bytesRead < bufferSize)
 		{
 			// This should happen only once, i.e. when the last chunk is read
-			buffer.resize(bytesRead);
+			buffer.resize(static_cast<size_t>(bytesRead));
 		}
 
 		if (!converter)
@@ -146,7 +142,7 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, std::
 		}
 
 		// NOTE: the converter's back buffer might grow larger than defined in the options
-		converter->Convert(buffer, stream.eof());
+		converter->Convert(buffer, size <= 0);
 
 		auto boundaries = _lineAnalyzer.Boundaries(converter->Data());
 
@@ -155,7 +151,7 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, std::
 			// Check if the boundary is "incomplete"
 			if (!boundary.End.has_value())
 			{
-				if (stream)
+				if (size > 0)
 				{
 					// Fetch more data by breaking out of the loop
 					break;
