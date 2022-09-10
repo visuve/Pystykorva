@@ -5,6 +5,7 @@
 #include "UnicodeConverter.hpp"
 #include "LineAnalyzer.hpp"
 #include "TextSearcher.hpp"
+#include "BufferedStream.hpp"
 
 class TextProcessor
 {
@@ -13,7 +14,7 @@ public:
 	~TextProcessor();
 
 	Pystykorva::Result ProcessFile(const std::filesystem::path&);
-	void ProcessStream(std::vector<Pystykorva::Match>& matches, std::iostream& stream, std::streamsize size = -1);
+	void ProcessStream(std::vector<Pystykorva::Match>& matches, BufferedStream& stream);
 	Pystykorva::Match ProcessLine(std::u16string_view line, uint32_t number);
 
 private:

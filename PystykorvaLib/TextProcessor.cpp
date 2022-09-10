@@ -2,17 +2,6 @@
 #include "TextProcessor.hpp"
 #include "Wildcard.hpp"
 
-std::streamsize StreamSize(std::iostream& stream)
-{
-	stream.seekg(0, std::ios::end);
-	std::streampos end = stream.tellg();
-
-	stream.seekg(0, std::ios::beg);
-	std::streampos beg = stream.tellg();
-
-	return end - beg;
-}
-
 TextProcessor::TextProcessor(const Pystykorva::Options& options, std::stop_token token) :
 	_options(options),
 	_token(token),
@@ -46,7 +35,7 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 
 		// TODO: check file permission
 
-		auto fileSize = std::filesystem::file_size(path);
+		uintmax_t fileSize = std::filesystem::file_size(path);
 
 		if (fileSize < _options.MinimumSize || fileSize == 0)
 		{
@@ -73,9 +62,11 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 			return result;
 		}
 
-		std::fstream file(path, std::ios::in | std::ios::out | std::ios::binary);
+		std::ifstream file(path, std::ios::in | std::ios::binary);
+		auto bufferSize = std::min<std::streamsize>(_options.BufferSize, fileSize);
+		BufferedStream stream(file, bufferSize, fileSize);
 
-		ProcessStream(result.Matches, file, fileSize);
+		ProcessStream(result.Matches, stream);
 
 	}
 	catch (const EncodingException&)
@@ -94,44 +85,22 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 	return result;
 }
 
-void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, std::iostream& stream, std::streamsize size)
+void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, BufferedStream& stream)
 {
-	if (size <= 0)
-	{
-		size = StreamSize(stream);
-	}
-	
-	assert(size > 0);
-
-	std::streamsize bufferSize = std::min(std::streamsize(_options.BufferSize), size);
-	std::string buffer(static_cast<size_t>(bufferSize), 0);
-
 	std::unique_ptr<UnicodeConverter> converter;
 
 	uint32_t lineNumber = 0;
 
-	while (!_token.stop_requested() && size > 0)
+	while (!_token.stop_requested() && stream.Read())
 	{
-		std::streamsize bytesRead = stream.read(buffer.data(), buffer.size()).gcount();
-
-		assert(bytesRead > 0);
-
-		size -= bytesRead;
-
-		if (bytesRead < bufferSize)
-		{
-			// This should happen only once, i.e. when the last chunk is read
-			buffer.resize(static_cast<size_t>(bytesRead));
-		}
-
 		if (!converter)
 		{
-			const std::string encoding = _encodingDetector.DetectEncoding(buffer);
+			const std::string encoding = _encodingDetector.DetectEncoding(stream.Data());
 			converter = std::make_unique<UnicodeConverter>(encoding);
 		}
 
 		// NOTE: the converter's back buffer might grow larger than defined in the options
-		converter->Convert(buffer, size <= 0);
+		converter->Convert(stream.Data(), stream.HasData() == false);
 
 		auto boundaries = _lineAnalyzer.Boundaries(converter->Data());
 
@@ -140,7 +109,7 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, std::
 			// Check if the boundary is "incomplete"
 			if (!boundary.End.has_value())
 			{
-				if (size > 0)
+				if (stream.HasData())
 				{
 					// Fetch more data by breaking out of the loop
 					break;
@@ -169,7 +138,7 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, std::
 			matches.emplace_back(match);
 		}
 
-		if (!boundaries.empty() && stream)
+		if (!boundaries.empty() && stream.HasData())
 		{
 			// Erase data which has already been analyzed
 			// Note: there is no point in erasing the data

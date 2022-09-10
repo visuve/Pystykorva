@@ -12,10 +12,11 @@ TEST(TextProcessorTests, RegexSearch)
 
 	TextProcessor processor(options, token);
 
-	std::stringstream stream;
-	stream << "foo\nbar\nxyz";
+	std::istringstream iss("foo\nbar\nxyz");
 
 	std::vector<Pystykorva::Match> matches;
+	BufferedStream stream(iss, 3, 11);
+
 	processor.ProcessStream(matches, stream);
 
 	EXPECT_EQ(matches.size(), 3);
