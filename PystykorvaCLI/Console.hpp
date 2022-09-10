@@ -8,7 +8,8 @@ concept Numeric =
 	std::is_same_v<uint8_t, T> ||
 	std::is_same_v<uint16_t, T> ||
 	std::is_same_v<uint32_t, T> ||
-	std::is_same_v<uint32_t, T>;
+	std::is_same_v<uint32_t, T> ||
+	std::is_same_v<size_t, T>;
 
 template<typename T>
 concept NarrowCharacter = std::is_same_v<char, T> || std::is_same_v<char8_t, T>;

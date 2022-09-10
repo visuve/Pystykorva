@@ -132,7 +132,8 @@ void ReportResults(std::filesystem::path path, Pystykorva::Result result)
 {
 	std::lock_guard<std::mutex> guard(_mutex);
 
-	Cout << path << " processed, status: " << StatusMaskToString(result.StatusMask) << '\n';
+	Cout << path << " processed, status: " << StatusMaskToString(result.StatusMask)
+		<< ", matches: " << result.Matches.size() << '\n';
 
 	for (const Pystykorva::Match& match : result.Matches)
 	{
