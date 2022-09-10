@@ -25,4 +25,5 @@
 #include <unicode/ucnv.h>
 #include <unicode/ucsdet.h>
 #include <unicode/uregex.h>
+#include <unicode/ustring.h>
 #endif

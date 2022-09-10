@@ -12,7 +12,7 @@ BufferedStream::BufferedStream(
 	assert(bufferSize > 0);
 	assert(streamSize > 0);
 
-	_buffer.resize(static_cast<size_t>(bufferSize), '\0');
+	_buffer.resize(static_cast<size_t>(bufferSize));
 }
 
 BufferedStream::~BufferedStream()

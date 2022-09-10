@@ -62,7 +62,7 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 			return result;
 		}
 
-		std::ifstream file(path, std::ios::in | std::ios::binary);
+		std::ifstream file(path, std::ios::binary);
 		auto bufferSize = std::min<std::streamsize>(_options.BufferSize, fileSize);
 		BufferedStream stream(file, bufferSize, fileSize);
 
