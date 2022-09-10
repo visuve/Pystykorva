@@ -5,10 +5,10 @@ class Pystykorva
 public:
 	enum MatchMode : uint8_t
 	{
-		PlainCaseSensitive,
 		PlainCaseInsensitive,
-		RegexCaseSensitive,
-		RegexCaseInsensitive
+		PlainCaseSensitive,
+		RegexCaseInsensitive,
+		RegexCaseSensitive
 	};
 
 	struct Options
@@ -20,7 +20,7 @@ public:
 		std::u16string SearchExpression;
 		std::u16string ReplacementText;
 
-		MatchMode Mode;
+		MatchMode Mode = PlainCaseInsensitive;
 
 		uint64_t MinimumSize = 0;
 		uint64_t MaximumSize = 0;
@@ -69,8 +69,8 @@ public:
 	struct Callbacks
 	{
 		std::function<void()> Started;
-		std::function<void(std::filesystem::path)> Processing;
-		std::function<void(std::filesystem::path, Result)> Processed;
+		std::function<void(const std::filesystem::path&)> Processing;
+		std::function<void(const std::filesystem::path&, const Result&)> Processed;
 		std::function<void(std::chrono::milliseconds)> Finished;
 	};
 

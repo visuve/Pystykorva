@@ -20,7 +20,7 @@ public:
 	std::string_view Data() const;
 
 private:
-	std::istream& _input;
+	std::streambuf* _input;
 	std::streamsize _streamSize;
 	std::string _buffer;
 };

@@ -5,7 +5,7 @@ BufferedStream::BufferedStream(
 	std::istream& input,
 	std::streamsize bufferSize,
 	std::streamsize streamSize) :
-	_input(input),
+	_input(input.rdbuf()),
 	_streamSize(streamSize)
 {
 	assert(input);
@@ -31,7 +31,7 @@ bool BufferedStream::Read()
 		return false;
 	}
 
-	std::streamsize extracted = _input.read(_buffer.data(), _buffer.size()).gcount();
+	std::streamsize extracted = _input->sgetn(_buffer.data(), _buffer.size());
 
 	if (extracted < static_cast<std::streamsize>(_buffer.size()))
 	{

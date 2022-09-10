@@ -128,12 +128,27 @@ Console& operator << (Console& stream, const Pystykorva::Match& result)
 
 std::mutex _mutex;
 
-void ReportResults(std::filesystem::path path, Pystykorva::Result result)
+void ReportProcessing(
+	const std::filesystem::path& path)
+{
+	_CRT_UNUSED(path);
+#if _DEBUG
+	_mutex.lock();
+	Cout << "Processing: " << path << '\n';
+	_mutex.unlock();
+#endif
+}
+
+void ReportResults(
+	const std::filesystem::path& path, 
+	const Pystykorva::Result& result)
 {
 	std::lock_guard<std::mutex> guard(_mutex);
 
+#if _DEBUG
 	Cout << path << " processed, status: " << StatusMaskToString(result.StatusMask)
 		<< ", matches: " << result.Matches.size() << '\n';
+#endif
 
 	for (const Pystykorva::Match& match : result.Matches)
 	{
@@ -151,11 +166,11 @@ int Run(const std::vector<std::string>& args)
 		{
 			{ "help", typeid(std::nullopt), "Prints out this help message" },
 			{ "directory", typeid(std::filesystem::path), "The directory to search in" },
-			{ "wildcards", typeid(std::set<std::string>), "The file names to match", std::set<std::string>({ "*" }) },
+			{ "wildcards", typeid(std::set<std::string>), "The file names to match", std::set<std::string>() },
 			{ "excludes", typeid(std::set<std::string>), "The directory names to exclude", std::set<std::string>({ ".bzr", ".git", ".hg", ".svn", ".vs" }) },
 			{ "searchexpression", typeid(std::u16string), "The text to search" },
 			{ "replacement", typeid(std::u16string), "The text to replace", std::u16string() },
-			{ "mode", typeid(uint8_t), "Plain or regex, case sensitive or not", uint8_t(1) },
+			{ "mode", typeid(uint8_t), "Plain or regex, case sensitive or not", uint8_t(0) },
 			{ "minsize", typeid(uint64_t), "Minimum file size", uint64_t(0) },
 			{ "maxsize", typeid(uint64_t), "Maximum file size", std::numeric_limits<uint64_t>::max() },
 			{ "mintime", typeid(std::chrono::file_clock::time_point), "Minimum file time", now - std::chrono::years(100) },
@@ -172,13 +187,7 @@ int Run(const std::vector<std::string>& args)
 			Cout << "Pystykorva started!\n";
 		};
 
-		callbacks.Processing = [](std::filesystem::path path)
-		{
-			_mutex.lock();
-			Cout << "Processing: " << path << '\n';
-			_mutex.unlock();
-		};
-
+		callbacks.Processing = ReportProcessing;
 		callbacks.Processed = ReportResults;
 
 		callbacks.Finished = [](std::chrono::milliseconds ms)
