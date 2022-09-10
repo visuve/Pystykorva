@@ -15,13 +15,15 @@ public:
 
 	~BufferedStream();
 
-	bool HasData();
+	bool HasData() const;
 	bool Read();
 	std::string_view Data() const;
+	uint64_t Offset() const;
 
 private:
 	std::streambuf* _input;
 	std::streamsize _streamSize;
 	std::string _buffer;
+	std::streamsize _bytesRead;
 };
 

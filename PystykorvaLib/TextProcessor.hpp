@@ -15,7 +15,7 @@ public:
 
 	Pystykorva::Result ProcessFile(const std::filesystem::path&);
 	void ProcessStream(std::vector<Pystykorva::Match>& matches, BufferedStream& stream);
-	Pystykorva::Match ProcessLine(std::u16string_view line, uint32_t number);
+	Pystykorva::Match ProcessLine(uint64_t offset, uint32_t lineNumber, std::u16string_view line);
 
 private:
 	std::stop_token _token;

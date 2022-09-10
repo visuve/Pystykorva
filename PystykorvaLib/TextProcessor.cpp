@@ -128,7 +128,7 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, Buffe
 			std::u16string_view line =
 				converter->View(boundary.Begin, boundary.End.value());
 
-			Pystykorva::Match match = ProcessLine(line, lineNumber);
+			Pystykorva::Match match = ProcessLine(stream.Offset(), lineNumber, line);
 
 			if (match.Positions.empty())
 			{
@@ -148,11 +148,12 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, Buffe
 	}
 }
 
-Pystykorva::Match TextProcessor::ProcessLine(std::u16string_view line, uint32_t number)
+Pystykorva::Match TextProcessor::ProcessLine(uint64_t offset, uint32_t lineNumber, std::u16string_view line)
 {
 	Pystykorva::Match result;
-	result.LineNumber = number;
-	result.Content = line;
+	result.Offset = offset;
+	result.LineNumber = lineNumber;
 	result.Positions = _textSearcher.FindIn(line);
+	result.Content = line;
 	return result;
 }

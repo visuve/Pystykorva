@@ -6,7 +6,8 @@ BufferedStream::BufferedStream(
 	std::streamsize bufferSize,
 	std::streamsize streamSize) :
 	_input(input.rdbuf()),
-	_streamSize(streamSize)
+	_streamSize(streamSize),
+	_bytesRead(0)
 {
 	assert(input);
 	assert(bufferSize > 0);
@@ -19,7 +20,7 @@ BufferedStream::~BufferedStream()
 {
 }
 
-bool BufferedStream::HasData()
+bool BufferedStream::HasData() const
 {
 	return _streamSize > 0;
 }
@@ -39,6 +40,7 @@ bool BufferedStream::Read()
 		_buffer.resize(static_cast<size_t>(extracted));
 	}
 
+	_bytesRead += extracted;
 	_streamSize -= extracted;
 
 	return extracted > 0;
@@ -47,4 +49,9 @@ bool BufferedStream::Read()
 std::string_view BufferedStream::Data() const
 {
 	return _buffer;
+}
+
+uint64_t BufferedStream::Offset() const
+{
+	return static_cast<uint64_t>(_bytesRead);
 }

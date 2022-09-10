@@ -55,9 +55,10 @@ public:
 
 	struct Match
 	{
-		std::u16string Content;
-		uint32_t LineNumber;
+		uint64_t Offset = 0;
+		uint32_t LineNumber = 0;
 		std::vector<MatchPosition> Positions;
+		std::u16string Content;
 	};
 
 	struct Result
