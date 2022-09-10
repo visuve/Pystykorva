@@ -73,18 +73,7 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 			return result;
 		}
 
-		std::fstream::openmode mode;
-
-		if (_options.ReplacementText.empty())
-		{
-			mode = std::ios::in | std::ios::binary;
-		}
-		else
-		{
-			mode = std::ios::in | std::ios::out | std::ios::binary;
-		}
-
-		std::fstream file(path, mode);
+		std::fstream file(path, std::ios::in | std::ios::out | std::ios::binary);
 
 		ProcessStream(result.Matches, file, fileSize);
 
