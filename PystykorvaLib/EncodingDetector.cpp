@@ -20,7 +20,12 @@ public:
 
 	std::string DetectEncoding(std::string_view sample)
 	{
-		ucsdet_setText(_detector, sample.data(), static_cast<int32_t>(sample.size()), &_status);
+		ucsdet_setText(
+			_detector, 
+			sample.data(),
+			std::min<int32_t>(static_cast<int32_t>(sample.size()), 0x800),
+			&_status);
+
 		assert(U_SUCCESS(_status));
 
 		const UCharsetMatch* match = ucsdet_detect(_detector, &_status);
