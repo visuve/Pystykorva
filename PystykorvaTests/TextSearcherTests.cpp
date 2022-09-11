@@ -9,15 +9,15 @@ TEST(TextSearcherTests, PlainSearch)
 		auto result = searcher.FindIn(u"foo bar xyz");
 
 		ASSERT_EQ(result.size(), 1);
-		ASSERT_EQ(result[0].Start, 4);
-		ASSERT_EQ(result[0].End, 7);
+		EXPECT_EQ(result[0].Start, 4);
+		EXPECT_EQ(result[0].End, 7);
 	}
 	{
 		TextSearcher searcher(u"BAR", Pystykorva::PlainCaseSensitive);
 
 		auto result = searcher.FindIn(u"foo bar xyz");
 
-		ASSERT_TRUE(result.empty());
+		EXPECT_TRUE(result.empty());
 	}
 	{
 		TextSearcher searcher(u"bar", Pystykorva::PlainCaseInsensitive);
@@ -25,8 +25,8 @@ TEST(TextSearcherTests, PlainSearch)
 		auto result = searcher.FindIn(u"foo bar xyz");
 
 		ASSERT_EQ(result.size(), 1);
-		ASSERT_EQ(result[0].Start, 4);
-		ASSERT_EQ(result[0].End, 7);
+		EXPECT_EQ(result[0].Start, 4);
+		EXPECT_EQ(result[0].End, 7);
 	}
 	{
 		TextSearcher searcher(u"BAR", Pystykorva::PlainCaseInsensitive);
@@ -34,8 +34,8 @@ TEST(TextSearcherTests, PlainSearch)
 		auto result = searcher.FindIn(u"foo bar xyz");
 
 		ASSERT_EQ(result.size(), 1);
-		ASSERT_EQ(result[0].Start, 4);
-		ASSERT_EQ(result[0].End, 7);
+		EXPECT_EQ(result[0].Start, 4);
+		EXPECT_EQ(result[0].End, 7);
 	}
 }
 
@@ -45,12 +45,12 @@ TEST(TextSearcherTests, RegexSearch)
 	auto result = searcher.FindIn(u"foo bar xyz");
 	ASSERT_EQ(result.size(), 3);
 
-	ASSERT_EQ(result[0].Start, 0);
-	ASSERT_EQ(result[0].End, 3);
+	EXPECT_EQ(result[0].Start, 0);
+	EXPECT_EQ(result[0].End, 3);
 
-	ASSERT_EQ(result[1].Start, 4);
-	ASSERT_EQ(result[1].End, 7);
+	EXPECT_EQ(result[1].Start, 4);
+	EXPECT_EQ(result[1].End, 7);
 
-	ASSERT_EQ(result[2].Start, 8);
-	ASSERT_EQ(result[2].End, 11);
+	EXPECT_EQ(result[2].Start, 8);
+	EXPECT_EQ(result[2].End, 11);
 }

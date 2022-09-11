@@ -19,7 +19,7 @@ TEST(TextProcessorTests, RegexSearch)
 
 	processor.ProcessStream(matches, stream);
 
-	EXPECT_EQ(matches.size(), 3);
+	ASSERT_EQ(matches.size(), 3);
 	EXPECT_TRUE(matches[0].Content == u"foo\n");
 	EXPECT_TRUE(matches[1].Content == u"bar\n");
 	EXPECT_TRUE(matches[2].Content == u"xyz");
