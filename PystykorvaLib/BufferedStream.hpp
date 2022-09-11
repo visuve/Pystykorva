@@ -5,8 +5,8 @@ class BufferedStream
 public:
 	BufferedStream(
 		std::istream& input,
-		std::streamsize bufferSize,
-		std::streamsize streamSize);
+		size_t bufferSize,
+		uint64_t streamSize);
 
 	BufferedStream(const BufferedStream&) = delete;
 	BufferedStream(BufferedStream&&) = delete;
@@ -22,8 +22,8 @@ public:
 
 private:
 	std::streambuf* _input;
-	std::streamsize _streamSize;
+	uint64_t _streamSize;
 	std::string _buffer;
-	std::streamsize _bytesRead;
+	uint64_t _bytesRead;
 };
 

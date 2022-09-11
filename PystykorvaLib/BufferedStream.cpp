@@ -3,8 +3,8 @@
 
 BufferedStream::BufferedStream(
 	std::istream& input,
-	std::streamsize bufferSize,
-	std::streamsize streamSize) :
+	size_t bufferSize,
+	uint64_t streamSize) :
 	_input(input.rdbuf()),
 	_streamSize(streamSize),
 	_bytesRead(0)
@@ -13,7 +13,12 @@ BufferedStream::BufferedStream(
 	assert(bufferSize > 0);
 	assert(streamSize > 0);
 
-	_buffer.resize(static_cast<size_t>(bufferSize));
+	if (streamSize < bufferSize)
+	{
+		bufferSize = streamSize;
+	}
+
+	_buffer.resize(bufferSize);
 }
 
 BufferedStream::~BufferedStream()
@@ -27,23 +32,31 @@ bool BufferedStream::HasData() const
 
 bool BufferedStream::Read()
 {
-	if (_streamSize <= 0)
+	if (_streamSize == 0)
 	{
 		return false;
 	}
 
 	std::streamsize extracted = _input->sgetn(_buffer.data(), _buffer.size());
 
-	if (extracted < static_cast<std::streamsize>(_buffer.size()))
+	if (extracted <= 0)
 	{
-		// This should happen only once, i.e. when the last chunk is read
-		_buffer.resize(static_cast<size_t>(extracted));
+		_streamSize = 0;
+		return false;
 	}
 
-	_bytesRead += extracted;
-	_streamSize -= extracted;
+	size_t extractedReal = static_cast<size_t>(extracted);
 
-	return extracted > 0;
+	if (extractedReal < _buffer.size())
+	{
+		// This should happen only once, i.e. when the last chunk is read
+		_buffer.resize(extractedReal);
+	}
+
+	_bytesRead += extractedReal;
+	_streamSize -= extractedReal;
+
+	return true;
 }
 
 std::string_view BufferedStream::Data() const
@@ -53,5 +66,10 @@ std::string_view BufferedStream::Data() const
 
 uint64_t BufferedStream::Offset() const
 {
-	return static_cast<uint64_t>(_bytesRead);
+	if (_bytesRead < _buffer.size())
+	{
+		return 0;
+	}
+
+	return _bytesRead - _buffer.size();
 }
