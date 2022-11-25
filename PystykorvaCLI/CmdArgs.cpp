@@ -222,9 +222,9 @@ std::any CmdArgs::ProvidedValueByKey(std::string_view key) const
 	{
 		std::set<std::string> result;
 
-		for (std::string_view x : std::views::split(value, ';'))
+		for (auto x : std::views::split(value, ';'))
 		{
-			result.emplace(x);
+			result.emplace(x.begin(), x.end());
 		}
 
 		return result;
