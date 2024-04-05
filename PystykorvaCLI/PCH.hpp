@@ -9,6 +9,7 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <mutex>
 #include <ranges>
 #include <sstream>
 #include <set>

@@ -27,7 +27,7 @@ void Console::WriteA(const void* data, size_t size) const
 
 	if (!WriteConsoleA(_stream, data, static_cast<DWORD>(size), &written, nullptr))
 	{
-		std::unreachable();
+		throw std::system_error(GetLastError(), std::system_category(), "WriteConsoleA");
 	}
 
 	assert(written > 0);
@@ -41,7 +41,7 @@ void Console::WriteW(const void* data, size_t size) const
 
 	if (!WriteConsoleW(_stream, data, static_cast<DWORD>(size), &written, nullptr))
 	{
-		std::unreachable();
+		throw std::system_error(GetLastError(), std::system_category(), "WriteConsoleW");
 	}
 
 	assert(written > 0);
