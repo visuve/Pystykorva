@@ -18,15 +18,18 @@ public:
 		}
 	}
 
-	std::string DetectEncoding(std::string_view sample)
+	bool DetectEncoding(std::string_view sample, Pystykorva::EncodingGuess& encoding)
 	{
 		ucsdet_setText(
-			_detector, 
+			_detector,
 			sample.data(),
 			std::min<int32_t>(static_cast<int32_t>(sample.size()), 0x800),
 			&_status);
 
-		assert(U_SUCCESS(_status));
+		if (U_FAILURE(_status))
+		{
+			throw EncodingException("ucsdet_setText failed");
+		}
 
 		const UCharsetMatch* match = ucsdet_detect(_detector, &_status);
 
@@ -35,30 +38,50 @@ public:
 			throw EncodingException("ucsdet_detect failed");
 		}
 
-		int32_t confidence = ucsdet_getConfidence(match, &_status);
-		assert(U_SUCCESS(_status));
+		encoding.Confidence = ucsdet_getConfidence(match, &_status);
 
-		std::string encoding = ucsdet_getName(match, &_status);
-		assert(U_SUCCESS(_status));
-
-		if (confidence < 15)
+		if (U_FAILURE(_status))
 		{
-			throw EncodingException("Too low confidence");
+			throw EncodingException("ucsdet_getConfidence failed");
 		}
 
-		// I do not have any IBM encoded files and I do not care even if I had
-		if (encoding.starts_with("IBM"))
+		encoding.Name = ucsdet_getName(match, &_status);
+		
+		if (U_FAILURE(_status))
 		{
-			throw EncodingException("IBM crap");
+			throw EncodingException("ucsdet_getConfidence failed");
 		}
 
-		// Buggy ICU. Many image files are incorrectly reported as UTF-16BE
-		if (confidence <= 30 && encoding == "UTF-16BE")
+		if (encoding.Confidence < 15)
 		{
-			throw EncodingException("Probably misinterpreted UTF-16BE");
+			return false;
 		}
 
-		return encoding;
+		// Sometimes large .img files are detected as UTF-32BE
+		if (encoding.Name == "UTF-32BE")
+		{
+			return false;
+		}
+
+		// Sometimes jpg files are detected as some weird IBM things
+		if (encoding.Name.starts_with("IBM"))
+		{
+			return false;
+		}
+
+		// Sometimes executables are detected as KOI8-R
+		if (encoding.Confidence <= 50 && encoding.Name.starts_with("KOI"))
+		{
+			return false;
+		}
+
+		// Buggy ICU. Many image files are incorrectly reported as UTF-16BE or windows-1252
+		if (encoding.Confidence <= 30 && encoding.Name == "UTF-16BE" || encoding.Name.starts_with("windows"))
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 private:
@@ -76,7 +99,7 @@ EncodingDetector::~EncodingDetector()
 	delete _impl;
 }
 
-std::string EncodingDetector::DetectEncoding(std::string_view sample)
+bool EncodingDetector::DetectEncoding(std::string_view sample, Pystykorva::EncodingGuess& encoding)
 {
-	return _impl->DetectEncoding(sample);
+	return _impl->DetectEncoding(sample, encoding);
 }

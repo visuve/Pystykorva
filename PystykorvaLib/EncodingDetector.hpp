@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Pystykorva.hpp"
+
 class EncodingDetectorImpl;
 
 struct EncodingException : std::runtime_error
@@ -16,7 +18,7 @@ public:
 	EncodingDetector();
 	~EncodingDetector();
 
-	std::string DetectEncoding(std::string_view sample);
+	bool DetectEncoding(std::string_view sample, Pystykorva::EncodingGuess& encoding);
 
 private:
 	EncodingDetectorImpl* _impl;

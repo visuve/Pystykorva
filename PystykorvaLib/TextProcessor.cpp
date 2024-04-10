@@ -65,12 +65,11 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 		std::ifstream file(path, std::ios::binary);
 		BufferedStream stream(file, _options.BufferSize, fileSize);
 
-		ProcessStream(result.Matches, stream);
-
+		FindAll(stream, result.Matches, result.Encoding);
 	}
 	catch (const EncodingException&)
 	{
-		result.StatusMask |= Pystykorva::Status::UnknownEncoding;
+		result.StatusMask |= Pystykorva::Status::EncodingError;
 	}
 	catch (const ConversionException&)
 	{
@@ -84,7 +83,7 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 	return result;
 }
 
-void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, BufferedStream& stream)
+void TextProcessor::FindAll(BufferedStream& stream, std::vector<Pystykorva::Match>& matches, Pystykorva::EncodingGuess& encoding)
 {
 	std::unique_ptr<UnicodeConverter> converter;
 
@@ -94,8 +93,12 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, Buffe
 	{
 		if (!converter)
 		{
-			const std::string encoding = _encodingDetector.DetectEncoding(stream.Data());
-			converter = std::make_unique<UnicodeConverter>(encoding);
+			if (!_encodingDetector.DetectEncoding(stream.Data(), encoding))
+			{
+				throw EncodingException("Failed to detect encoding");
+			}
+
+			converter = std::make_unique<UnicodeConverter>(encoding.Name);
 		}
 
 		// NOTE: the converter's back buffer might grow larger than defined in the options
@@ -103,10 +106,10 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, Buffe
 
 		auto boundaries = _lineAnalyzer.Boundaries(converter->Data());
 
-		for (Pystykorva::FilePosition& boundary : boundaries)
+		for (Pystykorva::Position& boundary : boundaries)
 		{
 			// Check if the boundary is "incomplete"
-			if (boundary.End == Pystykorva::FilePosition::Unknown)
+			if (boundary.End == Pystykorva::Position::Unknown)
 			{
 				if (stream.HasData())
 				{
@@ -129,7 +132,7 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, Buffe
 
 			Pystykorva::Match match = ProcessLine(stream.Offset(), lineNumber, line);
 
-			if (match.Positions.empty())
+			if (match.LinePositions.empty())
 			{
 				continue;
 			}
@@ -149,17 +152,20 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, Buffe
 
 Pystykorva::Match TextProcessor::ProcessLine(uint64_t offset, uint32_t lineNumber, std::u16string_view line)
 {
-	auto positions = _textSearcher.FindIn(line);
 
-	for (auto& position : positions)
-	{
-		position.Begin += offset;
-		position.End += offset;
-	}
+	std::vector<Pystykorva::Position> positions = _textSearcher.FindIn(line);
 
 	Pystykorva::Match result;
 	result.LineNumber = lineNumber;
-	result.Positions = positions;
-	result.Content = line;
+	result.LineContent = line;
+	result.LinePositions = positions;
+
+	for (Pystykorva::Position& position : positions)
+	{
+		position += offset;
+	}
+
+	result.FilePositions = positions;
+
 	return result;
 }

@@ -14,13 +14,15 @@ TEST(TextProcessorTests, RegexSearch)
 
 	std::istringstream iss("foo\nbar\nxyz");
 
-	std::vector<Pystykorva::Match> matches;
 	BufferedStream stream(iss, 3, 11);
-
-	processor.ProcessStream(matches, stream);
+	std::vector<Pystykorva::Match> matches;
+	Pystykorva::EncodingGuess encoding;
+	processor.FindAll(stream, matches, encoding);
 
 	ASSERT_EQ(matches.size(), 3);
-	EXPECT_TRUE(matches[0].Content == u"foo\n");
-	EXPECT_TRUE(matches[1].Content == u"bar\n");
-	EXPECT_TRUE(matches[2].Content == u"xyz");
+	EXPECT_TRUE(matches[0].LineContent == u"foo\n");
+	EXPECT_TRUE(matches[1].LineContent == u"bar\n");
+	EXPECT_TRUE(matches[2].LineContent == u"xyz");
+	EXPECT_STREQ(encoding.Name.c_str(), "UTF-8");
+	EXPECT_EQ(encoding.Confidence, 15);
 }

@@ -18,9 +18,9 @@ public:
 		}
 	}
 
-	std::vector<Pystykorva::FilePosition> Boundaries(std::u16string_view sample)
+	std::vector<Pystykorva::Position> Boundaries(std::u16string_view sample)
 	{
-		std::vector<Pystykorva::FilePosition> result;
+		std::vector<Pystykorva::Position> result;
 
 		ubrk_setText(_iterator, sample.data(), static_cast<int32_t>(sample.size()), &_status);
 		assert(U_SUCCESS(_status));
@@ -59,7 +59,7 @@ LineAnalyzer::~LineAnalyzer()
 	delete _impl;
 }
 
-std::vector<Pystykorva::FilePosition> LineAnalyzer::Boundaries(std::u16string_view sample)
+std::vector<Pystykorva::Position> LineAnalyzer::Boundaries(std::u16string_view sample)
 {
 	return _impl->Boundaries(sample);
 }

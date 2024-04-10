@@ -10,7 +10,7 @@ public:
 	LineAnalyzer();
 	~LineAnalyzer();
 
-	std::vector<Pystykorva::FilePosition> Boundaries(std::u16string_view sample);
+	std::vector<Pystykorva::Position> Boundaries(std::u16string_view sample);
 
 private:
 	LineAnalyzerImpl* _impl;

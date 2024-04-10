@@ -5,10 +5,10 @@ class Pystykorva
 public:
 	enum MatchMode : uint8_t
 	{
+		PlainCaseSensitive = 0,
 		PlainCaseInsensitive,
-		PlainCaseSensitive,
-		RegexCaseInsensitive,
-		RegexCaseSensitive
+		RegexCaseSensitive,
+		RegexCaseInsensitive
 	};
 
 	struct Options
@@ -44,43 +44,64 @@ public:
 		TooBig = (1u << 4),
 		TooEarly = (1u << 5),
 		TooLate = (1u << 6),
-		UnknownEncoding = (1u << 7),
+		EncodingError = (1u << 7),
 		ConversionError = (1u << 8),
 		IOError = (1u << 9)
 	};
 
-	struct FilePosition
+	struct Position
 	{
-		static constexpr auto Unknown = std::numeric_limits<size_t>::max();
+		static constexpr auto Unknown = std::numeric_limits<uint64_t>::max();
 
-		size_t Begin = 0; // Offset from the beginning of the file
-		size_t End = Unknown; // Offset from the beginning of the file
+		uint64_t Begin = 0;
+		uint64_t End = Unknown;
 
-		constexpr bool operator == (const FilePosition& other) const
+		constexpr uint64_t Size() const
+		{
+			return End - Begin;
+		}
+
+		constexpr Position& operator += (uint64_t offset)
+		{
+			Begin += offset;
+			End += offset;
+			return *this;
+		}
+
+		constexpr bool operator == (const Position& other) const
 		{
 			return Begin == other.Begin && End == other.End;
 		}
 
-		constexpr auto operator <=> (const FilePosition& other) const = default;
+		constexpr auto operator <=> (const Position& other) const = default;
 	};
 
 	struct Match
 	{
 		uint32_t LineNumber = 0;
-		std::vector<FilePosition> Positions;
-		std::u16string Content;
+		std::u16string LineContent;
+		std::vector<Position> LinePositions;
+		std::vector<Position> FilePositions;
 
 		constexpr bool operator == (const Match& other) const
 		{
 			return LineNumber == other.LineNumber &&
-				Positions == other.Positions &&
-				Content == other.Content;
+				LineContent == other.LineContent &&
+				LinePositions == other.LinePositions &&
+				FilePositions == other.FilePositions;
 		}
+	};
+
+	struct EncodingGuess
+	{
+		int32_t Confidence = 0;
+		std::string Name = "unknown";
 	};
 
 	struct Result
 	{
-		uint32_t StatusMask = 0;
+		uint32_t StatusMask = Status::Ok;
+		EncodingGuess Encoding;
 		std::vector<Match> Matches;
 	};
 

@@ -77,7 +77,7 @@ std::string StatusMaskToString(uint32_t statusMask)
 				result += delimiter + "file cretead too late";
 				delimiter = ", ";
 				break;
-			case Pystykorva::Status::UnknownEncoding:
+			case Pystykorva::Status::EncodingError:
 				result += delimiter + "probably a binary file";
 				delimiter = ", ";
 				break;
@@ -97,25 +97,28 @@ std::string StatusMaskToString(uint32_t statusMask)
 
 Console& operator << (Console& stream, const Pystykorva::Match& result)
 {
+	constexpr static std::u16string_view RedColorTagBegin = u"\033[31m";
+	constexpr static std::u16string_view RedColorTagEnd = u"\033[0m";
+
 	stream << result.LineNumber << "\n";
 
-	if (result.Positions.empty())
+	if (result.LinePositions.empty())
 	{
 		return stream;
 	}
 
-	std::u16string line = result.Content;
+	std::u16string line = result.LineContent;
 	size_t offset = 0;
 	
-	for (const auto& position : result.Positions)
+	for (const auto& position : result.LinePositions)
 	{
 		// Red color tag begin
-		line.insert(position.Begin + offset, u"\033[31m");
-		offset += 5;
+		line.insert(position.Begin + offset, RedColorTagBegin);
+		offset += RedColorTagBegin.size();
 
 		// Color tag end
-		line.insert(position.End + offset, u"\033[0m");
-		offset += 4;
+		line.insert(position.End + offset, RedColorTagEnd);
+		offset += RedColorTagEnd.size();
 	}
 
 	// Trim trailing whitespace, may have a lot
@@ -147,6 +150,7 @@ void ReportResults(
 
 #if _DEBUG
 	Cout << path << " processed, status: " << StatusMaskToString(result.StatusMask)
+		<< ", encoding: " << result.Encoding.Name << ", confidence: " << result.Encoding.Confidence 
 		<< ", matches: " << result.Matches.size() << '\n';
 #endif
 
@@ -170,13 +174,13 @@ int Run(const std::vector<std::string>& args)
 			{ "excludes", typeid(std::set<std::string>), "The directory names to exclude", std::set<std::string>({ ".bzr", ".git", ".hg", ".svn", ".vs" }) },
 			{ "searchexpression", typeid(std::u16string), "The text to search" },
 			{ "replacement", typeid(std::u16string), "The text to replace", std::u16string() },
-			{ "mode", typeid(uint8_t), "Plain or regex, case sensitive or not", uint8_t(0) },
+			{ "mode", typeid(uint8_t), "0=plain, 1=case insensitive, 2=regex, 3=regex case sensitive", uint8_t(0) },
 			{ "minsize", typeid(uint64_t), "Minimum file size", uint64_t(0) },
 			{ "maxsize", typeid(uint64_t), "Maximum file size", std::numeric_limits<uint64_t>::max() },
 			{ "mintime", typeid(std::chrono::file_clock::time_point), "Minimum file time", now - std::chrono::years(100) },
 			{ "maxtime", typeid(std::chrono::file_clock::time_point), "Maximum file time", now + std::chrono::years(100) },
-			{ "buffersize", typeid(uint32_t), "Buffer size", 0x10000u },
-			{ "maxthreads", typeid(uint32_t), "Maximum number of threads", 0 }
+			{ "buffersize", typeid(uint32_t), "Buffer size", uint32_t(0x10000) },
+			{ "maxthreads", typeid(uint32_t), "Maximum number of threads", uint32_t(0) }
 		});
 
 		Pystykorva::Options options = Deserialize(cmdArgs);

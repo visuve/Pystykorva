@@ -8,16 +8,12 @@ constexpr int32_t ModeToFlags(Pystykorva::MatchMode mode)
 	{
 		case Pystykorva::PlainCaseSensitive:
 			return UREGEX_LITERAL;
-			break;
 		case Pystykorva::PlainCaseInsensitive:
 			return UREGEX_CASE_INSENSITIVE | UREGEX_LITERAL;
-			break;
 		case Pystykorva::RegexCaseSensitive:
 			return 0;
-			break;
 		case Pystykorva::RegexCaseInsensitive:
 			return UREGEX_CASE_INSENSITIVE;
-			break;
 	}
 
 	// std::unreachable();
@@ -52,9 +48,9 @@ public:
 		}
 	}
 
-	std::vector<Pystykorva::FilePosition> FindIn(std::u16string_view sentence)
+	std::vector<Pystykorva::Position> FindIn(std::u16string_view sentence)
 	{
-		std::vector<Pystykorva::FilePosition> results;
+		std::vector<Pystykorva::Position> results;
 
 		uregex_setText(_regex,
 			sentence.data(),
@@ -92,7 +88,7 @@ TextSearcher::~TextSearcher()
 	delete _impl;
 }
 
-std::vector<Pystykorva::FilePosition> TextSearcher::FindIn(std::u16string_view sentence)
+std::vector<Pystykorva::Position> TextSearcher::FindIn(std::u16string_view sentence)
 {
 	return _impl->FindIn(sentence);
 }

@@ -14,7 +14,7 @@ public:
 	~TextProcessor();
 
 	Pystykorva::Result ProcessFile(const std::filesystem::path&);
-	void ProcessStream(std::vector<Pystykorva::Match>& matches, BufferedStream& stream);
+	void FindAll(BufferedStream& stream, std::vector<Pystykorva::Match>& matches, Pystykorva::EncodingGuess& encoding);
 	Pystykorva::Match ProcessLine(uint64_t offset, uint32_t lineNumber, std::u16string_view line);
 
 private:
