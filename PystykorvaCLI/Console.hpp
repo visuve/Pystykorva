@@ -58,7 +58,13 @@ public:
 
 	Console& operator << (NarrowCharacter auto value)
 	{
-		WriteA(&value, sizeof(value));
+		WriteA(&value, 1);
+		return *this;
+	}
+
+	Console& operator << (WideCharacter auto value)
+	{
+		WriteW(&value, 1);
 		return *this;
 	}
 
@@ -110,7 +116,7 @@ public:
 		WriteW(str.data(), str.size());
 #else
 		const std::string str = value;
-		WriteW(str.data(), str.size());
+		WriteA(str.data(), str.size());
 #endif
 		return *this;
 	}

@@ -52,9 +52,9 @@ public:
 		}
 	}
 
-	std::vector<Pystykorva::MatchPosition> FindIn(std::u16string_view sentence)
+	std::vector<Pystykorva::FilePosition> FindIn(std::u16string_view sentence)
 	{
-		std::vector<Pystykorva::MatchPosition> results;
+		std::vector<Pystykorva::FilePosition> results;
 
 		uregex_setText(_regex,
 			sentence.data(),
@@ -92,7 +92,7 @@ TextSearcher::~TextSearcher()
 	delete _impl;
 }
 
-std::vector<Pystykorva::MatchPosition> TextSearcher::FindIn(std::u16string_view sentence)
+std::vector<Pystykorva::FilePosition> TextSearcher::FindIn(std::u16string_view sentence)
 {
 	return _impl->FindIn(sentence);
 }

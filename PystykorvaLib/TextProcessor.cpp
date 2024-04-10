@@ -103,10 +103,10 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, Buffe
 
 		auto boundaries = _lineAnalyzer.Boundaries(converter->Data());
 
-		for (LineAnalyzer::LineBoundary& boundary : boundaries)
+		for (Pystykorva::FilePosition& boundary : boundaries)
 		{
 			// Check if the boundary is "incomplete"
-			if (!boundary.End.has_value())
+			if (boundary.End == Pystykorva::FilePosition::Unknown)
 			{
 				if (stream.HasData())
 				{
@@ -125,7 +125,7 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, Buffe
 			++lineNumber;
 
 			std::u16string_view line =
-				converter->View(boundary.Begin, boundary.End.value());
+				converter->View(boundary.Begin, boundary.End);
 
 			Pystykorva::Match match = ProcessLine(stream.Offset(), lineNumber, line);
 
@@ -149,10 +149,17 @@ void TextProcessor::ProcessStream(std::vector<Pystykorva::Match>& matches, Buffe
 
 Pystykorva::Match TextProcessor::ProcessLine(uint64_t offset, uint32_t lineNumber, std::u16string_view line)
 {
+	auto positions = _textSearcher.FindIn(line);
+
+	for (auto& position : positions)
+	{
+		position.Begin += offset;
+		position.End += offset;
+	}
+
 	Pystykorva::Match result;
-	result.Offset = offset;
 	result.LineNumber = lineNumber;
-	result.Positions = _textSearcher.FindIn(line);
+	result.Positions = positions;
 	result.Content = line;
 	return result;
 }

@@ -110,7 +110,7 @@ Console& operator << (Console& stream, const Pystykorva::Match& result)
 	for (const auto& position : result.Positions)
 	{
 		// Red color tag begin
-		line.insert(position.Start + offset, u"\033[31m");
+		line.insert(position.Begin + offset, u"\033[31m");
 		offset += 5;
 
 		// Color tag end
@@ -176,7 +176,7 @@ int Run(const std::vector<std::string>& args)
 			{ "mintime", typeid(std::chrono::file_clock::time_point), "Minimum file time", now - std::chrono::years(100) },
 			{ "maxtime", typeid(std::chrono::file_clock::time_point), "Maximum file time", now + std::chrono::years(100) },
 			{ "buffersize", typeid(uint32_t), "Buffer size", 0x10000u },
-			{ "maxthreads", typeid(uint32_t), "Maximum number of threads", std::thread::hardware_concurrency() }
+			{ "maxthreads", typeid(uint32_t), "Maximum number of threads", 0 }
 		});
 
 		Pystykorva::Options options = Deserialize(cmdArgs);

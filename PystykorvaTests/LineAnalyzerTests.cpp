@@ -20,7 +20,7 @@ TEST(LineAnalyzerTests, NoBoundary)
 
 	ASSERT_EQ(result.size(), 1);
 	ASSERT_EQ(result[0].Begin, 0);
-	ASSERT_EQ(result[0].End, std::nullopt);
+	ASSERT_EQ(result[0].End, Pystykorva::FilePosition::Unknown);
 }
 
 TEST(LineAnalyzerTests, LF)
@@ -39,7 +39,7 @@ TEST(LineAnalyzerTests, LF)
 	ASSERT_EQ(result[1].End, 8);
 
 	ASSERT_EQ(result[2].Begin, 8);
-	ASSERT_EQ(result[2].End, std::nullopt);
+	ASSERT_EQ(result[2].End, Pystykorva::FilePosition::Unknown);
 }
 
 TEST(LineAnalyzerTests, CRLF)
@@ -58,7 +58,7 @@ TEST(LineAnalyzerTests, CRLF)
 	ASSERT_EQ(result[1].End, 10);
 
 	ASSERT_EQ(result[2].Begin, 10);
-	ASSERT_EQ(result[2].End, std::nullopt);
+	ASSERT_EQ(result[2].End, Pystykorva::FilePosition::Unknown);
 }
 
 TEST(LineAnalyzerTests, CR)
@@ -77,7 +77,7 @@ TEST(LineAnalyzerTests, CR)
 	ASSERT_EQ(result[1].End, 8);
 
 	ASSERT_EQ(result[2].Begin, 8);
-	ASSERT_EQ(result[2].End, std::nullopt);
+	ASSERT_EQ(result[2].End, Pystykorva::FilePosition::Unknown);
 }
 
 TEST(LineAnalyzerTests, Mixed)
@@ -99,7 +99,7 @@ TEST(LineAnalyzerTests, Mixed)
 	ASSERT_EQ(result[2].End, 13);
 
 	ASSERT_EQ(result[3].Begin, 13);
-	ASSERT_EQ(result[3].End, std::nullopt);
+	ASSERT_EQ(result[3].End, Pystykorva::FilePosition::Unknown);
 }
 
 TEST(LineAnalyzerTests, Incomplete)
@@ -111,5 +111,5 @@ TEST(LineAnalyzerTests, Incomplete)
 	
 	ASSERT_EQ(result.size(), 3);
 	ASSERT_EQ(result[2].Begin, 8);
-	ASSERT_EQ(result[2].End, std::nullopt);
+	ASSERT_EQ(result[2].End, Pystykorva::FilePosition::Unknown);
 }

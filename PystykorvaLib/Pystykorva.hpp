@@ -29,7 +29,9 @@ public:
 		std::chrono::time_point<std::chrono::file_clock> MaximumTime;
 
 		uint32_t BufferSize = 0;
-		uint32_t MaximumThreads = 1;
+
+		// Zero will default to std::thread::hardware_concurrency or 1
+		uint32_t MaximumThreads = 0;
 	};
 
 	enum Status : uint32_t
@@ -47,18 +49,33 @@ public:
 		IOError = (1u << 9)
 	};
 
-	struct MatchPosition
+	struct FilePosition
 	{
-		size_t Start = 0;
-		size_t End = 0;
+		static constexpr auto Unknown = std::numeric_limits<size_t>::max();
+
+		size_t Begin = 0; // Offset from the beginning of the file
+		size_t End = Unknown; // Offset from the beginning of the file
+
+		constexpr bool operator == (const FilePosition& other) const
+		{
+			return Begin == other.Begin && End == other.End;
+		}
+
+		constexpr auto operator <=> (const FilePosition& other) const = default;
 	};
 
 	struct Match
 	{
-		uint64_t Offset = 0;
 		uint32_t LineNumber = 0;
-		std::vector<MatchPosition> Positions;
+		std::vector<FilePosition> Positions;
 		std::u16string Content;
+
+		constexpr bool operator == (const Match& other) const
+		{
+			return LineNumber == other.LineNumber &&
+				Positions == other.Positions &&
+				Content == other.Content;
+		}
 	};
 
 	struct Result

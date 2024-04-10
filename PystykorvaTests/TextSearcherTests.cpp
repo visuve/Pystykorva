@@ -9,7 +9,7 @@ TEST(TextSearcherTests, PlainSearch)
 		auto result = searcher.FindIn(u"foo bar xyz");
 
 		ASSERT_EQ(result.size(), 1);
-		EXPECT_EQ(result[0].Start, 4);
+		EXPECT_EQ(result[0].Begin, 4);
 		EXPECT_EQ(result[0].End, 7);
 	}
 	{
@@ -25,7 +25,7 @@ TEST(TextSearcherTests, PlainSearch)
 		auto result = searcher.FindIn(u"foo bar xyz");
 
 		ASSERT_EQ(result.size(), 1);
-		EXPECT_EQ(result[0].Start, 4);
+		EXPECT_EQ(result[0].Begin, 4);
 		EXPECT_EQ(result[0].End, 7);
 	}
 	{
@@ -34,7 +34,7 @@ TEST(TextSearcherTests, PlainSearch)
 		auto result = searcher.FindIn(u"foo bar xyz");
 
 		ASSERT_EQ(result.size(), 1);
-		EXPECT_EQ(result[0].Start, 4);
+		EXPECT_EQ(result[0].Begin, 4);
 		EXPECT_EQ(result[0].End, 7);
 	}
 }
@@ -45,12 +45,12 @@ TEST(TextSearcherTests, RegexSearch)
 	auto result = searcher.FindIn(u"foo bar xyz");
 	ASSERT_EQ(result.size(), 3);
 
-	EXPECT_EQ(result[0].Start, 0);
+	EXPECT_EQ(result[0].Begin, 0);
 	EXPECT_EQ(result[0].End, 3);
 
-	EXPECT_EQ(result[1].Start, 4);
+	EXPECT_EQ(result[1].Begin, 4);
 	EXPECT_EQ(result[1].End, 7);
 
-	EXPECT_EQ(result[2].Start, 8);
+	EXPECT_EQ(result[2].Begin, 8);
 	EXPECT_EQ(result[2].End, 11);
 }

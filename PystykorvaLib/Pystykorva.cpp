@@ -25,7 +25,11 @@ void Pystykorva::Start()
 		_callbacks.Started();
 	}
 
-	assert(_options.MaximumThreads >= 1);
+	if (!_options.MaximumThreads)
+	{
+		uint32_t maxConcurrentThreads = std::thread::hardware_concurrency();
+		_options.MaximumThreads = maxConcurrentThreads ? maxConcurrentThreads : 1;
+	}
 
 	for (uint32_t i = 0; i < _options.MaximumThreads; ++i)
 	{
