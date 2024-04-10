@@ -18,6 +18,18 @@ public:
 		}
 	}
 
+	uint8_t CharSize() const
+	{
+		int8_t minCharSize = ucnv_getMinCharSize(_converter);
+
+		if (minCharSize < 0 || minCharSize > 4)
+		{
+			throw ConversionException("ucnv_getMinCharSize went haywire");
+		}
+
+		return static_cast<uint8_t>(minCharSize);
+	}
+
 	void Convert(std::string_view sample, bool flush)
 	{
 		std::u16string buffer(sample.size(), '\0');
@@ -75,6 +87,11 @@ UnicodeConverter::UnicodeConverter(std::string_view encoding) :
 UnicodeConverter::~UnicodeConverter()
 {
 	delete _impl;
+}
+
+uint8_t UnicodeConverter::CharSize() const
+{
+	return _impl->CharSize();
 }
 
 void UnicodeConverter::Convert(std::string_view sample, bool flush)

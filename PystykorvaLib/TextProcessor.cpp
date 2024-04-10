@@ -89,8 +89,16 @@ void TextProcessor::FindAll(BufferedStream& stream, std::vector<Pystykorva::Matc
 
 	uint32_t lineNumber = 0;
 
-	while (!_token.stop_requested() && stream.Read())
+	uint64_t offset = 0;
+	uint8_t charSize = 0;
+
+	while (!_token.stop_requested())
 	{
+		if (!stream.Read())
+		{
+			return;
+		}
+
 		if (!converter)
 		{
 			if (!_encodingDetector.DetectEncoding(stream.Data(), encoding))
@@ -99,6 +107,7 @@ void TextProcessor::FindAll(BufferedStream& stream, std::vector<Pystykorva::Matc
 			}
 
 			converter = std::make_unique<UnicodeConverter>(encoding.Name);
+			charSize = converter->CharSize();
 		}
 
 		// NOTE: the converter's back buffer might grow larger than defined in the options
@@ -130,9 +139,12 @@ void TextProcessor::FindAll(BufferedStream& stream, std::vector<Pystykorva::Matc
 			std::u16string_view line =
 				converter->View(boundary.Begin, boundary.End);
 
-			Pystykorva::Match match = ProcessLine(stream.Offset(), lineNumber, line);
+			Pystykorva::Match match = ProcessLine(offset, lineNumber, line);
 
-			if (match.LinePositions.empty())
+			// I smell problems here with variable-length character encoding...
+			offset += line.size() * charSize;
+
+			if (match.Positions.empty())
 			{
 				continue;
 			}
@@ -152,20 +164,14 @@ void TextProcessor::FindAll(BufferedStream& stream, std::vector<Pystykorva::Matc
 
 Pystykorva::Match TextProcessor::ProcessLine(uint64_t offset, uint32_t lineNumber, std::u16string_view line)
 {
-
-	std::vector<Pystykorva::Position> positions = _textSearcher.FindIn(line);
-
 	Pystykorva::Match result;
 	result.LineNumber = lineNumber;
 	result.LineContent = line;
-	result.LinePositions = positions;
 
-	for (Pystykorva::Position& position : positions)
+	for (const Pystykorva::Position& position : _textSearcher.FindIn(line))
 	{
-		position += offset;
+		result.Positions.emplace_back(position, offset);
 	}
-
-	result.FilePositions = positions;
 
 	return result;
 }

@@ -31,9 +31,11 @@ void Pystykorva::Start()
 		_options.MaximumThreads = maxConcurrentThreads ? maxConcurrentThreads : 1;
 	}
 
+	const auto worker = std::bind_front(&Pystykorva::Worker, this);
+
 	for (uint32_t i = 0; i < _options.MaximumThreads; ++i)
 	{
-		_threads.emplace_back(std::bind_front(&Pystykorva::Worker, this));
+		_threads.emplace_back(worker);
 	}
 }
 

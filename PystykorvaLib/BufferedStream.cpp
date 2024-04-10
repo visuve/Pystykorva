@@ -63,13 +63,3 @@ std::string_view BufferedStream::Data() const
 {
 	return _buffer;
 }
-
-uint64_t BufferedStream::Offset() const
-{
-	if (_bytesRead < _buffer.size())
-	{
-		return 0;
-	}
-
-	return _bytesRead - _buffer.size();
-}

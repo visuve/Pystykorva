@@ -16,6 +16,7 @@ public:
 	UnicodeConverter(std::string_view encoding);
 	~UnicodeConverter();
 
+	uint8_t CharSize() const;
 	void Convert(std::string_view sample, bool flush);
 	std::u16string_view Data() const;
 	size_t End() const;

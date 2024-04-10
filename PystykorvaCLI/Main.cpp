@@ -102,7 +102,7 @@ Console& operator << (Console& stream, const Pystykorva::Match& result)
 
 	stream << result.LineNumber << "\n";
 
-	if (result.LinePositions.empty())
+	if (result.Positions.empty())
 	{
 		return stream;
 	}
@@ -110,14 +110,14 @@ Console& operator << (Console& stream, const Pystykorva::Match& result)
 	std::u16string line = result.LineContent;
 	size_t offset = 0;
 	
-	for (const auto& position : result.LinePositions)
+	for (const auto& position : result.Positions)
 	{
 		// Red color tag begin
-		line.insert(position.Begin + offset, RedColorTagBegin);
+		line.insert(position.Relative.Begin + offset, RedColorTagBegin);
 		offset += RedColorTagBegin.size();
 
 		// Color tag end
-		line.insert(position.End + offset, RedColorTagEnd);
+		line.insert(position.Relative.End + offset, RedColorTagEnd);
 		offset += RedColorTagEnd.size();
 	}
 
@@ -142,11 +142,23 @@ void ReportProcessing(
 #endif
 }
 
+size_t Processed = 0;
+size_t Skipped = 0;
+
 void ReportResults(
-	const std::filesystem::path& path, 
+	const std::filesystem::path& path,
 	const Pystykorva::Result& result)
 {
 	std::lock_guard<std::mutex> guard(_mutex);
+
+	if (result.StatusMask == Pystykorva::Status::Ok)
+	{
+		++Processed;
+	}
+	else
+	{
+		++Skipped;
+	}
 
 #if _DEBUG
 	Cout << path << " processed, status: " << StatusMaskToString(result.StatusMask)
@@ -158,6 +170,15 @@ void ReportResults(
 	{
 		Cout << path << " @ " << match << '\n';
 	}
+}
+
+void ReportFinished(std::chrono::milliseconds ms)
+{
+	Cout << "\nPystykorva finished!\n\n";
+	Cout << "Statistics:\n";
+	Cout << "\tTook: " << std::format("{:%T}\n", ms);
+	Cout << "\tProcessed: " << Processed << " files\n";
+	Cout << "\tSkipped: " << Skipped << " files\n";
 }
 
 int Run(const std::vector<std::string>& args)
@@ -193,12 +214,7 @@ int Run(const std::vector<std::string>& args)
 
 		callbacks.Processing = ReportProcessing;
 		callbacks.Processed = ReportResults;
-
-		callbacks.Finished = [](std::chrono::milliseconds ms)
-		{
-			Cout << "Pystykorva finished!\n";
-			Cout << "Took: " << std::format("{:%T}", ms) << '\n';
-		};
+		callbacks.Finished = ReportFinished;
 
 		Pystykorva pystykorva(options, callbacks);
 

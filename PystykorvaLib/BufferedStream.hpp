@@ -18,7 +18,6 @@ public:
 	bool HasData() const;
 	bool Read();
 	std::string_view Data() const;
-	uint64_t Offset() const;
 
 private:
 	std::streambuf* _input;

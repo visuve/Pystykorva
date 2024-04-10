@@ -53,19 +53,15 @@ public:
 	{
 		static constexpr auto Unknown = std::numeric_limits<uint64_t>::max();
 
-		uint64_t Begin = 0;
-		uint64_t End = Unknown;
+		constexpr Position(uint64_t begin = 0, uint64_t end = Unknown) :
+			Begin(begin),
+			End(end)
+		{
+		}
 
 		constexpr uint64_t Size() const
 		{
 			return End - Begin;
-		}
-
-		constexpr Position& operator += (uint64_t offset)
-		{
-			Begin += offset;
-			End += offset;
-			return *this;
 		}
 
 		constexpr bool operator == (const Position& other) const
@@ -73,23 +69,42 @@ public:
 			return Begin == other.Begin && End == other.End;
 		}
 
-		constexpr auto operator <=> (const Position& other) const = default;
+		uint64_t Begin;
+		uint64_t End;
+	};
+
+	struct RelAbsPair
+	{
+		constexpr RelAbsPair(
+			uint64_t relativeBegin,
+			uint64_t relativeEnd,
+			uint64_t absoluteBegin,
+			uint64_t absoluteEnd) :
+			Relative(relativeBegin, relativeEnd),
+			Absolute(absoluteBegin, absoluteEnd)
+		{
+		}
+
+		constexpr RelAbsPair(Position relative, uint64_t offset) :
+			Relative(relative),
+			Absolute(relative.Begin + offset, relative.End + offset)
+		{
+		}
+
+		constexpr bool operator == (const RelAbsPair& other) const
+		{
+			return Relative == other.Relative && Absolute == other.Absolute;
+		}
+
+		Position Relative;
+		Position Absolute;
 	};
 
 	struct Match
 	{
 		uint32_t LineNumber = 0;
 		std::u16string LineContent;
-		std::vector<Position> LinePositions;
-		std::vector<Position> FilePositions;
-
-		constexpr bool operator == (const Match& other) const
-		{
-			return LineNumber == other.LineNumber &&
-				LineContent == other.LineContent &&
-				LinePositions == other.LinePositions &&
-				FilePositions == other.FilePositions;
-		}
+		std::vector<RelAbsPair> Positions;
 	};
 
 	struct EncodingGuess

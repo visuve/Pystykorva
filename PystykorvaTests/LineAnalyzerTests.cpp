@@ -19,8 +19,8 @@ TEST(LineAnalyzerTests, NoBoundary)
 	auto result = analyzer.Boundaries(sample);
 
 	ASSERT_EQ(result.size(), 1);
-	ASSERT_EQ(result[0].Begin, 0);
-	ASSERT_EQ(result[0].End, Pystykorva::Position::Unknown);
+	EXPECT_EQ(result[0].Begin, 0);
+	EXPECT_EQ(result[0].End, Pystykorva::Position::Unknown);
 }
 
 TEST(LineAnalyzerTests, LF)
@@ -32,14 +32,14 @@ TEST(LineAnalyzerTests, LF)
 
 	ASSERT_EQ(result.size(), 3);
 
-	ASSERT_EQ(result[0].Begin, 0);
-	ASSERT_EQ(result[0].End, 4);
+	EXPECT_EQ(result[0].Begin, 0);
+	EXPECT_EQ(result[0].End, 4);
 
-	ASSERT_EQ(result[1].Begin, 4);
-	ASSERT_EQ(result[1].End, 8);
+	EXPECT_EQ(result[1].Begin, 4);
+	EXPECT_EQ(result[1].End, 8);
 
-	ASSERT_EQ(result[2].Begin, 8);
-	ASSERT_EQ(result[2].End, Pystykorva::Position::Unknown);
+	EXPECT_EQ(result[2].Begin, 8);
+	EXPECT_EQ(result[2].End, Pystykorva::Position::Unknown);
 }
 
 TEST(LineAnalyzerTests, CRLF)
@@ -51,14 +51,14 @@ TEST(LineAnalyzerTests, CRLF)
 
 	ASSERT_EQ(result.size(), 3);
 
-	ASSERT_EQ(result[0].Begin, 0);
-	ASSERT_EQ(result[0].End, 5);
+	EXPECT_EQ(result[0].Begin, 0);
+	EXPECT_EQ(result[0].End, 5);
 
-	ASSERT_EQ(result[1].Begin, 5);
-	ASSERT_EQ(result[1].End, 10);
+	EXPECT_EQ(result[1].Begin, 5);
+	EXPECT_EQ(result[1].End, 10);
 
-	ASSERT_EQ(result[2].Begin, 10);
-	ASSERT_EQ(result[2].End, Pystykorva::Position::Unknown);
+	EXPECT_EQ(result[2].Begin, 10);
+	EXPECT_EQ(result[2].End, Pystykorva::Position::Unknown);
 }
 
 TEST(LineAnalyzerTests, CR)
@@ -70,14 +70,14 @@ TEST(LineAnalyzerTests, CR)
 
 	ASSERT_EQ(result.size(), 3);
 
-	ASSERT_EQ(result[0].Begin, 0);
-	ASSERT_EQ(result[0].End, 4);
+	EXPECT_EQ(result[0].Begin, 0);
+	EXPECT_EQ(result[0].End, 4);
 
-	ASSERT_EQ(result[1].Begin, 4);
-	ASSERT_EQ(result[1].End, 8);
+	EXPECT_EQ(result[1].Begin, 4);
+	EXPECT_EQ(result[1].End, 8);
 
-	ASSERT_EQ(result[2].Begin, 8);
-	ASSERT_EQ(result[2].End, Pystykorva::Position::Unknown);
+	EXPECT_EQ(result[2].Begin, 8);
+	EXPECT_EQ(result[2].End, Pystykorva::Position::Unknown);
 }
 
 TEST(LineAnalyzerTests, Mixed)
@@ -89,17 +89,17 @@ TEST(LineAnalyzerTests, Mixed)
 
 	ASSERT_EQ(result.size(), 4);
 
-	ASSERT_EQ(result[0].Begin, 0);
-	ASSERT_EQ(result[0].End, 4);
+	EXPECT_EQ(result[0].Begin, 0);
+	EXPECT_EQ(result[0].End, 4);
 
-	ASSERT_EQ(result[1].Begin, 4);
-	ASSERT_EQ(result[1].End, 8);
+	EXPECT_EQ(result[1].Begin, 4);
+	EXPECT_EQ(result[1].End, 8);
 
-	ASSERT_EQ(result[2].Begin, 8);
-	ASSERT_EQ(result[2].End, 13);
+	EXPECT_EQ(result[2].Begin, 8);
+	EXPECT_EQ(result[2].End, 13);
 
-	ASSERT_EQ(result[3].Begin, 13);
-	ASSERT_EQ(result[3].End, Pystykorva::Position::Unknown);
+	EXPECT_EQ(result[3].Begin, 13);
+	EXPECT_EQ(result[3].End, Pystykorva::Position::Unknown);
 }
 
 TEST(LineAnalyzerTests, Incomplete)
@@ -110,6 +110,6 @@ TEST(LineAnalyzerTests, Incomplete)
 	auto result = analyzer.Boundaries(sample);
 	
 	ASSERT_EQ(result.size(), 3);
-	ASSERT_EQ(result[2].Begin, 8);
-	ASSERT_EQ(result[2].End, Pystykorva::Position::Unknown);
+	EXPECT_EQ(result[2].Begin, 8);
+	EXPECT_EQ(result[2].End, Pystykorva::Position::Unknown);
 }
