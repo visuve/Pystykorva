@@ -197,7 +197,7 @@ int Run(const std::vector<std::string>& args)
 		callbacks.Finished = [](std::chrono::milliseconds ms)
 		{
 			Cout << "Pystykorva finished!\n";
-			Cout << "Took: " << ms << '\n';
+			Cout << "Took: " << std::format("{:%T}", ms) << '\n';
 		};
 
 		Pystykorva pystykorva(options, callbacks);

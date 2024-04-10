@@ -37,6 +37,8 @@ struct RawString
 	}
 };
 
+// This class is to speed things up, especially on Windows
+// using std::cout etc. will be a lot slower
 class Console
 {
 public:
