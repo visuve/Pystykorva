@@ -28,7 +28,6 @@
     <ClCompile Include="PCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="BufferedStreamTests.cpp" />
     <ClCompile Include="TextProcessorTests.cpp" />
     <ClCompile Include="TextSearcherTests.cpp" />
     <ClCompile Include="UnicodeConverterTests.cpp" />

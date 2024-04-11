@@ -1,6 +1,43 @@
 #include "PCH.hpp"
 #include "TextProcessor.hpp"
 
+class FakeFile : public Pystykorva::IFile
+{
+public:
+	template<typename T, size_t N>
+	FakeFile(T(&data)[N])
+	{
+		_size = sizeof(T) * (N - 1); // Exclude the trailing nulls
+		_data = static_cast<char*>(malloc(_size));
+
+		if (_data)
+		{
+			memcpy(_data, data, _size);
+		}
+	}
+
+	~FakeFile()
+	{
+		if (_data)
+		{
+			free(_data);
+		}
+	}
+
+	std::string_view Sample(size_t size = 0x400) const override
+	{
+		return { _data, std::min(size, _size) };
+	}
+
+	std::string_view Data() const override
+	{
+		return { _data, _size };
+	}
+private:
+	char* _data = nullptr;
+	size_t _size = 0;
+};
+
 TEST(TextProcessorTests, RegexSearchUTF8)
 {
 	std::stop_token token;
@@ -8,20 +45,13 @@ TEST(TextProcessorTests, RegexSearchUTF8)
 	Pystykorva::Options options = {};
 	options.Mode = Pystykorva::MatchMode::RegexCaseInsensitive;
 	options.SearchExpression = u"\\w+";
-	options.BufferSize = 3;
 
 	TextProcessor processor(token, options);
 
-	// I do not understand why this only works with UTF-16 _BE_ BOM...
-	std::istringstream iss({ reinterpret_cast<const char*>(u8"\uFEFFAAAA\nBBB\nCC"), 14 });
-
-	//	0	1	2	3	4	5	6	7	8	9	10	11
-	//	x	A	A	A	A	\n	B	B	B	\n	C	C
-
-	BufferedStream stream(iss, 3, 14);
+	FakeFile file(u8"\uFEFFAAAA\nBBB\nCC");
 	std::vector<Pystykorva::Match> matches;
 	Pystykorva::EncodingGuess encoding;
-	processor.FindAll(stream, matches, encoding);
+	processor.FindAll(file, matches, encoding);
 	EXPECT_STREQ(encoding.Name.c_str(), "UTF-8");
 	EXPECT_EQ(encoding.Confidence, 100);
 
@@ -38,7 +68,6 @@ TEST(TextProcessorTests, RegexSearchUTF8)
 	EXPECT_TRUE(matches[2].LineContent == u"CC");
 	ASSERT_EQ(matches[2].Positions.size(), 1);
 	EXPECT_EQ(matches[2].Positions[0], Pystykorva::RelAbsPosPair(0, 2, 10, 12));
-
 }
 
 TEST(TextProcessorTests, RegexSearchUTF16LE)
@@ -48,18 +77,15 @@ TEST(TextProcessorTests, RegexSearchUTF16LE)
 	Pystykorva::Options options = {};
 	options.Mode = Pystykorva::MatchMode::RegexCaseInsensitive;
 	options.SearchExpression = u"\\w+";
-	options.BufferSize = 3;
 
 	TextProcessor processor(token, options);
 
 	// I do not understand why this only works with UTF-16 _BE_ BOM...
-	std::istringstream iss({ reinterpret_cast<const char*>(u"\uFEFFAAAA\nBBB\nCC"), 24 });
 
-	// It is simply impossible to use buffer sizes, which are not divisible by two when the source data is unicode
-	BufferedStream stream(iss, 3, 24);
+	FakeFile file(u"\uFEFFAAAA\nBBB\nCC");
 	std::vector<Pystykorva::Match> matches;
 	Pystykorva::EncodingGuess encoding;
-	processor.FindAll(stream, matches, encoding);
+	processor.FindAll(file, matches, encoding);
 	EXPECT_STREQ(encoding.Name.c_str(), "UTF-16LE");
 	EXPECT_EQ(encoding.Confidence, 100);
 	ASSERT_EQ(matches.size(), 3);

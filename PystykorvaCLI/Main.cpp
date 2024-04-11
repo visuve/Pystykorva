@@ -26,9 +26,6 @@ Pystykorva::Options Deserialize(const CmdArgs& args)
 	options.MinimumTime = args.Value<std::chrono::file_clock::time_point>("mintime");
 	options.MaximumTime = args.Value<std::chrono::file_clock::time_point>("maxtime");
 
-	// 64 kib should be decent for most text files
-	options.BufferSize = args.Value<uint32_t>("buffersize");
-
 	// On my 16 core CPU, harware_concurrency returns 32, which is fine as I have SMT
 	options.MaximumThreads = args.Value<uint32_t>("maxthreads");
 
@@ -131,8 +128,7 @@ Console& operator << (Console& stream, const Pystykorva::Match& result)
 
 std::mutex _mutex;
 
-void ReportProcessing(
-	const std::filesystem::path& path)
+void ReportProcessing(const std::filesystem::path& path)
 {
 	_CRT_UNUSED(path);
 #if _DEBUG
@@ -174,6 +170,8 @@ void ReportResults(
 
 void ReportFinished(std::chrono::milliseconds ms)
 {
+	std::lock_guard<std::mutex> guard(_mutex);
+
 	Cout << "\nPystykorva finished!\n\n";
 	Cout << "Statistics:\n";
 	Cout << "\tTook: " << std::format("{:%T}\n", ms);

@@ -28,10 +28,14 @@ public:
 		std::chrono::time_point<std::chrono::file_clock> MinimumTime;
 		std::chrono::time_point<std::chrono::file_clock> MaximumTime;
 
-		uint32_t BufferSize = 0;
-
 		// Zero will default to std::thread::hardware_concurrency or 1
 		uint32_t MaximumThreads = 0;
+	};
+
+	struct IFile
+	{
+		virtual std::string_view Sample(size_t size = 0x400) const = 0;
+		virtual std::string_view Data() const = 0;
 	};
 
 	enum Status : uint32_t

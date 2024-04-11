@@ -8,7 +8,6 @@ Pystykorva::Pystykorva(const Options& options, const Callbacks& callbacks) :
 	_callbacks(callbacks),
 	_rdi(options.Directory)
 {
-	assert(_options.BufferSize > _options.SearchExpression.size());
 }
 
 Pystykorva::~Pystykorva()
