@@ -57,8 +57,8 @@ public:
 			return false;
 		}
 
-		// Sometimes large .img files are detected as UTF-32BE
-		if (encoding.Name == "UTF-32BE")
+		// Sometimes large .img files are detected as UTF-32BE and some .o files as UTF-32LE
+		if (encoding.Name.starts_with("UTF-32"))
 		{
 			return false;
 		}
