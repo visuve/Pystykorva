@@ -12,18 +12,13 @@ TEST(TextProcessorTests, RegexSearchUTF8)
 
 	TextProcessor processor(token, options);
 
-	constexpr char8_t src[] = u8"\uFEFFAAAA\nBBB\nCC"; // I do not understand why this only works with UTF-16 _BE_ BOM...
-	constexpr size_t srcSize = sizeof(src) - 1; // Exclude the trailing null
-
-	char dst[srcSize] = {};
-	memcpy(dst, src, srcSize);
-
-	std::istringstream iss({ reinterpret_cast<const char*>(src), srcSize });
+	// I do not understand why this only works with UTF-16 _BE_ BOM...
+	std::istringstream iss({ reinterpret_cast<const char*>(u8"\uFEFFAAAA\nBBB\nCC"), 14 });
 
 	//	0	1	2	3	4	5	6	7	8	9	10	11
 	//	x	A	A	A	A	\n	B	B	B	\n	C	C
 
-	BufferedStream stream(iss, 3, srcSize);
+	BufferedStream stream(iss, 3, 14);
 	std::vector<Pystykorva::Match> matches;
 	Pystykorva::EncodingGuess encoding;
 	processor.FindAll(stream, matches, encoding);
@@ -57,16 +52,11 @@ TEST(TextProcessorTests, RegexSearchUTF16LE)
 
 	TextProcessor processor(token, options);
 
-	constexpr char16_t src[] = u"\uFEFFAAAA\nBBB\nCC"; // I do not understand why this only works with UTF-16 _BE_ BOM...
-	constexpr size_t srcSize = sizeof(src) - 2; // Exclude the trailing null
-
-	char dst[srcSize] = {};
-	memcpy(dst, src, srcSize);
-
-	std::istringstream iss({ reinterpret_cast<const char*>(src), srcSize });
+	// I do not understand why this only works with UTF-16 _BE_ BOM...
+	std::istringstream iss({ reinterpret_cast<const char*>(u"\uFEFFAAAA\nBBB\nCC"), 24 });
 
 	// It is simply impossible to use buffer sizes, which are not divisible by two when the source data is unicode
-	BufferedStream stream(iss, 3, srcSize);
+	BufferedStream stream(iss, 3, 24);
 	std::vector<Pystykorva::Match> matches;
 	Pystykorva::EncodingGuess encoding;
 	processor.FindAll(stream, matches, encoding);
