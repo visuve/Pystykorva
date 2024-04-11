@@ -1,0 +1,19 @@
+name: MSVC build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: microsoft/setup-msbuild@v2
+
+    - name: Restore
+      run: nuget restore Pystykorva.sln
+
+    - name: Build
+      run: msbuild Pystykorva.sln /p:Platform=x64 /p:Configuration=Debug /m
+    
+    - name: Test
+      run: out/x64d/bin/PystykorvaTests.exe
