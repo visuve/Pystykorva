@@ -1,6 +1,7 @@
 #include "PCH.hpp"
 #include "Wildcard.hpp"
 
+// It's a shame that std::tolower is not constexpr :(
 inline bool IEquals(char lhs, char rhs)
 {
 	// https://en.cppreference.com/w/cpp/string/byte/tolower#Notes
@@ -10,39 +11,38 @@ inline bool IEquals(char lhs, char rhs)
 
 bool Wildcard::Matches(std::string_view text, std::string_view wildcard)
 {
-	std::string_view::iterator textNext = text.begin();
-	std::string_view::iterator textPrev;
+	// Adapted from:
+	// https://github.com/keineahnung2345/leetcode-cpp-practices/blob/master/44.%20Wildcard%20Matching.cpp
 
-	std::string_view::iterator wildNext = wildcard.begin();
-	std::string_view::iterator wildPrev  = wildcard.end();
+	static constexpr size_t Max = std::numeric_limits<size_t>::max();
 
-	while (textNext != text.end() && wildNext != wildcard.end())
-	{
-		if (*wildNext == '*')
+	size_t textIter = 0, wildIter = 0;
+	size_t lastMatch = Max, star = Max;
+
+	while (textIter < text.size()) {
+
+		if (wildIter < wildcard.size() && (IEquals(wildcard[wildIter], text[textIter]) || wildcard[wildIter] == '?'))
 		{
-			textPrev = textNext;
-			wildPrev = ++wildNext;
+			textIter++;
+			wildIter++;
 		}
-		else if (*wildNext == '?' || IEquals(*wildNext, *textNext))
+		else if (wildIter < wildcard.size() && wildcard[wildIter] == '*')
 		{
-			textNext++;
-			wildNext++;
+			star = wildIter;
+			lastMatch = textIter;
+			wildIter++;
 		}
-		else if (wildPrev == wildcard.end())
+		else if (star != Max)
 		{
-			return false;
+			lastMatch++;
+			textIter = lastMatch;
+			wildIter = star + 1;
 		}
 		else
 		{
-			textNext = ++textPrev;
-			wildNext = wildPrev;
+			return false;
 		}
 	}
 
-	while (wildNext != wildcard.end() && *wildNext == '*')
-	{
-		++wildNext;
-	}
-
-	return wildNext == wildcard.end() ? true : false;
+	return wildcard.substr(wildIter) == std::string(wildcard.size() - wildIter, '*');
 }

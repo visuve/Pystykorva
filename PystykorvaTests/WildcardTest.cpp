@@ -114,3 +114,16 @@ TEST(WildCardTests, MixedMulti)
 	EXPECT_TRUE(Wildcard::Matches("FOOBAR", "?*?a?"));
 	EXPECT_TRUE(Wildcard::Matches("foobar", "?*?A?"));
 }
+
+TEST(WildCardTests, Dots)
+{
+	EXPECT_TRUE(Wildcard::Matches("foo.bar", "*.bar"));
+	EXPECT_TRUE(Wildcard::Matches("foo.bar", "foo.*"));
+	EXPECT_TRUE(Wildcard::Matches("foo.bar.foo", "*.bar.*"));
+
+	EXPECT_FALSE(Wildcard::Matches("foo.bar.foo", "*.bar"));
+	EXPECT_FALSE(Wildcard::Matches("foo.barf", "*.bar"));
+
+	EXPECT_TRUE(Wildcard::Matches("foo.barf", "*.barf"));
+	EXPECT_TRUE(Wildcard::Matches("foo.barf", "foo.*"));
+}
