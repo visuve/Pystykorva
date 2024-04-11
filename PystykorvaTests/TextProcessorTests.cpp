@@ -34,15 +34,15 @@ TEST(TextProcessorTests, RegexSearchUTF8)
 
 	EXPECT_TRUE(matches[0].LineContent == u"\uFEFFAAAA\n");
 	ASSERT_EQ(matches[0].Positions.size(), 1);
-	EXPECT_EQ(matches[0].Positions[0], Pystykorva::RelAbsPair(1, 5, 1, 5));
+	EXPECT_EQ(matches[0].Positions[0], Pystykorva::RelAbsPosPair(1, 5, 1, 5));
 	
 	EXPECT_TRUE(matches[1].LineContent == u"BBB\n");
 	ASSERT_EQ(matches[1].Positions.size(), 1);
-	EXPECT_EQ(matches[1].Positions[0], Pystykorva::RelAbsPair(0, 3, 6, 9));
+	EXPECT_EQ(matches[1].Positions[0], Pystykorva::RelAbsPosPair(0, 3, 6, 9));
 
 	EXPECT_TRUE(matches[2].LineContent == u"CC");
 	ASSERT_EQ(matches[2].Positions.size(), 1);
-	EXPECT_EQ(matches[2].Positions[0], Pystykorva::RelAbsPair(0, 2, 10, 12));
+	EXPECT_EQ(matches[2].Positions[0], Pystykorva::RelAbsPosPair(0, 2, 10, 12));
 
 }
 
@@ -76,13 +76,13 @@ TEST(TextProcessorTests, RegexSearchUTF16LE)
 
 	EXPECT_TRUE(matches[0].LineContent == u"\uFEFFAAAA\n");
 	ASSERT_EQ(matches[0].Positions.size(), 1);
-	EXPECT_EQ(matches[0].Positions[0], Pystykorva::RelAbsPair(1, 5, 1, 5));
+	EXPECT_EQ(matches[0].Positions[0], Pystykorva::RelAbsPosPair(1, 5, 1, 5));
 
 	EXPECT_TRUE(matches[1].LineContent == u"BBB\n");
 	ASSERT_EQ(matches[1].Positions.size(), 1);
-	EXPECT_EQ(matches[1].Positions[0], Pystykorva::RelAbsPair(0, 3, 12, 15));
+	EXPECT_EQ(matches[1].Positions[0], Pystykorva::RelAbsPosPair(0, 3, 12, 15));
 
 	EXPECT_TRUE(matches[2].LineContent == u"CC");
 	ASSERT_EQ(matches[2].Positions.size(), 1);
-	EXPECT_EQ(matches[2].Positions[0], Pystykorva::RelAbsPair(0, 2, 20, 22));
+	EXPECT_EQ(matches[2].Positions[0], Pystykorva::RelAbsPosPair(0, 2, 20, 22));
 }

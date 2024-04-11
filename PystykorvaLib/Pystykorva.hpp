@@ -73,9 +73,9 @@ public:
 		uint64_t End;
 	};
 
-	struct RelAbsPair
+	struct RelAbsPosPair
 	{
-		constexpr RelAbsPair(
+		constexpr RelAbsPosPair(
 			uint64_t relativeBegin,
 			uint64_t relativeEnd,
 			uint64_t absoluteBegin,
@@ -85,13 +85,13 @@ public:
 		{
 		}
 
-		constexpr RelAbsPair(Position relative, uint64_t offset) :
+		constexpr RelAbsPosPair(Position relative, uint64_t offset) :
 			Relative(relative),
 			Absolute(relative.Begin + offset, relative.End + offset)
 		{
 		}
 
-		constexpr bool operator == (const RelAbsPair& other) const
+		constexpr bool operator == (const RelAbsPosPair& other) const
 		{
 			return Relative == other.Relative && Absolute == other.Absolute;
 		}
@@ -104,13 +104,14 @@ public:
 	{
 		uint32_t LineNumber = 0;
 		std::u16string LineContent;
-		std::vector<RelAbsPair> Positions;
+		std::vector<RelAbsPosPair> Positions;
 	};
 
 	struct EncodingGuess
 	{
+		static constexpr char Unknown[] = "unknown";
 		int32_t Confidence = 0;
-		std::string Name = "unknown";
+		std::string Name = Unknown;
 	};
 
 	struct Result
