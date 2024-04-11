@@ -16,7 +16,6 @@ constexpr int32_t ModeToFlags(Pystykorva::MatchMode mode)
 			return UREGEX_CASE_INSENSITIVE;
 	}
 
-	// std::unreachable();
 	throw std::invalid_argument("Unknown mode");
 }
 
@@ -50,27 +49,30 @@ public:
 
 	std::vector<Pystykorva::Position> FindIn(std::u16string_view sentence)
 	{
-		std::vector<Pystykorva::Position> results;
+		std::vector<Pystykorva::Position> result;
 
 		uregex_setText(_regex,
 			sentence.data(),
 			static_cast<int32_t>(sentence.size()),
 			&_status);
 
+		if (U_FAILURE(_status))
+		{
+			throw SearchException("uregex_setText failed");
+		}
+
 		while (U_SUCCESS(_status) && uregex_findNext(_regex, &_status))
 		{
-			int32_t start = uregex_start(_regex, 0, &_status);
-			assert(U_SUCCESS(_status) && start >= 0);
+			int32_t begin = uregex_start(_regex, 0, &_status);
+			assert(U_SUCCESS(_status) && begin >= 0);
 
 			int32_t end = uregex_end(_regex, 0, &_status);
 			assert(U_SUCCESS(_status) && end > 0);
 
-			results.emplace_back(
-				static_cast<size_t>(start),
-				static_cast<size_t>(end));
+			result.emplace_back(begin, end);
 		}
 
-		return results;
+		return result;
 	}
 
 private:

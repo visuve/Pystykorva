@@ -7,7 +7,10 @@ public:
 	LineAnalyzerImpl() :
 		_iterator(ubrk_open(UBRK_SENTENCE, nullptr, nullptr, 0, &_status))
 	{
-		assert(U_SUCCESS(_status));
+		if (U_FAILURE(_status))
+		{
+			throw AnalysisException("ubrk_open failed");
+		}
 	}
 
 	~LineAnalyzerImpl()
@@ -23,7 +26,11 @@ public:
 		std::vector<Pystykorva::Position> result;
 
 		ubrk_setText(_iterator, sample.data(), static_cast<int32_t>(sample.size()), &_status);
-		assert(U_SUCCESS(_status));
+
+		if (U_FAILURE(_status))
+		{
+			throw AnalysisException("ubrk_setText failed");
+		}
 
 		int32_t begin = ubrk_first(_iterator);
 		int32_t end = ubrk_next(_iterator);

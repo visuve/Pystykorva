@@ -2,9 +2,9 @@
 #include "TextProcessor.hpp"
 #include "Wildcard.hpp"
 
-TextProcessor::TextProcessor(const Pystykorva::Options& options, std::stop_token token) :
-	_options(options),
+TextProcessor::TextProcessor(std::stop_token token, const Pystykorva::Options& options) :
 	_token(token),
+	_options(options),
 	_textSearcher(options.SearchExpression, options.Mode)
 {
 }
@@ -74,6 +74,14 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 	catch (const ConversionException&)
 	{
 		result.StatusMask |= Pystykorva::Status::ConversionError;
+	}
+	catch (const AnalysisException&)
+	{
+		result.StatusMask |= Pystykorva::Status::AnalysisError;
+	}
+	catch (const SearchException&)
+	{
+		result.StatusMask |= Pystykorva::Status::SearchError;
 	}
 	catch (const std::exception&)
 	{

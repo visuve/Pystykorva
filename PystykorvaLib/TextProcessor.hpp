@@ -10,7 +10,7 @@
 class TextProcessor
 {
 public:
-	TextProcessor(const Pystykorva::Options& options, std::stop_token);
+	TextProcessor(std::stop_token, const Pystykorva::Options&);
 	~TextProcessor();
 
 	Pystykorva::Result ProcessFile(const std::filesystem::path&);

@@ -18,6 +18,12 @@ Pystykorva::~Pystykorva()
 
 void Pystykorva::Start()
 {
+	if (!_options.MaximumThreads)
+	{
+		uint32_t maxConcurrentThreads = std::thread::hardware_concurrency();
+		_options.MaximumThreads = maxConcurrentThreads ? maxConcurrentThreads : 1;
+	}
+
 	_start = std::chrono::high_resolution_clock::now();
 
 	if (_callbacks.Started)
@@ -25,11 +31,7 @@ void Pystykorva::Start()
 		_callbacks.Started();
 	}
 
-	if (!_options.MaximumThreads)
-	{
-		uint32_t maxConcurrentThreads = std::thread::hardware_concurrency();
-		_options.MaximumThreads = maxConcurrentThreads ? maxConcurrentThreads : 1;
-	}
+	_threads.reserve(_options.MaximumThreads);
 
 	const auto worker = std::bind_front(&Pystykorva::Worker, this);
 
@@ -94,7 +96,7 @@ std::filesystem::path Pystykorva::Next()
 
 void Pystykorva::Worker(std::stop_token token)
 {
-	TextProcessor textProcessor(_options, token);
+	TextProcessor textProcessor(token, _options);
 
 	while (!token.stop_requested())
 	{

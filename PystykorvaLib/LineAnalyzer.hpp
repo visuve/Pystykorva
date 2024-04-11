@@ -4,6 +4,14 @@
 
 class LineAnalyzerImpl;
 
+struct AnalysisException : std::runtime_error
+{
+	inline AnalysisException(const std::string& message) :
+		std::runtime_error(message)
+	{
+	}
+};
+
 class LineAnalyzer
 {
 public:

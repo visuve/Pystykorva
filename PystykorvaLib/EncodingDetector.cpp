@@ -7,7 +7,10 @@ public:
 	EncodingDetectorImpl() :
 		_detector(ucsdet_open(&_status))
 	{
-		assert(U_SUCCESS(_status));
+		if (U_FAILURE(_status))
+		{
+			throw EncodingException("ucsdet_open failed");
+		}
 	}
 
 	~EncodingDetectorImpl()

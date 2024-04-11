@@ -46,7 +46,9 @@ public:
 		TooLate = (1u << 6),
 		EncodingError = (1u << 7),
 		ConversionError = (1u << 8),
-		IOError = (1u << 9)
+		AnalysisError = (1u << 9),
+		SearchError = (1u << 10),
+		IOError = (1u << 11)
 	};
 
 	struct Position

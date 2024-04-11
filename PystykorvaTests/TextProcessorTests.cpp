@@ -3,14 +3,14 @@
 
 TEST(TextProcessorTests, RegexSearchUTF8)
 {
+	std::stop_token token;
+
 	Pystykorva::Options options = {};
 	options.Mode = Pystykorva::MatchMode::RegexCaseInsensitive;
 	options.SearchExpression = u"\\w+";
 	options.BufferSize = 3;
 
-	std::stop_token token;
-
-	TextProcessor processor(options, token);
+	TextProcessor processor(token, options);
 
 	constexpr char8_t src[] = u8"\uFEFFAAAA\nBBB\nCC"; // I do not understand why this only works with UTF-16 _BE_ BOM...
 	constexpr size_t srcSize = sizeof(src) - 1; // Exclude the trailing null
@@ -48,14 +48,14 @@ TEST(TextProcessorTests, RegexSearchUTF8)
 
 TEST(TextProcessorTests, RegexSearchUTF16LE)
 {
+	std::stop_token token;
+
 	Pystykorva::Options options = {};
 	options.Mode = Pystykorva::MatchMode::RegexCaseInsensitive;
 	options.SearchExpression = u"\\w+";
 	options.BufferSize = 3;
 
-	std::stop_token token;
-
-	TextProcessor processor(options, token);
+	TextProcessor processor(token, options);
 
 	constexpr char16_t src[] = u"\uFEFFAAAA\nBBB\nCC"; // I do not understand why this only works with UTF-16 _BE_ BOM...
 	constexpr size_t srcSize = sizeof(src) - 2; // Exclude the trailing null
