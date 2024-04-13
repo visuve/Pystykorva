@@ -5,18 +5,17 @@ std::filesystem::path TestDataPath()
 {
 	auto current = std::filesystem::current_path();
 
-	if (current.stem() == "Pystykorva")
+	while (current.stem() != "Pystykorva")
 	{
-		return current / "PystykorvaTests" / "Data";
+		current = current.parent_path();
+
+		if (!current.has_stem())
+		{
+			throw std::runtime_error("Test data not found");
+		}
 	}
 
-	if (current.stem() == "PystykorvaTests")
-	{
-		return current / "Data";
-	}
-
-	const std::string message = "Test data not found @ " + current.string();
-	throw std::runtime_error(message);
+	return current / "PystykorvaTests" / "Data";
 }
 
 TEST(PystykorvaTests, SearchSuccess)
