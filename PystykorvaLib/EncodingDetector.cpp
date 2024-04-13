@@ -21,6 +21,8 @@ public:
 		}
 	}
 
+	NonCopyable(EncodingDetectorImpl);
+
 	bool DetectEncoding(std::string_view sample, Pystykorva::EncodingGuess& encoding)
 	{
 		ucsdet_setText(

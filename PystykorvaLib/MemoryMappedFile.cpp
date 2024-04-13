@@ -68,6 +68,8 @@ public:
 		}
 	}
 
+	NonCopyable(MemoryMappedFileImpl);
+
 	std::string_view Data() const
 	{
 		return { reinterpret_cast<char*>(_view), _size };
@@ -119,6 +121,8 @@ public:
 			::close(_descriptor);
 		}
 	}
+
+	NonCopyable(MemoryMappedFileImpl);
 
 	std::string_view Sample(size_t size)
 	{

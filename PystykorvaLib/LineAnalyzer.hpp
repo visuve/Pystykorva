@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NonCopyable.hpp"
 #include "Pystykorva.hpp"
 
 class LineAnalyzerImpl;
@@ -17,6 +18,7 @@ class LineAnalyzer
 public:
 	LineAnalyzer();
 	~LineAnalyzer();
+	NonCopyable(LineAnalyzer);
 
 	std::vector<Pystykorva::Position> Boundaries(std::u16string_view sample);
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NonCopyable.hpp"
 #include "Pystykorva.hpp"
 #include "EncodingDetector.hpp"
 #include "UnicodeConverter.hpp"
@@ -11,6 +12,7 @@ class TextProcessor
 public:
 	TextProcessor(std::stop_token, const Pystykorva::Options&);
 	~TextProcessor();
+	NonCopyable(TextProcessor);
 
 	Pystykorva::Result ProcessFile(const std::filesystem::path&);
 	void FindAll(Pystykorva::IFile& file, std::vector<Pystykorva::Match>& matches, Pystykorva::EncodingGuess& encoding);

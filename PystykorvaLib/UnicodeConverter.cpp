@@ -18,6 +18,8 @@ public:
 		}
 	}
 
+	NonCopyable(UnicodeConverterImpl);
+
 	uint8_t CharSize() const
 	{
 		int8_t minCharSize = ucnv_getMinCharSize(_converter);

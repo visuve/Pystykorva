@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NonCopyable.hpp"
 #include "Pystykorva.hpp"
 
 struct SearchException : std::runtime_error
@@ -17,6 +18,7 @@ class TextSearcher
 public:
 	TextSearcher(std::u16string_view expression, Pystykorva::MatchMode mode);
 	~TextSearcher();
+	NonCopyable(TextSearcher);
 
 	std::vector<Pystykorva::Position> FindIn(std::u16string_view sentence);
 private:

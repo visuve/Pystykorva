@@ -47,6 +47,8 @@ public:
 		}
 	}
 
+	NonCopyable(TextSearcherImpl);
+
 	std::vector<Pystykorva::Position> FindIn(std::u16string_view sentence)
 	{
 		std::vector<Pystykorva::Position> result;

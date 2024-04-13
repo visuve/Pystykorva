@@ -28,6 +28,7 @@
     <ClInclude Include="EncodingDetector.hpp" />
     <ClInclude Include="LineAnalyzer.hpp" />
     <ClInclude Include="MemoryMappedFile.hpp" />
+    <ClInclude Include="NonCopyable.hpp" />
     <ClInclude Include="TextProcessor.hpp" />
     <ClInclude Include="Pystykorva.hpp" />
     <ClInclude Include="PCH.hpp" />

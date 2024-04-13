@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NonCopyable.hpp"
 #include "Pystykorva.hpp"
 
 class EncodingDetectorImpl;
@@ -17,6 +18,7 @@ class EncodingDetector
 public:
 	EncodingDetector();
 	~EncodingDetector();
+	NonCopyable(EncodingDetector);
 
 	bool DetectEncoding(std::string_view sample, Pystykorva::EncodingGuess& encoding);
 

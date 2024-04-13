@@ -1,5 +1,7 @@
 #pragma once
 
+#include "NonCopyable.hpp"
+
 class UnicodeConverterImpl;
 
 struct ConversionException : std::runtime_error
@@ -15,6 +17,7 @@ class UnicodeConverter
 public:
 	UnicodeConverter(std::string_view encoding);
 	~UnicodeConverter();
+	NonCopyable(UnicodeConverter);
 
 	uint8_t CharSize() const;
 	void Convert(std::string_view sample, bool flush = true);

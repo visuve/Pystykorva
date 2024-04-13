@@ -21,6 +21,8 @@ public:
 		}
 	}
 
+	NonCopyable(LineAnalyzerImpl);
+
 	std::vector<Pystykorva::Position> Boundaries(std::u16string_view sample)
 	{
 		std::vector<Pystykorva::Position> result;
