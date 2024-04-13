@@ -38,7 +38,7 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 
 		uint64_t fileSize = std::filesystem::file_size(path);
 
-		if (fileSize < _options.MinimumSize || fileSize == 0)
+		if (fileSize == 0 || fileSize < _options.MinimumSize)
 		{
 			result.StatusMask |= Pystykorva::Status::TooSmall;
 		}
@@ -67,6 +67,10 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 
 		FindAll(file, result.Matches, result.Encoding);
 	}
+	catch (const IOException&)
+	{
+		result.StatusMask |= Pystykorva::Status::IOError;
+	}
 	catch (const EncodingException&)
 	{
 		result.StatusMask |= Pystykorva::Status::EncodingError;
@@ -85,7 +89,7 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 	}
 	catch (const std::exception&)
 	{
-		result.StatusMask |= Pystykorva::Status::IOError;
+		result.StatusMask |= Pystykorva::Status::UnknownError;
 	}
 
 	return result;

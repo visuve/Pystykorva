@@ -22,10 +22,10 @@ public:
 
 		MatchMode Mode = PlainCaseSensitive;
 
-		uint64_t MinimumSize = 0;
+		uint64_t MinimumSize = 1;
 		uint64_t MaximumSize = std::numeric_limits<uint64_t>::max();
 
-		std::chrono::time_point<std::chrono::file_clock> MinimumTime;
+		std::chrono::time_point<std::chrono::file_clock> MinimumTime = std::chrono::file_clock::now() - std::chrono::years(1000);
 		std::chrono::time_point<std::chrono::file_clock> MaximumTime = std::chrono::file_clock::now() + std::chrono::years(1000);
 
 		uint32_t MaximumThreads = std::thread::hardware_concurrency();
@@ -41,17 +41,18 @@ public:
 	{
 		Ok = 0x00,
 		Missing = (1u << 0),
-		NameExcluded = (1u << 1),
-		NoPermission = (1u << 2),
+		NoPermission = (1u << 1),
+		NameExcluded = (1u << 2),
 		TooSmall = (1u << 3),
 		TooBig = (1u << 4),
 		TooEarly = (1u << 5),
 		TooLate = (1u << 6),
-		EncodingError = (1u << 7),
-		ConversionError = (1u << 8),
-		AnalysisError = (1u << 9),
-		SearchError = (1u << 10),
-		IOError = (1u << 11)
+		IOError = (1u << 7),
+		EncodingError = (1u << 8),
+		ConversionError = (1u << 9),
+		AnalysisError = (1u << 10),
+		SearchError = (1u << 11),
+		UnknownError = (1u << 12)
 	};
 
 	struct Position
@@ -140,6 +141,8 @@ public:
 	void Start();
 	void Wait();
 	void Stop();
+
+	static std::string StatusMaskToString(uint32_t);
 
 private:
 	bool IsExcludedDirectory(const std::filesystem::path&) const;

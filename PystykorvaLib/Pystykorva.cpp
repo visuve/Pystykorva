@@ -58,6 +58,78 @@ void Pystykorva::Stop()
 	_threads.clear();
 }
 
+std::string Pystykorva::StatusMaskToString(uint32_t statusMask)
+{
+	if (!statusMask)
+	{
+		return "ok";
+	}
+
+	std::string result;
+	std::string delimiter;
+
+	for (uint32_t bit = 1; statusMask; statusMask &= ~bit, bit <<= 1)
+	{
+		switch (statusMask & bit)
+		{
+			case Pystykorva::Status::Missing:
+				result += delimiter + "the file is missing";
+				delimiter = ", ";
+				break;
+			case Pystykorva::Status::NoPermission:
+				result += delimiter + "incorrect permissions";
+				delimiter = ", ";
+				break;
+			case Pystykorva::Status::NameExcluded:
+				result += delimiter + "excluded by name";
+				delimiter = ", ";
+				break;
+			case Pystykorva::Status::TooSmall:
+				result += delimiter + "too small file size";
+				delimiter = ", ";
+				break;
+			case Pystykorva::Status::TooBig:
+				result += delimiter + "too large file size";
+				delimiter = ", ";
+				break;
+			case Pystykorva::Status::TooEarly:
+				result += delimiter + "file cretead too early";
+				delimiter = ", ";
+				break;
+			case Pystykorva::Status::TooLate:
+				result += delimiter + "file cretead too late";
+				delimiter = ", ";
+				break;
+			case Pystykorva::Status::IOError:
+				result += delimiter + "i/o error";
+				delimiter = ", ";
+				break;
+			case Pystykorva::Status::EncodingError:
+				result += delimiter + "encoding error";
+				delimiter = ", ";
+				break;
+			case Pystykorva::Status::ConversionError:
+				result += delimiter + "unicode conversion error";
+				delimiter = ", ";
+				break;
+			case Pystykorva::Status::AnalysisError:
+				result += delimiter + "line analysis error";
+				delimiter = ", ";
+				break;
+			case Pystykorva::Status::SearchError:
+				result += delimiter + "line search error";
+				delimiter = ", ";
+				break;
+			case Pystykorva::Status::UnknownError:
+				result += delimiter + "unknown error";
+				delimiter = ", ";
+				break;
+		}
+	}
+
+	return result;
+}
+
 bool Pystykorva::IsExcludedDirectory(const std::filesystem::path& path) const
 {
 	return std::any_of(

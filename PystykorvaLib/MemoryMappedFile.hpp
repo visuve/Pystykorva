@@ -5,7 +5,10 @@
 
 class MemoryMappedFileImpl;
 
-// This interface has no other meaning than to allow testing
+struct IOException : std::system_error
+{
+	IOException(const std::string& message);
+};
 
 class MemoryMappedFile : public Pystykorva::IFile
 {

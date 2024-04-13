@@ -50,7 +50,7 @@ TEST(PystykorvaTests, SearchSuccess)
 
 	for (auto& [_, result] : results)
 	{
-		EXPECT_EQ(result.StatusMask, Pystykorva::Ok);
+		EXPECT_STREQ(Pystykorva::StatusMaskToString(result.StatusMask).c_str(), "ok");
 		EXPECT_EQ(result.Matches.size(), 15);
 	}
 

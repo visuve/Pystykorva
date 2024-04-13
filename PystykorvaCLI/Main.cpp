@@ -32,66 +32,6 @@ Pystykorva::Options Deserialize(const CmdArgs& args)
 	return options;
 }
 
-std::string StatusMaskToString(uint32_t statusMask)
-{
-	if (!statusMask)
-	{
-		return "ok";
-	}
-
-	std::string result;
-	std::string delimiter;
-
-	for (uint32_t bit = 1; statusMask; statusMask &= ~bit, bit <<= 1)
-	{
-		switch (statusMask & bit)
-		{
-			case Pystykorva::Status::Missing:
-				result += delimiter + "the file is missing";
-				delimiter = ", ";
-				break;
-			case Pystykorva::Status::NoPermission:
-				result += delimiter + "incorrect permissions";
-				delimiter = ", ";
-				break;
-			case Pystykorva::Status::NameExcluded:
-				result += delimiter + "excluded by name";
-				delimiter = ", ";
-				break;
-			case Pystykorva::Status::TooSmall:
-				result += delimiter + "too small file size";
-				delimiter = ", ";
-				break;
-			case Pystykorva::Status::TooBig:
-				result += delimiter + "too large file size";
-				delimiter = ", ";
-				break;
-			case Pystykorva::Status::TooEarly:
-				result += delimiter + "file cretead too early";
-				delimiter = ", ";
-				break;
-			case Pystykorva::Status::TooLate:
-				result += delimiter + "file cretead too late";
-				delimiter = ", ";
-				break;
-			case Pystykorva::Status::EncodingError:
-				result += delimiter + "probably a binary file";
-				delimiter = ", ";
-				break;
-			case Pystykorva::Status::ConversionError:
-				result += delimiter + "unicode conversion error";
-				delimiter = ", ";
-				break;
-			case Pystykorva::Status::IOError:
-				result += delimiter + "i/o error";
-				delimiter = ", ";
-				break;
-		}
-	}
-
-	return result;
-}
-
 Console& operator << (Console& stream, const Pystykorva::Match& result)
 {
 	constexpr static std::u16string_view RedColorTagBegin = u"\033[31m";
@@ -157,7 +97,7 @@ void ReportResults(
 	}
 
 #if _DEBUG
-	Cout << path << " processed, status: " << StatusMaskToString(result.StatusMask)
+	Cout << path << " processed, status: " << Pystykorva::StatusMaskToString(result.StatusMask)
 		<< ", encoding: " << result.Encoding.Name << ", confidence: " << result.Encoding.Confidence 
 		<< ", matches: " << result.Matches.size() << '\n';
 #endif

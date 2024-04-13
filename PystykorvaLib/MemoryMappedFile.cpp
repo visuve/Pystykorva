@@ -6,6 +6,11 @@
 #define NOMINMAX
 #include <Windows.h>
 
+IOException::IOException(const std::string& message) :
+	std::system_error(GetLastError(), std::system_category(), message)
+{
+}
+
 class MemoryMappedFileImpl
 {
 public:
@@ -21,7 +26,7 @@ public:
 	{
 		if (!_file || _file == INVALID_HANDLE_VALUE)
 		{
-			throw std::system_error(GetLastError(), std::system_category(), "CreateFileW");
+			throw IOException("CreateFileW");
 		}
 
 		LARGE_INTEGER mappingSize;
@@ -37,14 +42,14 @@ public:
 
 		if (!_mapping)
 		{
-			throw std::system_error(GetLastError(), std::system_category(), "CreateFileMappingW");
+			throw IOException("CreateFileMappingW");
 		}
 
 		_view = MapViewOfFile(_mapping, FILE_MAP_ALL_ACCESS, 0, 0, fileSize);
 
 		if (!_view)
 		{
-			throw std::system_error(GetLastError(), std::system_category(), "MapViewOfFile");
+			throw IOException("MapViewOfFile");
 		}
 
 		_size = fileSize;
@@ -88,6 +93,11 @@ private:
 };
 #else
 
+IOException::IOException(const std::string& message) :
+	std::system_error(errno, std::system_category(), message)
+{
+}
+
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -101,14 +111,14 @@ public:
 	{
 		if (_descriptor == -1)
 		{
-			throw std::system_error(errno, std::system_category(), "open");
+			throw IOException("open");
 		}
 
 		_view = mmap(nullptr, _size, PROT_READ, MAP_PRIVATE, _descriptor, 0);
 
 		if (_view == MAP_FAILED)
 		{
-			throw std::system_error(errno, std::system_category(), "mmap");
+			throw IOException("mmap");
 		}
 
 		_size = fileSize;
