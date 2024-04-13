@@ -1,0 +1,40 @@
+name: Ubuntu
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Prerequisites
+      run: |
+        sudo apt update
+        sudo apt install cppcheck clang-15 g++12 cmake ninja libicu-dev valgrind
+
+    - name: Static analysis
+      run: |
+        cppcheck --project=Pystykorva.cppcheck --platform=win32W --error-exitcode=1 --enable=warning
+        cppcheck --project=Pystykorva.cppcheck --platform=win64 --error-exitcode=1 --enable=warning
+        cppcheck --project=Pystykorva.cppcheck --platform=unix64 --error-exitcode=1 --enable=warning
+
+    - name: Build GCC
+      run: |
+        mkdir -p out/gcc
+        cd out/gcc
+        cmake -G Ninja -DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 ../..
+        ninja
+
+    - name: Test GCC
+      run: valgrind --leak-check=yes ./out/gcc/pystykorva_tests
+        
+    - name: Build Clang
+      run: |
+        mkdir -p out/clang
+        cd out/clang
+        cmake -G -DCMAKE_C_COMPILER=/usr/bin/clang-15 -DCMAKE_CXX_COMPILER=/usr/bin/clang++-15 ../..
+        ninja
+
+    - name: Test Clang
+      run: valgrind --leak-check=yes ./out/clang/pystykorva_tests
+
