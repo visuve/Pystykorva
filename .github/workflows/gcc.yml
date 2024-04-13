@@ -1,0 +1,26 @@
+name: GCC
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Prerequisites
+      run: |
+        sudo apt update
+        sudo apt install g++12 cmake ninja libicu-dev valgrind
+
+    - name: Build
+      run: |
+        mkdir out
+        cd out
+        cmake -G Ninja -DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 ..
+        ninja
+
+    - name: Test
+      run: |
+        cd out
+        valgrind --leak-check=yes ./pystykorva_tests
+
