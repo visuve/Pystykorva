@@ -15,7 +15,8 @@ std::filesystem::path TestDataPath()
 		return current / "Data";
 	}
 
-	throw std::runtime_error(std::format("Test data not found @ {}", current.string()));
+	const std::string message = "Test data not found @ " + current.string();
+	throw std::runtime_error(message);
 }
 
 TEST(PystykorvaTests, SearchSuccess)

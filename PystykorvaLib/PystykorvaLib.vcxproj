@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7FA20915-6EFB-40AC-969C-1D408922AFC3}</ProjectGuid>
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <ProjectName>PystykorvaLib</ProjectName>
+    <ProjectName>LibPystykorva</ProjectName>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\Pystykorva.props" />
   <ItemDefinitionGroup>

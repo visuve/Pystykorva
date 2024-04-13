@@ -10,7 +10,7 @@ jobs:
     - name: Prerequisites
       run: |
         sudo apt update
-        sudo apt install cppcheck clang-15 g++12 cmake ninja libicu-dev valgrind
+        sudo apt install cppcheck clang-15 g++-12 cmake ninja-build libicu-dev valgrind
 
     - name: Static analysis
       run: |

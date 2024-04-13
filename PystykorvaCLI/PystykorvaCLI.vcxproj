@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4D16FDA1-E2D7-4F93-9542-56F45C743A34}</ProjectGuid>
     <ConfigurationType>Application</ConfigurationType>
-    <ProjectName>PystykorvaCLI</ProjectName>
+    <ProjectName>Pystykorva</ProjectName>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\Pystykorva.props" />
   <ItemDefinitionGroup>

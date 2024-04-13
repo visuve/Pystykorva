@@ -12,13 +12,12 @@ set(LIBRARY_OUTPUT_PATH "..")
 if(MSVC)
 	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 	add_compile_options(/MP /W4 /WX)
-	add_compile_definitions(NOMINMAX VC_EXTRALEAN)
 endif()
 
 # apt install libicu-dev / dnf install icu
 find_package(ICU COMPONENTS i18n uc REQUIRED)
 
-message(${ICU_INCLUDE_DIRS})
+message(${ICU_INCLUDE_DIR})
 
 add_subdirectory("PystykorvaLib")
 include_directories("PystykorvaLib")

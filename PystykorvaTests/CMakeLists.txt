@@ -1,8 +1,14 @@
-file(GLOB SourceFiles "*.cpp")
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	file(GLOB SourceFiles "*.cpp" "Win32/*.cpp")
+	set(ExecutableName "PystykorvaTests")
+	set(LibraryName "LibPystykorva")
+else()
+	file(GLOB SourceFiles "*.cpp")
+	set(ExecutableName "pystykorva_tests")
+	set(LibraryName "libpystykorva")
+endif()
 
-add_executable("pystykorva_tests" ${SourceFiles})
-
-add_test(NAME "pystykorva_tests" COMMAND $<TARGET_FILE:PystykorvaTests>)
-
-# target_precompile_headers("pystykorva_tests" PRIVATE "PCH.hpp")
-target_link_libraries("pystykorva_tests" LINK_PRIVATE libpystykorva gtest)
+add_executable(${ExecutableName} ${SourceFiles})
+add_test(NAME ${ExecutableName} COMMAND $<TARGET_FILE:${ExecutableName}>)
+target_precompile_headers(${ExecutableName} PRIVATE "PCH.hpp")
+target_link_libraries(${ExecutableName} LINK_PRIVATE ${LibraryName} gtest)

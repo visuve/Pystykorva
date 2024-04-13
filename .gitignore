@@ -2,3 +2,4 @@ out/
 .vs/
 packages/
 *.user
+CMake*.json
