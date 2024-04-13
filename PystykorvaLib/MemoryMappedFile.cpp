@@ -126,9 +126,14 @@ public:
 
 	~MemoryMappedFileImpl()
 	{
+		if (_view)
+		{
+			munmap(_view, _size);
+		}
+
 		if (_descriptor)
 		{
-			::close(_descriptor);
+			close(_descriptor);
 		}
 	}
 
