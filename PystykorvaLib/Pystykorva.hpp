@@ -25,8 +25,9 @@ public:
 		uint64_t MinimumSize = 1;
 		uint64_t MaximumSize = std::numeric_limits<uint64_t>::max();
 
-		std::chrono::time_point<std::chrono::file_clock> MinimumTime = std::chrono::file_clock::now() - std::chrono::years(1000);
-		std::chrono::time_point<std::chrono::file_clock> MaximumTime = std::chrono::file_clock::now() + std::chrono::years(1000);
+		// std::filesystem::last_write_time return some very odd crap on libstdc++12 on WSL and on GitHub actions ubuntu-22.04
+		std::filesystem::file_time_type MinimumTime = std::filesystem::file_time_type() - std::chrono::years(200);
+		std::filesystem::file_time_type MaximumTime = std::filesystem::file_time_type() + std::chrono::years(2000);
 
 		uint32_t MaximumThreads = std::thread::hardware_concurrency();
 	};
