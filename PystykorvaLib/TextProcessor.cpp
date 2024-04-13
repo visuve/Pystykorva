@@ -36,7 +36,7 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 
 		// TODO: check file permission
 
-		uintmax_t fileSize = std::filesystem::file_size(path);
+		uint64_t fileSize = std::filesystem::file_size(path);
 
 		if (fileSize < _options.MinimumSize || fileSize == 0)
 		{

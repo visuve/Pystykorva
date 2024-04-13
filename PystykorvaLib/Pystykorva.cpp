@@ -19,8 +19,7 @@ void Pystykorva::Start()
 {
 	if (!_options.MaximumThreads)
 	{
-		uint32_t maxConcurrentThreads = std::thread::hardware_concurrency();
-		_options.MaximumThreads = maxConcurrentThreads ? maxConcurrentThreads : 1;
+		_options.MaximumThreads = 1;
 	}
 
 	_start = std::chrono::high_resolution_clock::now();

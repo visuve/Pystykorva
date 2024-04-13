@@ -20,16 +20,15 @@ public:
 		std::u16string SearchExpression;
 		std::u16string ReplacementText;
 
-		MatchMode Mode = PlainCaseInsensitive;
+		MatchMode Mode = PlainCaseSensitive;
 
 		uint64_t MinimumSize = 0;
-		uint64_t MaximumSize = 0;
+		uint64_t MaximumSize = std::numeric_limits<uint64_t>::max();
 
 		std::chrono::time_point<std::chrono::file_clock> MinimumTime;
-		std::chrono::time_point<std::chrono::file_clock> MaximumTime;
+		std::chrono::time_point<std::chrono::file_clock> MaximumTime = std::chrono::file_clock::now() + std::chrono::years(1000);
 
-		// Zero will default to std::thread::hardware_concurrency or 1
-		uint32_t MaximumThreads = 0;
+		uint32_t MaximumThreads = std::thread::hardware_concurrency();
 	};
 
 	struct IFile
@@ -131,7 +130,7 @@ public:
 	{
 		std::function<void()> Started;
 		std::function<void(const std::filesystem::path&)> Processing;
-		std::function<void(const std::filesystem::path&, const Result&)> Processed;
+		std::function<void(const std::filesystem::path&, const Pystykorva::Result&)> Processed;
 		std::function<void(std::chrono::milliseconds)> Finished;
 	};
 
