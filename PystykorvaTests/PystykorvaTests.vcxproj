@@ -34,7 +34,9 @@
     <ClCompile Include="TextSearcherTests.cpp" />
     <ClCompile Include="UnicodeConverterTests.cpp" />
     <ClCompile Include="WildcardTest.cpp" />
-    <ClCompile Include="Win32\MemoryLeakListener.cpp" />
+    <ClCompile Include="Win32\MemoryLeakListener.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
