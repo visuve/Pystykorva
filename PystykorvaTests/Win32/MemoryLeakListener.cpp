@@ -1,4 +1,4 @@
-#include "PystykorvaTests.pch"
+#include "../PystykorvaTests.pch"
 #include "MemoryLeakListener.hpp"
 
 MemoryLeakListener::MemoryLeakListener() :

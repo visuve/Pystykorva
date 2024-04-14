@@ -1,8 +1,9 @@
-if(NOT MSVC)
-	# apt install libicu-dev / dnf install icu
-	find_package(ICU COMPONENTS i18n uc REQUIRED)
-	message(${ICU_INCLUDE_DIR})
+if(MSVC)
+	set(ICU_INCLUDE_DIR "$ENV{WindowsSdkDir}Include\\$ENV{WindowsSDKLibVersion}um")
 endif()
+
+# apt install libicu-dev / dnf install icu
+find_package(ICU COMPONENTS i18n uc REQUIRED)
 
 file(GLOB SourceFiles "*.cpp")
 
@@ -15,9 +16,6 @@ endif()
 add_library(${LibraryName} STATIC ${SourceFiles})
 target_precompile_headers(${LibraryName} PRIVATE "PystykorvaLib.pch")
 
-if(MSVC)
-	target_link_libraries(${LibraryName} LINK_PUBLIC icu)
-else()
-	target_link_libraries(${LibraryName} LINK_PUBLIC ICU::i18n ICU::uc)
-endif()
 
+
+target_link_libraries(${LibraryName} LINK_PUBLIC ICU::i18n ICU::uc)
