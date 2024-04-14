@@ -14,11 +14,6 @@ if(MSVC)
 	add_compile_options(/MP /W4 /WX)
 endif()
 
-# apt install libicu-dev / dnf install icu
-find_package(ICU COMPONENTS i18n uc REQUIRED)
-
-message(${ICU_INCLUDE_DIR})
-
 add_subdirectory("PystykorvaLib")
 include_directories("PystykorvaLib")
 

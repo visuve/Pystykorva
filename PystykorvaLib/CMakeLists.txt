@@ -1,3 +1,8 @@
+# apt install libicu-dev / dnf install icu
+find_package(ICU COMPONENTS i18n uc REQUIRED)
+
+message(${ICU_INCLUDE_DIR})
+
 file(GLOB SourceFiles "*.cpp")
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")

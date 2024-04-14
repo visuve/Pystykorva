@@ -25,15 +25,15 @@ jobs:
         cmake -G Ninja -DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 ../..
         ninja
 
-    - name: Test GCC
-      run: valgrind --leak-check=yes ./out/gcc/pystykorva_tests
-        
     - name: Build Clang
       run: |
         mkdir -p out/clang
         cd out/clang
-        cmake -G -DCMAKE_C_COMPILER=/usr/bin/clang-15 -DCMAKE_CXX_COMPILER=/usr/bin/clang++-15 ../..
+        cmake -G Ninja -DCMAKE_C_COMPILER=/usr/bin/clang-15 -DCMAKE_CXX_COMPILER=/usr/bin/clang++-15 ../..
         ninja
+
+    - name: Test GCC
+      run: valgrind --leak-check=yes ./out/gcc/pystykorva_tests
 
     - name: Test Clang
       run: valgrind --leak-check=yes ./out/clang/pystykorva_tests
