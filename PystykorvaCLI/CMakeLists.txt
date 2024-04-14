@@ -1,4 +1,4 @@
-file(GLOB SourceFiles "*.cpp")
+file(GLOB SourceFiles "*.?pp")
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
 	set(ExecutableName "Pystykorva")

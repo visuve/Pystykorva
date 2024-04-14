@@ -5,7 +5,7 @@ endif()
 # apt install libicu-dev / dnf install icu
 find_package(ICU COMPONENTS i18n uc REQUIRED)
 
-file(GLOB SourceFiles "*.cpp")
+file(GLOB SourceFiles "*.?pp")
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
 	set(LibraryName "LibPystykorva")
