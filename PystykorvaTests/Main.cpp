@@ -1,4 +1,4 @@
-#include "PCH.hpp"
+#include "PystykorvaTests.pch"
 
 #if defined(_WIN32) && defined(_DEBUG)
 #include "Win32/MemoryLeakListener.hpp"

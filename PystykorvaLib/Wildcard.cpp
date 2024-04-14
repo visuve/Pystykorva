@@ -1,4 +1,4 @@
-#include "PCH.hpp"
+#include "PystykorvaLib.pch"
 #include "Wildcard.hpp"
 
 // It's a shame that std::tolower is not constexpr :(

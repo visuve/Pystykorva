@@ -17,7 +17,7 @@
   <ItemGroup>
     <ClInclude Include="CmdArgs.hpp" />
     <ClInclude Include="Console.hpp" />
-    <ClInclude Include="PCH.hpp" />
+    <ClInclude Include="PystykorvaCLI.pch" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CmdArgs.cpp" />

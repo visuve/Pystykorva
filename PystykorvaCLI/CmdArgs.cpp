@@ -1,4 +1,4 @@
-#include "PCH.hpp"
+#include "PystykorvaCLI.pch"
 #include "CmdArgs.hpp"
 #include "UnicodeConverter.hpp"
 

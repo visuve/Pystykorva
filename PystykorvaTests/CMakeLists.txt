@@ -10,5 +10,5 @@ endif()
 
 add_executable(${ExecutableName} ${SourceFiles})
 add_test(NAME ${ExecutableName} COMMAND $<TARGET_FILE:${ExecutableName}>)
-target_precompile_headers(${ExecutableName} PRIVATE "PCH.hpp")
+target_precompile_headers(${ExecutableName} PRIVATE "PystykorvaTests.pch")
 target_link_libraries(${ExecutableName} LINK_PRIVATE ${LibraryName} gtest)

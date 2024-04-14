@@ -31,7 +31,7 @@
     <ClInclude Include="NonCopyable.hpp" />
     <ClInclude Include="TextProcessor.hpp" />
     <ClInclude Include="Pystykorva.hpp" />
-    <ClInclude Include="PCH.hpp" />
+    <ClInclude Include="PystykorvaLib.pch" />
     <ClInclude Include="TextSearcher.hpp" />
     <ClInclude Include="UnicodeConverter.hpp" />
     <ClInclude Include="Wildcard.hpp" />

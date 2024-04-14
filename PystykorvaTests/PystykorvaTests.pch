@@ -1,0 +1,6 @@
+#pragma once
+
+#include "../PystykorvaCLI/PystykorvaCLI.pch"
+#include "../PystykorvaLib/PystykorvaLib.pch"
+
+#include <gtest/gtest.h>

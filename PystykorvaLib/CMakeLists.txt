@@ -13,7 +13,7 @@ else()
 endif()
 
 add_library(${LibraryName} STATIC ${SourceFiles})
-target_precompile_headers(${LibraryName} PRIVATE "PCH.hpp")
+target_precompile_headers(${LibraryName} PRIVATE "PystykorvaLib.pch")
 
 if(MSVC)
 	target_link_libraries(${LibraryName} LINK_PUBLIC icu)

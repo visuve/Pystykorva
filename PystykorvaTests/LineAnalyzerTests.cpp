@@ -1,4 +1,4 @@
-#include "PCH.hpp"
+#include "PystykorvaTests.pch"
 #include "LineAnalyzer.hpp"
 
 TEST(LineAnalyzerTests, Empty)

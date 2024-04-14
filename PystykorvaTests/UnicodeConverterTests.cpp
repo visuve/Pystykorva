@@ -1,4 +1,4 @@
-#include "PCH.hpp"
+#include "PystykorvaTests.pch"
 #include "UnicodeConverter.hpp"
 
 TEST(UnicodeConverterTests, Simple)

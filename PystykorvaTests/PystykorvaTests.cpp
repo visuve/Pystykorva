@@ -1,4 +1,4 @@
-#include "PCH.hpp"
+#include "PystykorvaTests.pch"
 #include "Pystykorva.hpp"
 
 std::filesystem::path TestDataPath()

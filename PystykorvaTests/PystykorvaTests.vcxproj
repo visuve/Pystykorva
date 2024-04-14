@@ -19,7 +19,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="PCH.hpp" />
+    <ClInclude Include="PystykorvaTests.pch" />
     <ClInclude Include="Win32\MemoryLeakListener.hpp" />
   </ItemGroup>
   <ItemGroup>

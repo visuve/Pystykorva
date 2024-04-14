@@ -9,6 +9,6 @@ else()
 endif()
 
 add_executable(${ExecutableName} ${SourceFiles})
-target_precompile_headers(${ExecutableName} PRIVATE "PCH.hpp")
+target_precompile_headers(${ExecutableName} PRIVATE "PystykorvaCLI.pch")
 target_link_libraries(${ExecutableName} LINK_PRIVATE ${LibraryName} ICU::uc)
 

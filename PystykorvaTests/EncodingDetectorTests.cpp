@@ -1,4 +1,4 @@
-#include "PCH.hpp"
+#include "PystykorvaTests.pch"
 #include "../PystykorvaLib/EncodingDetector.hpp"
 
 TEST(EncodingDetectorTests, UTF8BOM)

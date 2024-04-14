@@ -1,4 +1,4 @@
-#include "PCH.hpp"
+#include "PystykorvaLib.pch"
 #include "EncodingDetector.hpp"
 
 class EncodingDetectorImpl

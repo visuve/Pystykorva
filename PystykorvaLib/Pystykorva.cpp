@@ -1,4 +1,4 @@
-#include "PCH.hpp"
+#include "PystykorvaLib.pch"
 #include "Pystykorva.hpp"
 #include "TextProcessor.hpp"
 #include "Wildcard.hpp"

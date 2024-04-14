@@ -1,4 +1,4 @@
-#include "PCH.hpp"
+#include "PystykorvaTests.pch"
 #include "TextProcessor.hpp"
 
 class FakeFile : public Pystykorva::IFile

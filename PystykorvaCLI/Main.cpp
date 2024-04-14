@@ -1,4 +1,4 @@
-#include "PCH.hpp"
+#include "PystykorvaCLI.pch"
 #include "Pystykorva.hpp"
 #include "CmdArgs.hpp"
 #include "Console.hpp"

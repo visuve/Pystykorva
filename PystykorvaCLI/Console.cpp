@@ -1,4 +1,4 @@
-#include "PCH.hpp"
+#include "PystykorvaCLI.pch"
 #include "Console.hpp"
 
 #if _WIN32
