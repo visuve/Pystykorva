@@ -135,5 +135,9 @@ private:
 	void WriteA(const void* data, size_t size) const;
 	void WriteW(const void* data, size_t size) const;
 
-	void* _stream;
+#ifdef _WIN32
+	void* _handle = nullptr;
+#else
+	int _descriptor = -1;
+#endif
 };

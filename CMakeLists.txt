@@ -16,11 +16,7 @@ endif()
 
 add_subdirectory("PystykorvaLib")
 include_directories("PystykorvaLib")
-
-if(MSVC)
-	# This just uses too new features for GCC or Clang
-	add_subdirectory("PystykorvaCLI")
-endif()
+add_subdirectory("PystykorvaCLI")
 
 set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
 set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)

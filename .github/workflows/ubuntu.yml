@@ -10,7 +10,7 @@ jobs:
     - name: Prerequisites
       run: |
         sudo apt update
-        sudo apt install cppcheck clang-15 g++-12 cmake ninja-build libicu-dev valgrind
+        sudo apt install cppcheck clang g++ cmake ninja-build libicu-dev valgrind
 
     - name: Static analysis
       run: |
@@ -22,14 +22,14 @@ jobs:
       run: |
         mkdir -p out/gcc
         cd out/gcc
-        cmake -G Ninja -DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 ../..
+        cmake -G Ninja -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_CXX_COMPILER=/usr/bin/g++ ../..
         ninja
 
     - name: Build Clang
       run: |
         mkdir -p out/clang
         cd out/clang
-        cmake -G Ninja -DCMAKE_C_COMPILER=/usr/bin/clang-15 -DCMAKE_CXX_COMPILER=/usr/bin/clang++-15 ../..
+        cmake -G Ninja -DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++ ../..
         ninja
 
     - name: Test GCC

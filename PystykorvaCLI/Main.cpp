@@ -68,9 +68,8 @@ Console& operator << (Console& stream, const Pystykorva::Match& result)
 
 std::mutex _mutex;
 
-void ReportProcessing(const std::filesystem::path& path)
+void ReportProcessing([[maybe_unused]] const std::filesystem::path& path)
 {
-	_CRT_UNUSED(path);
 #if _DEBUG
 	_mutex.lock();
 	Cout << "Processing: " << path << '\n';

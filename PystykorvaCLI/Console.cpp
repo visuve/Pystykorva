@@ -8,13 +8,13 @@
 typedef BOOL(*WriteFunctionType)(HANDLE, const void*, DWORD, LPDWORD, LPVOID);
 
 template <WriteFunctionType WriteFunction>
-void Write(HANDLE stream, const void* data, size_t size)
+void Write(HANDLE handle, const void* data, size_t size)
 {
 	assert(data && size);
 
 	DWORD written = 0;
 
-	if (!WriteFunction(stream, data, static_cast<DWORD>(size), &written, nullptr))
+	if (!WriteFunction(handle, data, static_cast<DWORD>(size), &written, nullptr))
 	{
 		throw std::system_error(GetLastError(), std::system_category(), "WriteConsoleA");
 	}
@@ -23,9 +23,9 @@ void Write(HANDLE stream, const void* data, size_t size)
 }
 
 Console::Console(OutputType type) :
-	_stream(reinterpret_cast<HANDLE>(_get_osfhandle(type)))
+	_handle(reinterpret_cast<HANDLE>(_get_osfhandle(type)))
 {
-	if (_stream == INVALID_HANDLE_VALUE)
+	if (_handle == INVALID_HANDLE_VALUE)
 	{
 		throw std::runtime_error("Failed to get console handle");
 	}
@@ -33,36 +33,36 @@ Console::Console(OutputType type) :
 
 Console::~Console()
 {
-	FlushFileBuffers(_stream);
+	FlushFileBuffers(_handle);
 }
 
 void Console::WriteA(const void* data, size_t size) const
 {
-	return Write<WriteConsoleA>(_stream, data, size);
+	return Write<WriteConsoleA>(_handle, data, size);
 }
 
 void Console::WriteW(const void* data, size_t size) const
 {
-	return Write<WriteConsoleW>(_stream, data, size);
+	return Write<WriteConsoleW>(_handle, data, size);
 }
 #else
 #include <unistd.h>
 
-Console::Console(OutputType type)
+Console::Console(OutputType type) :
+	_descriptor(static_cast<int>(type))
 {
-	*_stream = type
 }
 
 Console::~Console()
 {
-	fdatasync(*_stream);
+	fdatasync(_descriptor);
 }
 
 void Console::WriteA(const void* data, size_t size) const
 {
 	assert(data && size);
 
-	ssize_t written = write(*_stream, data, size);
+	ssize_t written = write(_descriptor, data, size);
 
 	if (written == -1)
 	{
