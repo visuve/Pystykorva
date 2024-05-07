@@ -4,13 +4,13 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
     - name: Prerequisites
       run: |
         sudo apt update
-        sudo apt install cppcheck clang g++ cmake ninja-build libicu-dev valgrind
+        sudo apt install cppcheck clang-18 g++14 cmake ninja-build libicu-dev valgrind
 
     - name: Static analysis
       run: |
@@ -22,14 +22,14 @@ jobs:
       run: |
         mkdir -p out/gcc
         cd out/gcc
-        cmake -G Ninja -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_CXX_COMPILER=/usr/bin/g++ ../..
+        cmake -G Ninja -DCMAKE_C_COMPILER=/usr/bin/gcc-14 -DCMAKE_CXX_COMPILER=/usr/bin/g++-14 ../..
         ninja
 
     - name: Build Clang
       run: |
         mkdir -p out/clang
         cd out/clang
-        cmake -G Ninja -DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++ ../..
+        cmake -G Ninja -DCMAKE_C_COMPILER=/usr/bin/clang-18 -DCMAKE_CXX_COMPILER=/usr/bin/clang++-18 ../..
         ninja
 
     - name: Test GCC
