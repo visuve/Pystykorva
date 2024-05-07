@@ -20,6 +20,7 @@
     <ClCompile Include="PCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TextReplacer.cpp" />
     <ClCompile Include="TextSearcher.cpp" />
     <ClCompile Include="UnicodeConverter.cpp" />
     <ClCompile Include="Wildcard.cpp" />
@@ -32,6 +33,7 @@
     <ClInclude Include="TextProcessor.hpp" />
     <ClInclude Include="Pystykorva.hpp" />
     <ClInclude Include="PystykorvaLib.pch" />
+    <ClInclude Include="TextReplacer.hpp" />
     <ClInclude Include="TextSearcher.hpp" />
     <ClInclude Include="UnicodeConverter.hpp" />
     <ClInclude Include="Wildcard.hpp" />

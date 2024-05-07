@@ -144,6 +144,7 @@ public:
 	void Stop();
 
 	static std::string StatusMaskToString(uint32_t);
+	static int32_t ModeToRegexFlags(Pystykorva::MatchMode);
 
 private:
 	bool IsExcludedDirectory(const std::filesystem::path&) const;

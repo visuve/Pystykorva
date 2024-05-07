@@ -1,7 +1,25 @@
 #include "PystykorvaLib.pch"
 #include "TextReplacer.hpp"
 
-TextReplacer::TextReplacer()
+class TextReplacerImpl
+{
+public:
+	TextReplacerImpl()
+	{
+		// TODO!
+	}
+
+	~TextReplacerImpl()
+	{
+	}
+	
+	NonCopyable(TextReplacerImpl);
+
+private:
+};
+
+TextReplacer::TextReplacer() :
+	_impl(new TextReplacerImpl())
 {
 }
 
@@ -10,6 +28,7 @@ TextReplacer::~TextReplacer()
 }
 
 
-void TextReplacer::ReplaceAll(Pystykorva::IFile&, Pystykorva::Match&, std::string_view )
+void TextReplacer::ReplaceAll(Pystykorva::IFile&, Pystykorva::Match&, std::string_view)
 {
+	// TODO!
 }

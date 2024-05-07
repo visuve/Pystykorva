@@ -130,6 +130,23 @@ std::string Pystykorva::StatusMaskToString(uint32_t statusMask)
 	return result;
 }
 
+int32_t Pystykorva::ModeToRegexFlags(Pystykorva::MatchMode mode)
+{
+	switch (mode)
+	{
+		case Pystykorva::PlainCaseSensitive:
+			return UREGEX_LITERAL;
+		case Pystykorva::PlainCaseInsensitive:
+			return UREGEX_CASE_INSENSITIVE | UREGEX_LITERAL;
+		case Pystykorva::RegexCaseSensitive:
+			return 0;
+		case Pystykorva::RegexCaseInsensitive:
+			return UREGEX_CASE_INSENSITIVE;
+	}
+
+	throw std::invalid_argument("Unknown mode");
+}
+
 bool Pystykorva::IsExcludedDirectory(const std::filesystem::path& path) const
 {
 	return std::any_of(

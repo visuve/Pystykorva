@@ -2,23 +2,6 @@
 #include "TextSearcher.hpp"
 #include "UnicodeConverter.hpp"
 
-constexpr int32_t ModeToFlags(Pystykorva::MatchMode mode)
-{
-	switch (mode)
-	{
-		case Pystykorva::PlainCaseSensitive:
-			return UREGEX_LITERAL;
-		case Pystykorva::PlainCaseInsensitive:
-			return UREGEX_CASE_INSENSITIVE | UREGEX_LITERAL;
-		case Pystykorva::RegexCaseSensitive:
-			return 0;
-		case Pystykorva::RegexCaseInsensitive:
-			return UREGEX_CASE_INSENSITIVE;
-	}
-
-	throw std::invalid_argument("Unknown mode");
-}
-
 class TextSearcherImpl
 {
 public:
@@ -29,7 +12,7 @@ public:
 		_regex = uregex_open(
 			expression.data(),
 			static_cast<int32_t>(expression.size()),
-			ModeToFlags(mode),
+			Pystykorva::ModeToRegexFlags(mode),
 			&error,
 			&_status);
 
