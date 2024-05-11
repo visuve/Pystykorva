@@ -34,8 +34,12 @@ public:
 
 	struct IFile
 	{
-		virtual std::string_view Sample(size_t size = 0x400) const = 0;
+		virtual uint64_t Size() const = 0;
+		virtual std::string_view Sample(uint64_t size = 0x400) const = 0;
+		virtual std::string_view Chunk(uint64_t offset, uint64_t size) const = 0;
 		virtual std::string_view Data() const = 0;
+		virtual void Read(void* data, uint64_t size) = 0;
+		virtual void Write(const void* data, uint64_t size) = 0;
 	};
 
 	enum Status : uint32_t

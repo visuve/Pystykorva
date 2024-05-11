@@ -63,9 +63,9 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 			return result;
 		}
 
-		MemoryMappedFile file(path, fileSize);
+		MemoryMappedFile input(path, fileSize, true);
 
-		FindAll(file, result.Matches, result.Encoding);
+		FindAll(input, result.Matches, result.Encoding);
 	}
 	catch (const IOException&)
 	{

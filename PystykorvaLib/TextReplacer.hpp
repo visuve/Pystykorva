@@ -16,11 +16,11 @@ class TextReplacerImpl;
 class TextReplacer
 {
 public:
-	TextReplacer();
+	TextReplacer(const Pystykorva::IFile&, Pystykorva::Result&);
 	~TextReplacer();
 	NonCopyable(TextReplacer);
 
-	void ReplaceAll(Pystykorva::IFile&, Pystykorva::Match&, std::string_view);
+	void ReplaceAll(Pystykorva::IFile& output, std::u16string_view);
 
 private:
 	TextReplacerImpl* _impl;

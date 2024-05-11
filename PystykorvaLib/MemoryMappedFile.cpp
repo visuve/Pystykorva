@@ -14,15 +14,15 @@ IOException::IOException(const std::string& message) :
 class MemoryMappedFileImpl
 {
 public:
-	MemoryMappedFileImpl(const std::filesystem::path& path, uint64_t fileSize) :
+	MemoryMappedFileImpl(const std::filesystem::path& path, uint64_t fileSize, bool readOnly) :
 		_file(CreateFileW(
 			path.c_str(),
-			GENERIC_READ | GENERIC_WRITE,
+			readOnly ? GENERIC_READ : GENERIC_READ | GENERIC_WRITE,
 			0,
 			nullptr,
-			OPEN_EXISTING,
+			readOnly ? OPEN_EXISTING : CREATE_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL,
-			NULL))
+			nullptr))
 	{
 		if (!_file || _file == INVALID_HANDLE_VALUE)
 		{
@@ -35,7 +35,7 @@ public:
 		_mapping = CreateFileMappingW(
 			_file,
 			nullptr,
-			PAGE_READWRITE,
+			readOnly ? PAGE_READONLY : PAGE_READWRITE,
 			mappingSize.HighPart,
 			mappingSize.LowPart,
 			nullptr);
@@ -45,7 +45,12 @@ public:
 			throw IOException("CreateFileMappingW");
 		}
 
-		_view = MapViewOfFile(_mapping, FILE_MAP_ALL_ACCESS, 0, 0, fileSize);
+		_view = MapViewOfFile(
+			_mapping,
+			readOnly ? FILE_MAP_READ : FILE_MAP_ALL_ACCESS,
+			0,
+			0,
+			fileSize);
 
 		if (!_view)
 		{
@@ -74,16 +79,7 @@ public:
 	}
 
 	NonCopyable(MemoryMappedFileImpl);
-
-	std::string_view Data() const
-	{
-		return { reinterpret_cast<char*>(_view), _size };
-	}
-
-	std::string_view Sample(size_t size) const
-	{
-		return { reinterpret_cast<char*>(_view), std::min(size, _size) };
-	}
+	friend class MemoryMappedFile;
 
 private:
 	HANDLE _file = nullptr;
@@ -106,15 +102,21 @@ IOException::IOException(const std::string& message) :
 class MemoryMappedFileImpl
 {
 public:
-	MemoryMappedFileImpl(const std::filesystem::path& path, uint64_t fileSize) :
-		_descriptor(open(path.c_str(), O_RDONLY))
+	MemoryMappedFileImpl(const std::filesystem::path& path, uint64_t fileSize, bool readOnly) :
+		_descriptor(open(path.c_str(), readOnly ? O_RDONLY : O_RDWR))
 	{
 		if (_descriptor == -1)
 		{
 			throw IOException("open");
 		}
 
-		_view = mmap(nullptr, _size, PROT_READ, MAP_PRIVATE, _descriptor, 0);
+		_view = mmap(
+			nullptr,
+			_size,
+			readOnly ? PROT_READ : PROT_READ | PROT_WRITE,
+			MAP_PRIVATE,
+			_descriptor,
+			0);
 
 		if (_view == MAP_FAILED)
 		{
@@ -138,17 +140,7 @@ public:
 	}
 
 	NonCopyable(MemoryMappedFileImpl);
-
-	std::string_view Sample(size_t size)
-	{
-		return { reinterpret_cast<char*>(_view), std::min(_size, size) };
-	}
-
-	std::string_view Data() const
-	{
-		return { reinterpret_cast<char*>(_view), _size };
-	}
-
+	friend class MemoryMappedFile;
 private:
 	int _descriptor = 0;
 	void* _view = nullptr;
@@ -156,8 +148,8 @@ private:
 };
 #endif
 
-MemoryMappedFile::MemoryMappedFile(const std::filesystem::path& path, uint64_t fileSize) :
-	_impl(new MemoryMappedFileImpl(path, fileSize))
+MemoryMappedFile::MemoryMappedFile(const std::filesystem::path& path, uint64_t fileSize, bool readOnly) :
+	_impl(new MemoryMappedFileImpl(path, fileSize, readOnly))
 {
 }
 
@@ -166,12 +158,58 @@ MemoryMappedFile::~MemoryMappedFile()
 	delete _impl;
 }
 
+uint64_t MemoryMappedFile::Size() const
+{
+	return _impl->_size;
+}
+
 std::string_view MemoryMappedFile::Sample(size_t size) const
 {
-	return _impl->Sample(size);
+	size = std::min(_impl->_size, size);
+	return { reinterpret_cast<char*>(_impl->_view), size };
+}
+
+std::string_view MemoryMappedFile::Chunk(uint64_t offset, uint64_t size) const
+{
+	if (offset + size > _impl->_size)
+	{
+		throw std::out_of_range("chunk out of bounds");
+	}
+
+	return { reinterpret_cast<char*>(_impl->_view) + offset, size };
 }
 
 std::string_view MemoryMappedFile::Data() const
 {
-	return _impl->Data();
+	return { reinterpret_cast<char*>(_impl->_view), _impl->_size };
+}
+
+void MemoryMappedFile::Read(void* data, uint64_t size)
+{
+	if (_offset + size > _impl->_size)
+	{
+		throw std::out_of_range("read out of bounds");
+	}
+
+	for (uint64_t offset = 0; offset < size; ++offset, ++_offset)
+	{
+		auto source = reinterpret_cast<const uint8_t*>(_impl->_view) + _offset;
+		auto target = reinterpret_cast<uint8_t*>(data) + offset;
+		*target = *source;
+	}
+}
+
+void MemoryMappedFile::Write(const void* data, uint64_t size)
+{
+	if (_offset + size > _impl->_size)
+	{
+		throw std::out_of_range("write out of bounds");
+	}
+
+	for (uint64_t offset = 0; offset < size; ++offset, ++_offset)
+	{
+		auto source = reinterpret_cast<const uint8_t*>(data) + offset;
+		auto target = reinterpret_cast<uint8_t*>(_impl->_view) + _offset;
+		*target = *source;
+	}
 }

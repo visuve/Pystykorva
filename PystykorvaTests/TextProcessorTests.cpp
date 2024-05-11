@@ -1,42 +1,6 @@
 #include "PystykorvaTests.pch"
 #include "TextProcessor.hpp"
-
-class FakeFile : public Pystykorva::IFile
-{
-public:
-	template<typename T, size_t N>
-	FakeFile(T(&data)[N])
-	{
-		_size = sizeof(T) * (N - 1); // Exclude the trailing nulls
-		_data = static_cast<char*>(malloc(_size));
-
-		if (_data)
-		{
-			memcpy(_data, data, _size);
-		}
-	}
-
-	~FakeFile()
-	{
-		if (_data)
-		{
-			free(_data);
-		}
-	}
-
-	std::string_view Sample(size_t size = 0x400) const override
-	{
-		return { _data, std::min(size, _size) };
-	}
-
-	std::string_view Data() const override
-	{
-		return { _data, _size };
-	}
-private:
-	char* _data = nullptr;
-	size_t _size = 0;
-};
+#include "MockFile.hpp"
 
 TEST(TextProcessorTests, RegexSearchUTF8)
 {
@@ -48,7 +12,7 @@ TEST(TextProcessorTests, RegexSearchUTF8)
 
 	TextProcessor processor(token, options);
 
-	FakeFile file(u8"\uFEFFAAAA\nBBB\nCC");
+	MockFile file(u8"\uFEFFAAAA\nBBB\nCC");
 	std::vector<Pystykorva::Match> matches;
 	Pystykorva::EncodingGuess encoding;
 	processor.FindAll(file, matches, encoding);
@@ -82,7 +46,7 @@ TEST(TextProcessorTests, RegexSearchUTF16LE)
 
 	// I do not understand why this only works with UTF-16 _BE_ BOM...
 
-	FakeFile file(u"\uFEFFAAAA\nBBB\nCC");
+	MockFile file(u"\uFEFFAAAA\nBBB\nCC");
 	std::vector<Pystykorva::Match> matches;
 	Pystykorva::EncodingGuess encoding;
 	processor.FindAll(file, matches, encoding);

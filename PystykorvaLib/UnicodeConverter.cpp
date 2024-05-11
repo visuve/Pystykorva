@@ -7,7 +7,10 @@ public:
 	UnicodeConverterImpl(std::string_view encoding) :
 		_converter(ucnv_open(encoding.data(), &_status))
 	{
-		assert(U_SUCCESS(_status));
+		if (U_FAILURE(_status))
+		{
+			throw ConversionException("ucnv_open failed");
+		}
 	}
 
 	~UnicodeConverterImpl()
