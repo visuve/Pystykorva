@@ -127,6 +127,7 @@ public:
 
 	struct Result
 	{
+		std::filesystem::path Path;
 		uint32_t StatusMask = Status::Ok;
 		EncodingGuess Encoding;
 		std::vector<Match> Matches;
@@ -136,7 +137,7 @@ public:
 	{
 		std::function<void()> Started;
 		std::function<void(const std::filesystem::path&)> Processing;
-		std::function<void(const std::filesystem::path&, const Pystykorva::Result&)> Processed;
+		std::function<void(const Pystykorva::Result&)> Processed;
 		std::function<void(std::chrono::milliseconds)> Finished;
 	};
 

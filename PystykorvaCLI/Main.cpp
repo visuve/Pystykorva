@@ -80,9 +80,7 @@ void ReportProcessing([[maybe_unused]] const std::filesystem::path& path)
 size_t Processed = 0;
 size_t Skipped = 0;
 
-void ReportResults(
-	const std::filesystem::path& path,
-	const Pystykorva::Result& result)
+void ReportResults(const Pystykorva::Result& result)
 {
 	std::lock_guard<std::mutex> guard(_mutex);
 
@@ -96,14 +94,14 @@ void ReportResults(
 	}
 
 #if _DEBUG
-	Cout << path << " processed, status: " << Pystykorva::StatusMaskToString(result.StatusMask)
+	Cout << result.Path << " processed, status: " << Pystykorva::StatusMaskToString(result.StatusMask)
 		<< ", encoding: " << result.Encoding.Name << ", confidence: " << result.Encoding.Confidence 
 		<< ", matches: " << result.Matches.size() << '\n';
 #endif
 
 	for (const Pystykorva::Match& match : result.Matches)
 	{
-		Cout << path << " @ " << match << '\n';
+		Cout << result.Path << " @ " << match << '\n';
 	}
 }
 

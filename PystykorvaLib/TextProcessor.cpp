@@ -17,6 +17,7 @@ TextProcessor::~TextProcessor()
 Pystykorva::Result TextProcessor::ProcessPath(const std::filesystem::path& path)
 {
 	Pystykorva::Result result;
+	result.Path = path;
 
 	try
 	{

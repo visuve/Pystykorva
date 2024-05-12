@@ -34,11 +34,10 @@ TEST(PystykorvaTests, SearchSuccess)
 	std::map<std::string, Pystykorva::Result> results;
 
 	callbacks.Processed = [&](
-		const std::filesystem::path& path,
 		const Pystykorva::Result& result)
 	{
 		mutex.lock(); // Will explode without... ;-D
-		results.emplace(path.filename().string(), result);
+		results.emplace(result.Path.filename().string(), result);
 		mutex.unlock();
 	};
 
