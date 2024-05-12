@@ -5,9 +5,9 @@ class TextReplacerImpl
 {
 public:
 	TextReplacerImpl(const Pystykorva::IFile& input, Pystykorva::Result& result) :
+		_converter(ucnv_open(result.Encoding.Name.data(), &_status)),
 		_input(input),
-		_result(result),
-		_converter(ucnv_open(result.Encoding.Name.data(), &_status))
+		_matches(result.Matches)
 	{
 		if (U_FAILURE(_status))
 		{
@@ -33,7 +33,7 @@ public:
 
 		std::string sourceEncodedReplacement = SourceEncode(replacement);
 
-		for (Pystykorva::Match& match : _result.Matches)
+		for (Pystykorva::Match& match : _matches)
 		{
 			for (const auto& [relative, absolute] : match.Positions)
 			{
@@ -68,7 +68,8 @@ public:
 private:
 	std::string SourceEncode(std::u16string_view replacement)
 	{
-		std::string buffer(replacement.size() * 2, '\0');
+		// NOTE: the multiplier 4 is completely arbitrary
+		std::string buffer(replacement.size() * 4, '\0');
 		char* target = buffer.data();
 		char* targetLimit = buffer.data() + buffer.size();
 
@@ -87,10 +88,12 @@ private:
 		return buffer;
 	}
 
-	const Pystykorva::IFile& _input;
-	Pystykorva::Result& _result;
-	UErrorCode _status = U_ZERO_ERROR;
 	UConverter* _converter = nullptr;
+	UErrorCode _status = U_ZERO_ERROR;
+
+	const Pystykorva::IFile& _input;
+	std::vector<Pystykorva::Match>& _matches;
+
 };
 
 TextReplacer::TextReplacer(const Pystykorva::IFile& file, Pystykorva::Result& result) :

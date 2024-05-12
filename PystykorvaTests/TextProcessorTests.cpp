@@ -14,10 +14,7 @@ TEST(TextProcessorTests, RegexSearchUTF8)
 
 	MockFile file(u8"\uFEFFAAAA\nBBB\nCC");
 	std::vector<Pystykorva::Match> matches;
-	Pystykorva::EncodingGuess encoding;
-	processor.FindAll(file, matches, encoding);
-	EXPECT_STREQ(encoding.Name.c_str(), "UTF-8");
-	EXPECT_EQ(encoding.Confidence, 100);
+	processor.ProcessFile(file, matches, "UTF-8");
 
 	ASSERT_EQ(matches.size(), 3);
 
@@ -45,13 +42,9 @@ TEST(TextProcessorTests, RegexSearchUTF16LE)
 	TextProcessor processor(token, options);
 
 	// I do not understand why this only works with UTF-16 _BE_ BOM...
-
 	MockFile file(u"\uFEFFAAAA\nBBB\nCC");
 	std::vector<Pystykorva::Match> matches;
-	Pystykorva::EncodingGuess encoding;
-	processor.FindAll(file, matches, encoding);
-	EXPECT_STREQ(encoding.Name.c_str(), "UTF-16LE");
-	EXPECT_EQ(encoding.Confidence, 100);
+	processor.ProcessFile(file, matches, "UTF-16LE");
 	ASSERT_EQ(matches.size(), 3);
 
 	EXPECT_TRUE(matches[0].LineContent == u"\uFEFFAAAA\n");

@@ -14,7 +14,7 @@ TextProcessor::~TextProcessor()
 {
 }
 
-Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
+Pystykorva::Result TextProcessor::ProcessPath(const std::filesystem::path& path)
 {
 	Pystykorva::Result result;
 
@@ -65,7 +65,13 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 
 		MemoryMappedFile input(path, fileSize, true);
 
-		FindAll(input, result.Matches, result.Encoding);
+		if (!_encodingDetector.DetectEncoding(input.Sample(0x400), result.Encoding))
+		{
+			result.StatusMask |= Pystykorva::Status::EncodingError;
+			return result;
+		}
+
+		ProcessFile(input, result.Matches, result.Encoding.Name);
 	}
 	catch (const IOException&)
 	{
@@ -95,14 +101,9 @@ Pystykorva::Result TextProcessor::ProcessFile(const std::filesystem::path& path)
 	return result;
 }
 
-void TextProcessor::FindAll(Pystykorva::IFile& file, std::vector<Pystykorva::Match>& matches, Pystykorva::EncodingGuess& encoding)
+void TextProcessor::ProcessFile(Pystykorva::IFile& file, std::vector<Pystykorva::Match>& matches, std::string_view encoding)
 {
-	if (!_encodingDetector.DetectEncoding(file.Sample(), encoding))
-	{
-		throw EncodingException("Failed to detect encoding");
-	}
-
-	UnicodeConverter converter(encoding.Name);
+	UnicodeConverter converter(encoding);
 	uint8_t charSize = converter.CharSize();
 	uint32_t lineNumber = 0;
 	uint64_t offset = 0;

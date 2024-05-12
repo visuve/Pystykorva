@@ -14,8 +14,8 @@ public:
 	~TextProcessor();
 	NonCopyable(TextProcessor);
 
-	Pystykorva::Result ProcessFile(const std::filesystem::path&);
-	void FindAll(Pystykorva::IFile& file, std::vector<Pystykorva::Match>& matches, Pystykorva::EncodingGuess& encoding);
+	Pystykorva::Result ProcessPath(const std::filesystem::path&);
+	void ProcessFile(Pystykorva::IFile& file, std::vector<Pystykorva::Match>& matches, std::string_view encoding);
 	Pystykorva::Match ProcessLine(uint64_t offset, uint32_t lineNumber, std::u16string_view line);
 
 private:
