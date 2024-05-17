@@ -13,6 +13,15 @@ public:
 		{
 			throw ReplaceException("ucnv_open failed");
 		}
+
+		int8_t maxCharSize = ucnv_getMaxCharSize(_converter);
+
+		if (maxCharSize < 0 || maxCharSize > 8)
+		{
+			throw ReplaceException("ucnv_getMaxCharSize went haywire");
+		}
+
+		_maxCharSize = static_cast<uint8_t>(maxCharSize);
 	}
 
 	~TextReplacerImpl()
@@ -68,8 +77,7 @@ public:
 private:
 	std::string SourceEncode(std::u16string_view replacement)
 	{
-		// NOTE: the multiplier 4 is completely arbitrary
-		std::string buffer(replacement.size() * 4, '\0');
+		std::string buffer(replacement.size() * _maxCharSize, '\0');
 		char* target = buffer.data();
 		char* targetLimit = buffer.data() + buffer.size();
 
@@ -90,6 +98,7 @@ private:
 
 	UConverter* _converter = nullptr;
 	UErrorCode _status = U_ZERO_ERROR;
+	uint8_t _maxCharSize = 0;
 
 	const Pystykorva::IFile& _input;
 	std::vector<Pystykorva::Match>& _matches;

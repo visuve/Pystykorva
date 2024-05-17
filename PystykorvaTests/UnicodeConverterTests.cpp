@@ -59,3 +59,28 @@ TEST(UnicodeConverterTests, Trim)
 		EXPECT_TRUE(text == u"Foo bar");
 	}
 }
+
+TEST(UnicodeConverterTests, Emoji)
+{
+	const std::map<std::string, std::string> testData =
+	{
+		{ "UTF-8", { "\xF0\x9F\x91\xA8\xF0\x9F\x8F\xBF\xE2\x80\x8D\xF0\x9F\xA6\xB2", 15 } },
+		{ "UTF-16BE", { "\xD8\x3D\xDC\x68\xD8\x3C\xDF\xFF\x20\x0D\xD8\x3E\xDD\xB2", 14 } },
+		{ "UTF-32BE", { "\x00\x01\xF4\x68\x00\x01\xF3\xFF\x00\x00\x20\x0D\x00\x01\xF9\xB2", 16 } }
+	};
+
+	for (const auto [encoding, emoji] : testData)
+	{
+		UnicodeConverter converter(encoding);
+		converter.Convert(emoji);
+		auto data = converter.Data();
+		ASSERT_EQ(data.size(), 7);
+		EXPECT_TRUE(data[0] == u'\xD83D');
+		EXPECT_TRUE(data[1] == u'\xDC68');
+		EXPECT_TRUE(data[2] == u'\xD83C');
+		EXPECT_TRUE(data[3] == u'\xDFFF');
+		EXPECT_TRUE(data[4] == u'\x200D');
+		EXPECT_TRUE(data[5] == u'\xD83E');
+		EXPECT_TRUE(data[6] == u'\xDDB2');
+	}
+}
