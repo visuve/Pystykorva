@@ -51,8 +51,7 @@ public:
 			throw ConversionException("ucnv_toUnicode failed");
 		}
 
-		size_t end = targetLimit - target;
-		_data.append(buffer, 0, buffer.size() - end);
+		_data.append(buffer.data(), target - buffer.data());
 	}
 
 	std::u16string_view Data() const

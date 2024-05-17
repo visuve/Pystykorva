@@ -17,7 +17,7 @@ TEST(TextReplacedTests, ReplaceSameSize)
 	result.Matches.emplace_back(2, u"xyz\n", xyz);
 
 	TextReplacer replacer(input, result);
-	replacer.ReplaceAll(output, u"abc");
+	ASSERT_NO_THROW(replacer.ReplaceAll(output, u"abc"));
 
 	EXPECT_TRUE(output.Data() == "abc\nabc\nabc");
 	EXPECT_TRUE(result.Matches[0].LineContent == u"abc\n");
@@ -40,7 +40,7 @@ TEST(TextReplacedTests, ReplaceSmallerSize)
 	result.Matches.emplace_back(2, u"xyz\n", xyz);
 
 	TextReplacer replacer(input, result);
-	replacer.ReplaceAll(output, u"ab");
+	ASSERT_NO_THROW(replacer.ReplaceAll(output, u"ab"));
 
 	EXPECT_TRUE(output.Data() == "ab\nab\nab");
 	EXPECT_TRUE(result.Matches[0].LineContent == u"ab\n");
@@ -63,7 +63,7 @@ TEST(TextReplacedTests, ReplaceLargerSize)
 	result.Matches.emplace_back(2, u"xyz\n", xyz);
 
 	TextReplacer replacer(input, result);
-	replacer.ReplaceAll(output, u"abcd");
+	ASSERT_NO_THROW(replacer.ReplaceAll(output, u"abcd"));
 
 	EXPECT_TRUE(output.Data() == "abcd\nabcd\nabcd");
 	EXPECT_TRUE(result.Matches[0].LineContent == u"abcd\n");

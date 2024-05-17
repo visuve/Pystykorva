@@ -83,7 +83,7 @@ private:
 			throw ReplaceException("ucnv_toUnicode failed");
 		}
 
-		buffer.resize(targetLimit - target);
+		buffer.resize(target - buffer.data());
 
 		return buffer;
 	}
