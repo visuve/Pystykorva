@@ -35,7 +35,7 @@ void Pystykorva::Start()
 
 	for (uint32_t i = 0; i < _options.MaximumThreads; ++i)
 	{
-		_threads.emplace_back(worker);
+		_threads.emplace_back(worker, _stopSource.get_token());
 	}
 }
 
@@ -45,16 +45,11 @@ void Pystykorva::Wait()
 	{
 		thread.join();
 	}
-
-	if (_callbacks.Finished)
-	{
-		auto diff = std::chrono::high_resolution_clock::now() - _start;
-		_callbacks.Finished(std::chrono::duration_cast<std::chrono::milliseconds>(diff));
-	}
 }
 
 void Pystykorva::Stop()
 {
+	_stopSource.request_stop();
 	_threads.clear();
 }
 
@@ -109,11 +104,7 @@ std::string Pystykorva::StatusMaskToString(uint32_t statusMask)
 				delimiter = ", ";
 				break;
 			case Pystykorva::Status::ConversionError:
-				result += delimiter + "unicode conversion error";
-				delimiter = ", ";
-				break;
-			case Pystykorva::Status::AnalysisError:
-				result += delimiter + "line analysis error";
+				result += delimiter + "conversion error";
 				delimiter = ", ";
 				break;
 			case Pystykorva::Status::SearchError:
@@ -129,24 +120,6 @@ std::string Pystykorva::StatusMaskToString(uint32_t statusMask)
 
 	return result;
 }
-
-int32_t Pystykorva::ModeToRegexFlags(Pystykorva::MatchMode mode)
-{
-	switch (mode)
-	{
-		case Pystykorva::PlainCaseSensitive:
-			return UREGEX_LITERAL;
-		case Pystykorva::PlainCaseInsensitive:
-			return UREGEX_CASE_INSENSITIVE | UREGEX_LITERAL;
-		case Pystykorva::RegexCaseSensitive:
-			return 0;
-		case Pystykorva::RegexCaseInsensitive:
-			return UREGEX_CASE_INSENSITIVE;
-	}
-
-	throw std::invalid_argument("Unknown mode");
-}
-
 bool Pystykorva::IsExcludedDirectory(const std::filesystem::path& path) const
 {
 	return std::any_of(

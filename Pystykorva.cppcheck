@@ -11,10 +11,6 @@
         <dir name="PystykorvaCLI"/>
         <dir name="PystykorvaLib"/>
     </paths>
-    <libraries>
-        <library>posix</library>
-        <library>windows</library>
-    </libraries>
     <suppressions>
         <suppression>noExplicitConstructor</suppression>
     </suppressions>

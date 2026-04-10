@@ -17,8 +17,8 @@ public:
 		std::set<std::string> IncludeWildcards;
 		std::set<std::string> ExcludedDirectories;
 
-		std::u16string SearchExpression;
-		std::u16string ReplacementText;
+		std::string SearchExpression;
+		std::string ReplacementText;
 
 		MatchMode Mode = PlainCaseSensitive;
 
@@ -30,16 +30,6 @@ public:
 		std::filesystem::file_time_type MaximumTime = std::filesystem::file_time_type() + std::chrono::years(2000);
 
 		uint32_t MaximumThreads = std::thread::hardware_concurrency();
-	};
-
-	struct IFile
-	{
-		virtual uint64_t Size() const = 0;
-		virtual std::string_view Sample(uint64_t size = 0x400) const = 0;
-		virtual std::string_view Chunk(uint64_t offset, uint64_t size) const = 0;
-		virtual std::string_view Data() const = 0;
-		virtual void Read(void* data, uint64_t size) = 0;
-		virtual void Write(const void* data, uint64_t size) = 0;
 	};
 
 	enum Status : uint32_t
@@ -55,9 +45,8 @@ public:
 		IOError = (1u << 7),
 		EncodingError = (1u << 8),
 		ConversionError = (1u << 9),
-		AnalysisError = (1u << 10),
-		SearchError = (1u << 11),
-		UnknownError = (1u << 12)
+		SearchError = (1u << 10),
+		UnknownError = (1u << 11)
 	};
 
 	struct Position
@@ -114,22 +103,14 @@ public:
 	struct Match
 	{
 		uint32_t LineNumber = 0;
-		std::u16string LineContent;
+		std::string LineContent;
 		std::vector<RelAbsPosPair> Positions;
-	};
-
-	struct EncodingGuess
-	{
-		static constexpr char Unknown[] = "unknown";
-		int32_t Confidence = 0;
-		std::string Name = Unknown;
 	};
 
 	struct Result
 	{
 		std::filesystem::path Path;
 		uint32_t StatusMask = Status::Ok;
-		EncodingGuess Encoding;
 		std::vector<Match> Matches;
 	};
 
@@ -149,7 +130,6 @@ public:
 	void Stop();
 
 	static std::string StatusMaskToString(uint32_t);
-	static int32_t ModeToRegexFlags(Pystykorva::MatchMode);
 
 private:
 	bool IsExcludedDirectory(const std::filesystem::path&) const;
@@ -160,6 +140,7 @@ private:
 	Callbacks _callbacks;
 
 	std::chrono::high_resolution_clock::time_point _start;
+	std::stop_source _stopSource;
 	std::vector<std::jthread> _threads;
 	std::filesystem::recursive_directory_iterator _rdi;
 	std::mutex _mutex;

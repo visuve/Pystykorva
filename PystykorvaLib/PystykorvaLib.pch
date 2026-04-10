@@ -17,13 +17,3 @@
 #include <set>
 #include <thread>
 #include <utility>
-
-#ifdef _WIN32
-#include <icu.h>
-#else
-#include <unicode/ubrk.h>
-#include <unicode/ucnv.h>
-#include <unicode/ucsdet.h>
-#include <unicode/uregex.h>
-#include <unicode/ustring.h>
-#endif

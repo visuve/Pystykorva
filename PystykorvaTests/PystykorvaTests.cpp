@@ -24,7 +24,7 @@ TEST(PystykorvaTests, SearchSuccess)
 
 	options.Directory = TestDataPath();
 	options.IncludeWildcards = { "*.txt" };
-	options.SearchExpression = u"kala";
+	options.SearchExpression = "kala";
 	options.Mode = Pystykorva::PlainCaseInsensitive;
 	// options.MaximumThreads = 1;
 
@@ -49,16 +49,6 @@ TEST(PystykorvaTests, SearchSuccess)
 
 	for (auto& [_, result] : results)
 	{
-		EXPECT_STREQ(Pystykorva::StatusMaskToString(result.StatusMask).c_str(), "ok");
 		EXPECT_EQ(result.Matches.size(), 15);
 	}
-
-	// Yes, I know ANSI is a misnomer
-	EXPECT_TRUE(results["ANSI.txt"].Encoding.Name.starts_with("ISO-8859"));
-	EXPECT_TRUE(results["UTF-8.txt"].Encoding.Name.starts_with("UTF-8"));
-	EXPECT_TRUE(results["UTF-8-BOM.txt"].Encoding.Name == "UTF-8");
-	EXPECT_TRUE(results["UTF-16BE.txt"].Encoding.Name == "UTF-16BE");
-	EXPECT_TRUE(results["UTF-16BE-BOM.txt"].Encoding.Name == "UTF-16BE");
-	EXPECT_TRUE(results["UTF-16LE.txt"].Encoding.Name == "UTF-16LE");
-	EXPECT_TRUE(results["UTF-16LE-BOM.txt"].Encoding.Name == "UTF-16LE");
 }

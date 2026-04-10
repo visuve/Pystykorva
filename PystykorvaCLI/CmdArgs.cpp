@@ -1,6 +1,5 @@
 #include "PystykorvaCLI.pch"
 #include "CmdArgs.hpp"
-#include "UnicodeConverter.hpp"
 
 std::ostream& operator << (std::ostream& stream, const CmdArgs::Argument& argument)
 {
@@ -213,10 +212,6 @@ std::any CmdArgs::ProvidedValueByKey(std::string_view key) const
 	else if (expected.Type == typeid(std::string))
 	{
 		return value;
-	}
-	else if (expected.Type == typeid(std::u16string))
-	{
-		return UnicodeConverter::U8toU16(value);
 	}
 	else if (expected.Type == typeid(std::set<std::string>))
 	{

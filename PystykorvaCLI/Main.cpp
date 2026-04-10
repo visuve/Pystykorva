@@ -2,7 +2,6 @@
 #include "Pystykorva.hpp"
 #include "CmdArgs.hpp"
 #include "Console.hpp"
-#include "UnicodeConverter.hpp"
 
 Console Cout(Console::StandardOutput);
 Console Cerr(Console::StandardError);
@@ -15,8 +14,8 @@ Pystykorva::Options Deserialize(const CmdArgs& args)
 	options.IncludeWildcards = args.Value<std::set<std::string>>("wildcards");
 	options.ExcludedDirectories = args.Value<std::set<std::string>>("excludes");
 
-	options.SearchExpression = args.Value<std::u16string>("searchexpression");
-	options.ReplacementText = args.Value<std::u16string>("replacement");
+	options.SearchExpression = args.Value<std::string>("searchexpression");
+	options.ReplacementText = args.Value<std::string>("replacement");
 
 	options.Mode = static_cast<Pystykorva::MatchMode>(args.Value<uint8_t>("mode"));
 
@@ -34,8 +33,8 @@ Pystykorva::Options Deserialize(const CmdArgs& args)
 
 Console& operator << (Console& stream, const Pystykorva::Match& result)
 {
-	constexpr static std::u16string_view RedColorTagBegin = u"\033[31m";
-	constexpr static std::u16string_view RedColorTagEnd = u"\033[0m";
+	constexpr std::string_view RedColorTagBegin = "\033[31m";
+	constexpr std::string_view RedColorTagEnd = "\033[0m";
 
 	stream << result.LineNumber << "\n";
 
@@ -44,7 +43,7 @@ Console& operator << (Console& stream, const Pystykorva::Match& result)
 		return stream;
 	}
 
-	std::u16string line = result.LineContent;
+	std::string line = result.LineContent;
 	size_t offset = 0;
 	
 	for (const auto& position : result.Positions)
@@ -58,8 +57,7 @@ Console& operator << (Console& stream, const Pystykorva::Match& result)
 		offset += RedColorTagEnd.size();
 	}
 
-	// Trim trailing whitespace, may have a lot
-	UnicodeConverter::RightTrim(line);
+	// TODO: Trim trailing whitespace, may have a lot
 
 	Cout << line << '\n';
 
@@ -95,7 +93,6 @@ void ReportResults(const Pystykorva::Result& result)
 
 #if _DEBUG
 	Cout << result.Path << " processed, status: " << Pystykorva::StatusMaskToString(result.StatusMask)
-		<< ", encoding: " << result.Encoding.Name << ", confidence: " << result.Encoding.Confidence 
 		<< ", matches: " << result.Matches.size() << '\n';
 #endif
 
@@ -173,13 +170,13 @@ int Run(const std::vector<std::string>& args)
 
 #ifdef _WIN32
 
-int wmain(int argc, char16_t** argv)
+int wmain(int argc, char16_t**)
 {
 	std::vector<std::string> args;
 
 	for (int i = 0; i < argc; ++i)
 	{
-		args.emplace_back(UnicodeConverter::U16toU8(argv[i]));
+		args.emplace_back("TODO: argv to UTF-8");
 	}
 
 	return Run(args);

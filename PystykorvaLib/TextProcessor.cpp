@@ -1,12 +1,10 @@
 #include "PystykorvaLib.pch"
 #include "TextProcessor.hpp"
 #include "Wildcard.hpp"
-#include "MemoryMappedFile.hpp"
 
 TextProcessor::TextProcessor(std::stop_token token, const Pystykorva::Options& options) :
 	_token(token),
-	_options(options),
-	_textSearcher(options.SearchExpression, options.Mode)
+	_options(options)
 {
 }
 
@@ -64,17 +62,11 @@ Pystykorva::Result TextProcessor::ProcessPath(const std::filesystem::path& path)
 			return result;
 		}
 
-		MemoryMappedFile input(path, fileSize, true);
+		std::fstream input(path);
 
-		if (!_encodingDetector.DetectEncoding(input.Sample(0x400), result.Encoding))
-		{
-			result.StatusMask |= Pystykorva::Status::EncodingError;
-			return result;
-		}
-
-		ProcessFile(input, result.Matches, result.Encoding.Name);
+		ProcessFile(input, result.Matches);
 	}
-	catch (const IOException&)
+	/*catch (const IOException&)
 	{
 		result.StatusMask |= Pystykorva::Status::IOError;
 	}
@@ -86,14 +78,10 @@ Pystykorva::Result TextProcessor::ProcessPath(const std::filesystem::path& path)
 	{
 		result.StatusMask |= Pystykorva::Status::ConversionError;
 	}
-	catch (const AnalysisException&)
-	{
-		result.StatusMask |= Pystykorva::Status::AnalysisError;
-	}
 	catch (const SearchException&)
 	{
 		result.StatusMask |= Pystykorva::Status::SearchError;
-	}
+	}*/
 	catch (const std::exception&)
 	{
 		result.StatusMask |= Pystykorva::Status::UnknownError;
@@ -102,61 +90,7 @@ Pystykorva::Result TextProcessor::ProcessPath(const std::filesystem::path& path)
 	return result;
 }
 
-void TextProcessor::ProcessFile(Pystykorva::IFile& file, std::vector<Pystykorva::Match>& matches, std::string_view encoding)
+void TextProcessor::ProcessFile(std::fstream&, std::vector<Pystykorva::Match>&)
 {
-	UnicodeConverter converter(encoding);
-	uint8_t charSize = converter.CharSize();
-	uint32_t lineNumber = 0;
-	uint64_t offset = 0;
-
-	if (_token.stop_requested()) return;
-
-	converter.Convert(file.Data());
-
-	if (_token.stop_requested()) return;
-
-	auto boundaries = _lineAnalyzer.Boundaries(converter.Data());
-
-	for (Pystykorva::Position& boundary : boundaries)
-	{
-		if (_token.stop_requested()) return;
-
-		// Check if the boundary is "incomplete"
-		if (boundary.End == Pystykorva::Position::Unknown)
-		{
-			boundary.End = converter.End();
-		}
-
-		// Do not increment on "incomplete" lines
-		++lineNumber;
-
-		std::u16string_view line =
-			converter.View(boundary.Begin, boundary.End);
-
-		Pystykorva::Match match = ProcessLine(offset, lineNumber, line);
-
-		// I smell problems here with variable-length character encoding...
-		offset += line.size() * charSize;
-
-		if (match.Positions.empty())
-		{
-			continue;
-		}
-
-		matches.emplace_back(match);
-	}
-}
-
-Pystykorva::Match TextProcessor::ProcessLine(uint64_t offset, uint32_t lineNumber, std::u16string_view line)
-{
-	Pystykorva::Match result;
-	result.LineNumber = lineNumber;
-	result.LineContent = line;
-
-	for (const Pystykorva::Position& position : _textSearcher.FindIn(line))
-	{
-		result.Positions.emplace_back(position, offset);
-	}
-
-	return result;
+	// TODO
 }
